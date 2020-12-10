@@ -10,6 +10,13 @@ export const GET_BRANDID = gql`
       id
       isDefault
       domain
+      website {
+        websitePages {
+          id
+          route
+          internalPageName
+        }
+      }
     }
   }
 `;
@@ -39,6 +46,13 @@ export const GET_FILE_PATH = gql`
       path
       linkedCssFiles(order_by: { priority: desc }) {
         cssFile {
+          path
+          fileName
+          fileType
+        }
+      }
+      linkedJsFiles(order_by: { priority: desc }) {
+        jsFile {
           path
           fileName
           fileType

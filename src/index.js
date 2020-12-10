@@ -1,64 +1,64 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import {
+  split,
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  createHttpLink,
+  ApolloProvider,
+} from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { SubscriptionClient } from "subscriptions-transport-ws";
 import App from "./App";
 
-// Apollo Client Imports
-import { ApolloProvider } from "@apollo/react-hooks";
-import { ApolloClient } from "apollo-client";
-import { setContext } from "apollo-link-context";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { HttpLink } from "apollo-link-http";
-import { split } from "apollo-link";
-// import { WebSocketLink } from "apollo-link-ws";
-import { getMainDefinition } from "apollo-utilities";
-
-const authLink = setContext((_, { headers }) => {
-  return {
+const wssClient = new SubscriptionClient(
+  `${process.env.REACT_APP_DATA_HUB_SUBSCRIPTIONS_URI}`,
+  {
+    reconnect: true,
+    connectionParams: {
+      headers: {
+        "x-hasura-admin-secret": `${process.env.REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET}`,
+      },
+    },
+  }
+);
+const wssLink = new WebSocketLink(wssClient);
+const authLink = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers }) => ({
     headers: {
       ...headers,
-      "x-hasura-admin-secret": "60ea76ab-5ab6-4f09-ad44-efeb00f978ce",
+      "x-hasura-admin-secret": `${process.env.REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET}`,
     },
-  };
+  }));
+  return forward(operation);
+});
+const httpLink = createHttpLink({
+  uri: `${process.env.REACT_APP_DATA_HUB_URI}`,
 });
 
-// const wsLink = new WebSocketLink({
-//   uri: "wss://test.dailykit.org/datahub/v1/graphql",
-//   options: {
-//     reconnect: true,
-//     connectionParams: {
-//       headers: {
-//         "x-hasura-admin-secret": `60ea76ab-5ab6-4f09-ad44-efeb00f978ce`,
-//       },
-//     },
-//   },
-// });
-
-const httpLink = new HttpLink({
-  uri: "https://test.dailykit.org/datahub/v1/graphql",
-});
-
-// const link = split(
-//   ({ query }) => {
-//     const definition = getMainDefinition(query);
-//     return (
-//       definition.kind === "OperationDefinition" &&
-//       definition.operation === "subscription"
-//     );
-//   },
-//   wsLink,
-//   authLink.concat(httpLink)
-// );
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wssLink,
+  authLink.concat(httpLink)
+);
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: splitLink,
   cache: new InMemoryCache(),
 });
 
+const rootElement = document.getElementById("root");
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <App />
   </ApolloProvider>,
-  document.getElementById("root")
+  rootElement
 );
