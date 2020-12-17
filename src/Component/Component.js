@@ -1,15 +1,15 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-// import { useQuery } from "@apollo/client";
-import ReactHtmlParser from "react-html-parser";
+// import ReactHtmlParser from "react-html-parser";
+import ScriptTag from "react-script-tag";
+import { useQuery } from "@apollo/client";
+import { GET_BRANDID } from "../graphql/query";
+import axios from "axios";
 import {
   GET_FILE_PATH,
   GET_FILE_CONTENT,
   GET_PAGE_MODULES,
 } from "../graphql/query";
-
-import { useQuery } from "@apollo/client";
-import { GET_BRANDID } from "../graphql/query";
 
 const Component = () => {
   let { pathname } = useLocation();
@@ -23,6 +23,8 @@ const Component = () => {
   const [webPages, setWebPages] = React.useState([]);
   const [brandId, setBrandId] = React.useState(null);
   const domain = window.location.hostname;
+
+  //get brand info (id, and website links with the brand)
   const { loading } = useQuery(GET_BRANDID, {
     variables: {
       domain: domain,
@@ -43,6 +45,7 @@ const Component = () => {
     },
   });
 
+  //get fileID or templateId or internalModuleIdentifier query
   const { loading: moduleLoading } = useQuery(GET_PAGE_MODULES, {
     variables: {
       brandId: brandId,
@@ -59,6 +62,7 @@ const Component = () => {
     skip: !brandId,
   });
 
+  // get file path query
   const { loading: filePathLoading } = useQuery(GET_FILE_PATH, {
     variables: {
       id: fileId,
@@ -66,7 +70,11 @@ const Component = () => {
     onCompleted: ({
       editor_file_by_pk: { path, linkedCssFiles, linkedJsFiles },
     }) => {
-      // console.log(path, linkedCssFiles);
+      console.log(
+        path,
+        linkedCssFiles[0]?.cssFile?.path,
+        linkedJsFiles[0]?.jsFile?.path
+      );
       setFilePath(path);
       setCssPath(linkedCssFiles[0]?.cssFile?.path);
       setJsPath(linkedJsFiles[0]?.jsFile?.path);
@@ -77,65 +85,99 @@ const Component = () => {
     },
   });
 
-  const { loading: fileContentLoading } = useQuery(GET_FILE_CONTENT, {
-    variables: {
-      path: filePath,
-    },
-    onCompleted: ({ getFile: { content } }) => {
-      console.log(content);
-      setFileContent(content);
-    },
-    skip: !filePath,
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-  const { loading: fileCssLoading } = useQuery(GET_FILE_CONTENT, {
-    variables: {
-      path: cssPath,
-    },
-    onCompleted: ({ getFile: { content } }) => {
-      //   console.log(content);
-      setCssFileContent(content);
-    },
-    skip: !cssPath,
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-  const { loading: fileJsLoading } = useQuery(GET_FILE_CONTENT, {
-    variables: {
-      path: jsPath,
-    },
-    onCompleted: ({ getFile: { content } }) => {
-      //   console.log(content);
-      setJsFileContent(content);
-    },
-    skip: !jsPath,
-    onError: (error) => {
-      console.log(error);
-    },
+  //   // get file content query
+  //   const { loading: fileContentLoading } = useQuery(GET_FILE_CONTENT, {
+  //     variables: {
+  //       path: filePath,
+  //     },
+  //     onCompleted: ({ getFile: { content } }) => {
+  //       setFileContent(content);
+  //     },
+  //     skip: !filePath,
+  //     onError: (error) => {
+  //       console.log(error);
+  //     },
+  //   });
+
+  //   const { loading: fileCssLoading } = useQuery(GET_FILE_CONTENT, {
+  //     variables: {
+  //       path: cssPath,
+  //     },
+  //     onCompleted: ({ getFile: { content } }) => {
+  //       setCssFileContent(content);
+  //     },
+  //     skip: !cssPath,
+  //     onError: (error) => {
+  //       console.log(error);
+  //     },
+  //   });
+  //   const { loading: fileJsLoading } = useQuery(GET_FILE_CONTENT, {
+  //     variables: {
+  //       path: jsPath,
+  //     },
+  //     onCompleted: ({ getFile: { content } }) => {
+  //       setJsFileContent(content);
+  //     },
+  //     skip: !jsPath,
+  //     onError: (error) => {
+  //       console.log(error);
+  //     },
+  //   });
+
+  React.useEffect(() => {
+    if (filePath) {
+      axios
+        .get(`https://test.dailykit.org/template/files${filePath}`)
+        .then((data) => {
+          setFileContent(data.data);
+        });
+    }
   });
 
-  if (
-    moduleLoading ||
-    filePathLoading ||
-    fileContentLoading ||
-    fileCssLoading ||
-    fileJsLoading
-  ) {
+  React.useEffect(() => {
+    const node = document.createElement("script");
+    node.src = `https://test.dailykit.org/template/files${jsPath}`;
+    node.type = "text/javascript";
+    node.async = true;
+    document.body.appendChild(node);
+    const link = document.createElement("link");
+    link.href = `https://test.dailykit.org/template/files${cssPath}`;
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    document.body.appendChild(link);
+  });
+
+  if (moduleLoading || filePathLoading) {
     return "Loding...";
   }
+
   return (
     <>
-      {Boolean(fileContent) && (
-        <>
-          {ReactHtmlParser(
-            `${fileContent} <style>body{margin: 0} ${cssFileContent}</style> <script>${jsFileContent}</script>`
-          )}
-        </>
-      )}
+      <>
+        <div
+          id="htmlContent"
+          dangerouslySetInnerHTML={{
+            __html: fileContent,
+          }}
+        />
+        {/* <link
+          rel="stylesheet"
+          type="text/css"
+          href={`https://test.dailykit.org/template/files${cssPath}`}
+        /> */}
+        {/* <ScriptTag
+          type="text/javascript"
+          src={`https://test.dailykit.org/template/files${jsPath}`}
+        /> */}
+        {/* <script src={`https://test.dailykit.org/template/files${jsPath}`} /> */}
+      </>
     </>
+
+    // <>
+    //   {Boolean(fileContent) && (
+    //     <>{ReactHtmlParser(`${fileContent} <style>body{margin: 0}</style>`)}</>
+    //   )}
+    // </>
   );
 };
 
