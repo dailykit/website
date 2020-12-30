@@ -26,9 +26,10 @@ export const GET_PAGE_MODULES = gql`
     website_website(where: { brandId: { _eq: $brandId } }) {
       websitePages(where: { route: { _eq: $route } }) {
         id
-        websitePageModules(order_by: { priority: desc }) {
+        websitePageModules(order_by: { position: desc_nulls_last }) {
           id
-          priority
+          position
+          moduleType
           fileId
           templateId
           internalModuleIdentifier
@@ -39,23 +40,26 @@ export const GET_PAGE_MODULES = gql`
 `;
 
 export const GET_FILE_PATH = gql`
-  query GET_FILE_PATH($id: Int!) {
-    editor_file_by_pk(id: $id) {
-      fileName
-      fileType
-      path
-      linkedCssFiles(order_by: { priority: desc }) {
-        cssFile {
-          path
-          fileName
-          fileType
+  query GET_FILE_PATH($id: [Int!]!) {
+    editor_file_aggregate(where: { id: { _in: $id } }) {
+      nodes {
+        fileName
+        fileType
+        path
+        id
+        linkedCssFiles(order_by: { position: desc_nulls_last }) {
+          cssFile {
+            path
+            fileName
+            fileType
+          }
         }
-      }
-      linkedJsFiles(order_by: { priority: desc }) {
-        jsFile {
-          path
-          fileName
-          fileType
+        linkedJsFiles(order_by: { position: desc_nulls_last }) {
+          jsFile {
+            path
+            fileName
+            fileType
+          }
         }
       }
     }
