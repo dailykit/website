@@ -33,6 +33,23 @@ export const GET_PAGE_MODULES = gql`
           fileId
           templateId
           internalModuleIdentifier
+          file {
+            path
+            linkedCssFiles(order_by: { position: desc_nulls_last }) {
+              cssFile {
+                path
+                fileName
+                fileType
+              }
+            }
+            linkedJsFiles(order_by: { position: desc_nulls_last }) {
+              jsFile {
+                path
+                fileName
+                fileType
+              }
+            }
+          }
         }
       }
     }
