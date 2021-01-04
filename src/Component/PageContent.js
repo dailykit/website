@@ -75,101 +75,48 @@ const Component = () => {
     skip: !brandId,
   });
 
-  // // get file path query
-  // const { loading: filePathLoading } = useQuery(GET_FILE_PATH, {
-  //   variables: {
-  //     id: fileId,
-  //   },
-  //   onCompleted: ({ editor_file_aggregate: { nodes = [] } = {} }) => {
-  //     const filePaths = nodes.map((node) => {
-  //       return node.path;
-  //     });
-  //     const linkedCssPaths = nodes.map((node) => {
-  //       return node.linkedCssFiles.map((file) => {
-  //         return file.cssFile.path;
-  //       });
-  //     });
-  //     const linkedJsPaths = nodes.map((node) => {
-  //       return node.linkedJsFiles.map((file) => {
-  //         return file.jsFile.path;
-  //       });
-  //     });
-  //     console.log(filePaths, linkedCssPaths, linkedJsPaths);
-  //     setFilePath(filePaths);
-  //     setCssPath(linkedCssPaths);
-  //     setJsPath(linkedJsPaths);
-  //   },
-  //   skip: !fileId.length,
-  //   onError: (error) => {
-  //     console.log(error);
-  //   },
-  // });
-
   React.useEffect(() => {
     if (filePath.length) {
-      let content = [];
-      filePath.map((path) =>
-        axios
-          .get(`https://test.dailykit.org/template/files${path}`)
-          .then((data) => {
-            // content.push(data.data);
-            const htmlNode = document.createElement("div");
-            htmlNode.className = "pageContent";
-            htmlNode.innerHTML = data.data;
-            document.body.appendChild(htmlNode);
-          })
-          .catch((error) => console.error(error))
-      );
-      jsPath.map((path) => {
-        const scriptNode = document.createElement("script");
-        scriptNode.src = `https://test.dailykit.org/template/files${path}`;
-        scriptNode.type = "text/javascript";
-        scriptNode.async = true;
-        return document.body.appendChild(scriptNode);
-      });
-      cssPath.map((path) => {
+      cssPath.forEach((path) => {
         const linkNode = document.createElement("link");
         linkNode.href = `https://test.dailykit.org/template/files${path}`;
         linkNode.rel = "stylesheet";
         linkNode.type = "text/css";
         console.log(linkNode);
-        return document.head.appendChild(linkNode);
+        document.head.appendChild(linkNode);
       });
+      (async () => {
+        const htmlContents = await Promise.all(
+          filePath.map(async (path) => {
+            try {
+              const { data } = await axios.get(
+                `https://test.dailykit.org/template/files${path}`
+              );
+              return data;
+            } catch (error) {
+              console.log(error);
+            }
+          })
+        );
+        htmlContents.forEach((content) => {
+          const htmlNode = document.createElement("div");
+          htmlNode.className = "pageContent";
+          htmlNode.innerHTML = content;
+          document.body.appendChild(htmlNode);
+        });
+      })();
+
+      jsPath.forEach((path) => {
+        const scriptNode = document.createElement("script");
+        scriptNode.src = `https://test.dailykit.org/template/files${path}`;
+        scriptNode.type = "text/javascript";
+        scriptNode.async = true;
+        document.body.appendChild(scriptNode);
+      });
+
       // setFileContent([...fileContent, ...content]);
     }
   }, [filePath]);
-
-  // React.useEffect(() => {
-  //   if (document.getElementsByClassName("pageContent").length === 0) {
-  //     console.log("file");
-  //     if (fileContent.length) {
-  //       fileContent.map((content) => {
-  //         const htmlNode = document.createElement("div");
-  //         htmlNode.className = "pageContent";
-  //         htmlNode.innerHTML = content;
-  //         return document.body.appendChild(htmlNode);
-  //       });
-  //     }
-  //     if (fileContent.length && jsPath.length) {
-  //       jsPath.map((path) => {
-  //         const scriptNode = document.createElement("script");
-  //         scriptNode.src = `https://test.dailykit.org/template/files${path}`;
-  //         scriptNode.type = "text/javascript";
-  //         scriptNode.async = true;
-  //         return document.body.appendChild(scriptNode);
-  //       });
-  //     }
-  //     if (fileContent.length && cssPath.length) {
-  //       cssPath.map((path) => {
-  //         const linkNode = document.createElement("link");
-  //         linkNode.href = `https://test.dailykit.org/template/files${cssPath}`;
-  //         linkNode.rel = "stylesheet";
-  //         linkNode.type = "text/css";
-  //         return document.head.appendChild(linkNode);
-  //       });
-  //     }
-  //   }
-  // }, [fileContent, cssPath, jsPath]);
 
   if (loading || moduleLoading) {
     return <Loader />;
