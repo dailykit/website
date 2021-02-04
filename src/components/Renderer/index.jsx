@@ -13,6 +13,7 @@ const Renderer = ({ filePath, variables }) => {
   const { settings } = React.useContext(SettingsContext);
   const { menu } = React.useContext(MenuContext);
   const [loading, setLoading] = React.useState(true);
+  const [html, setHtml] = React.useState(null);
   const [queryData, setQueryData] = React.useState(null);
 
   const [runDynamicQuery, { loading: runningQuery }] = useLazyQuery(
@@ -69,19 +70,21 @@ const Renderer = ({ filePath, variables }) => {
           ...(queryData && { ...queryData }),
         }
       );
+      setHtml(parsedHtml);
       setLoading(false);
-      let element = document.getElementById(name);
-      if (element) {
-        removeChildren(element);
-        for (let el of parsedHtml) {
-          element.appendChild(el);
-        }
-      }
+      // let element = document.getElementById(name);
+      // console.log("🚀 ~ file: index.jsx ~ line 74 ~ element", element);
+      // if (element) {
+      //   removeChildren(element);
+      //   element.innerHTML = parsedHtml;
+      //   //   for (let el of parsedHtml) {
+      //   //   }
+      // }
     })();
   }, [settings, menu, queryData]);
 
   if (loading || runningQuery) return <Loader />;
-  return <div className="Wrapper" id={name}></div>;
+  return html;
 };
 
 export default Renderer;
