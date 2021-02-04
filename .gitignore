@@ -1,0 +1,28 @@
+### react ###
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+
+# temporary
+public/components
+
+node_modules
+bower_components
+
+.env
+
+*.sublime*
+
+psd
+thumb
+sketch
+
+### vscode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
