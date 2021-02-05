@@ -38,7 +38,7 @@ const useMutation = async (mutation, args) => {
 
 // Global Functions
 const addProductToCart = async (args) => {
-  console.log(args);
+  console.log(JSON.stringify(args));
   //   const data = await useMutation(MUTATIONS.UpdateCart, {
   //     variables: {
   //       id: cartId,

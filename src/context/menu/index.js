@@ -9,7 +9,21 @@ const initialState = {
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case "SEED": {
-      return { ...state, categories: payload.menu };
+      const updatedMenu = [];
+      for (let category of payload.menu) {
+        const products = [];
+        for (let product of category.products) {
+          products.push({
+            ...product,
+            jsonData: JSON.stringify(product),
+          });
+        }
+        updatedMenu.push({
+          ...category,
+          products,
+        });
+      }
+      return { ...state, categories: updatedMenu };
     }
     default:
       return state;

@@ -11,16 +11,7 @@ import { GET_MENU, GET_STORE_DATA } from "./graphql";
 
 import { Renderer, Loader } from "./components";
 import { SettingsContext, MenuContext } from "./context";
-import {
-  Home,
-  Profile,
-  TrackOrder,
-  Product,
-  Orders,
-  Checkout,
-  Category,
-  Cart,
-} from "./pages";
+import { Main } from "./sections";
 
 import "./styles.css";
 
@@ -75,14 +66,13 @@ const App = () => {
     variables: {
       params: {
         brandId: settings?.brand?.id,
-        date: "03-02-2021",
+        date,
       },
     },
     onCompleted: (data) => {
       if (data.onDemand_getMenuV2?.length) {
         const [res] = data.onDemand_getMenuV2;
         const { menu } = res.data;
-        console.log(menu);
         menuDispatch({
           type: "SEED",
           payload: { menu },
@@ -100,37 +90,15 @@ const App = () => {
         <Loader />
       ) : (
         <>
-          <Renderer filePath="components/navbar.liquid" />
+          <Renderer filePath="/default/components/navbar.liquid" />
           <div className="App">
             <Switch>
-              <Route exact path="/">
-                <Home />
+              <Route path="/">
+                <Main />
               </Route>
-              <Route exact path="/profile">
-                <Profile />
-              </Route>
-              <Route exact path="/category">
-                <Category />
-              </Route>
-              <Route exact path="/product">
-                <Product />
-              </Route>
-              <Route exact path="/cart">
-                <Cart />
-              </Route>
-              <Route exact path="/checkout">
-                <Checkout />
-              </Route>
-              <Route exact path="/track-order">
-                <TrackOrder />
-              </Route>
-              <Route exact path="/orders">
-                <Orders />
-              </Route>
-              <Redirect to="/" />
             </Switch>
           </div>
-          <Renderer filePath="components/footer.liquid" />
+          <Renderer filePath="/default/components/footer.liquid" />
         </>
       )}
     </Router>

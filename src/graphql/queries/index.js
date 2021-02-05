@@ -14,3 +14,39 @@ export const GET_MENU = `
       }
    }
 `;
+
+export const GET_PAGE_MODULES = `
+  query GET_PAGE_MODULES($brandId: Int!, $route: String!) {
+    website_website(where: { brandId: { _eq: $brandId } }) {
+      websitePages(where: { route: { _eq: $route } }) {
+        id
+        websitePageModules(order_by: { position: desc_nulls_last }) {
+          id
+          position
+          moduleType
+          fileId
+          templateId
+          internalModuleIdentifier
+          file {
+            path
+            variables
+            linkedCssFiles(order_by: { position: desc_nulls_last }) {
+              cssFile {
+                path
+                fileName
+                fileType
+              }
+            }
+            linkedJsFiles(order_by: { position: desc_nulls_last }) {
+              jsFile {
+                path
+                fileName
+                fileType
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
