@@ -52,21 +52,32 @@ const useMutation = async (mutation, args) => {
 const addProductToCart = async (
   cartId,
   productId,
-  type,
+  productType,
   optionId,
   quantity
 ) => {
-  console.log({ cartId, productId, type, optionId, quantity });
-  const data = await useMutation(QUERIES.AddProductToCart, {
-    variables: {
-      params: {
-        cartId,
-        productId,
-        type,
-        optionId,
-        quantity,
+  try {
+    console.log({ cartId, productId, productType, optionId, quantity });
+
+    const isValid = [cartId, productId, productType, optionId, quantity].every(
+      Boolean
+    );
+
+    if (!isValid) throw Error("Missing values for mutation!");
+
+    const data = await useMutation(QUERIES.AddProductToCart, {
+      variables: {
+        params: {
+          cartId,
+          productId,
+          productType,
+          optionId,
+          quantity,
+        },
       },
-    },
-  });
-  return data;
+    });
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
 };
