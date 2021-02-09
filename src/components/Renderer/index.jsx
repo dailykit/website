@@ -66,7 +66,7 @@ const Renderer = ({ filePath, variables }) => {
       // setHtml(parsedHtml);
       setLoading(false);
       let element = document.getElementById(name);
-      if (element) {
+      if (element && parsedHtml.length) {
         removeChildren(element);
         for (let el of parsedHtml) {
           element.appendChild(el);

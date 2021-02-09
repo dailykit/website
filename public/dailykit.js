@@ -3,6 +3,18 @@ const CONSTANTS = {
   DATAHUB_ADMIN_SECRET: "60ea76ab-5ab6-4f09-ad44-efeb00f978ce",
 };
 
+const QUERIES = {
+  AddProductToCart: `
+   query AddProductToCard($params: jsonb!) {
+      onDemand_addProductToCart(args: { params : $params }) {
+        success
+        message
+        data
+      }
+    }
+   `,
+};
+
 const MUTATIONS = {
   UpdateCart: `
       mutation UpdateCart($id: Int!, $set: crm_orderCart_set_input) {
@@ -37,15 +49,24 @@ const useMutation = async (mutation, args) => {
 };
 
 // Global Functions
-const addProductToCart = async (args) => {
-  console.log(JSON.stringify(args));
-  //   const data = await useMutation(MUTATIONS.UpdateCart, {
-  //     variables: {
-  //       id: cartId,
-  //       set: {
-  //         loyaltyPointsUsed: 1000,
-  //       },
-  //     },
-  //   });
-  //   console.log(data);
+const addProductToCart = async (
+  cartId,
+  productId,
+  type,
+  optionId,
+  quantity
+) => {
+  console.log({ cartId, productId, type, optionId, quantity });
+  const data = await useMutation(QUERIES.AddProductToCart, {
+    variables: {
+      params: {
+        cartId,
+        productId,
+        type,
+        optionId,
+        quantity,
+      },
+    },
+  });
+  return data;
 };
