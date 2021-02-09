@@ -50,3 +50,97 @@ export const GET_PAGE_MODULES = `
     }
   }
 `;
+
+export const CUSTOMER = `
+query Customer($keycloakId: String!, $brandId: Int!) {
+  customer(keycloakId: $keycloakId) {
+    id
+    email
+    keycloakId
+    isTest
+    brandCustomers {
+      id
+      brandId
+      keycloakId
+    }
+    customerReferralDetails {
+      id
+      signupStatus
+      referralStatus
+      referralCode
+      referredByCode
+    }
+    platform_customer {
+      email
+      firstName
+      lastName
+      phoneNumber
+      stripeCustomerId
+      customerAddresses {
+        id
+        line1
+        line2
+        state
+        zipcode
+        city
+        country
+        notes
+        label
+        landmark
+        lat
+        lng
+      }
+      defaultCustomerAddress {
+        id
+        line1
+        line2
+        state
+        zipcode
+        city
+        country
+        notes
+        label
+        landmark
+        lat
+        lng
+      }
+      stripePaymentMethods {
+        stripePaymentMethodId
+        last4
+        expMonth
+        expYear
+        brand
+      }
+      defaultPaymentMethodId
+      defaultStripePaymentMethod {
+        stripePaymentMethodId
+        last4
+        expMonth
+        expYear
+        brand
+      }
+    }
+    orderCarts(where: {status: {_eq: "PENDING"}, cartSource: {_eq: "a-la-carte"}, brandId: {_eq: $brandId}}, order_by: {created_at: desc}) {
+      id
+      address
+      customerInfo
+      cartInfo
+      customerId
+      isValid
+      paymentMethodId
+      stripeCustomerId
+      fulfillmentInfo
+      deliveryPrice
+      itemTotal
+      tip
+      taxPercent
+      tax
+      totalPrice
+      status
+      paymentStatus
+      orderId
+    }
+  }
+}
+
+`;

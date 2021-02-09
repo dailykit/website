@@ -27,7 +27,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-import { SettingsProvider, MenuProvider } from "./context";
+import { SettingsProvider, MenuProvider, CustomerProvider } from "./context";
 
 import App from "./App";
 
@@ -37,7 +37,9 @@ ReactDOM.render(
     <ApolloProvider client={client}>
       <SettingsProvider>
         <MenuProvider>
-          <App />
+          <CustomerProvider>
+            <App />
+          </CustomerProvider>
         </MenuProvider>
       </SettingsProvider>
     </ApolloProvider>

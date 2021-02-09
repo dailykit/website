@@ -1,7 +1,10 @@
 import React from "react";
-
+import { Renderer } from "../../components";
 const Orders = () => {
-  return <div>Orders</div>;
+  return (
+    <div>
+      <Renderer filePath="components/orders.liquid" />
+    </div>
+  );
 };
-
 export default Orders;
