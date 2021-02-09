@@ -142,5 +142,34 @@ query Customer($keycloakId: String!, $brandId: Int!) {
     }
   }
 }
+`;
 
+export const ORDERS = `
+   subscription Orders($keycloakId: String!, $brandId: Int!) {
+      orders(
+         where: {
+            keycloakId: { _eq: $keycloakId }
+            brandId: { _eq: $brandId }
+            source: { _eq: "a-la-carte" }
+         }
+         order_by: { created_at: desc }
+      ) {
+         id
+         deliveryInfo
+         fulfillmentType
+         orderStatus
+         amountPaid
+         currency
+         deliveryPrice
+         transactionId
+         discount
+         tax
+         tip
+         itemTotal
+         created_at
+         orderCart {
+            cartInfo
+         }
+      }
+   }
 `;

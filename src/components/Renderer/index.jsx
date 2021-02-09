@@ -1,9 +1,9 @@
 import React from "react";
-
+import { gql, useLazyQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
+import { ORDERS } from "../../graphql";
 import { Loader } from "..";
-import { gql, useLazyQuery } from "@apollo/client";
 
 const Renderer = ({ filePath, variables }) => {
   const dynamicQuery = React.useRef(null);
@@ -15,6 +15,7 @@ const Renderer = ({ filePath, variables }) => {
   const { customer } = React.useContext(CustomerContext);
   const [loading, setLoading] = React.useState(true);
   const [queryData, setQueryData] = React.useState(null);
+  const [orderHistory, setOrderHistory] = React.useState([]);
 
   const [runDynamicQuery, { loading: runningQuery }] = useLazyQuery(
     dynamicQuery.current,
@@ -24,6 +25,24 @@ const Renderer = ({ filePath, variables }) => {
       },
     }
   );
+
+  const { loading: runningOrderHistoryQuery } = useSubscription(gql(ORDERS), {
+    variables: {
+      brandId: 1,
+      keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
+    },
+    onSubscriptionData: ({
+      subscriptionData: { data: { orders = [] } = {} } = {},
+    } = {}) => {
+      console.log(orders);
+      setOrderHistory(orders);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  console.log("runningOrderHistoryQuery", runningOrderHistoryQuery);
 
   React.useEffect(() => {
     (async () => {
@@ -66,6 +85,7 @@ const Renderer = ({ filePath, variables }) => {
           customer: customer.platform_customer,
           customerReferralDetails: customer.customerReferralDetails,
         }),
+        ...(name === "orders" && { orderHistory: orderHistory }),
         ...(queryData && { ...queryData }),
       });
       // setHtml(parsedHtml);
@@ -80,7 +100,7 @@ const Renderer = ({ filePath, variables }) => {
     })();
   }, [settings, menu, queryData]);
 
-  if (loading || runningQuery) return <Loader />;
+  if (loading || runningQuery || runningOrderHistoryQuery) return <Loader />;
   return <div className="Wrapper" id={name}></div>;
 };
 

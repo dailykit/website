@@ -16,7 +16,6 @@ import { Main } from "./sections";
 import "./styles.css";
 
 const App = () => {
-  console.log(SettingsContext, MenuContext, CustomerContext);
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
@@ -84,8 +83,6 @@ const App = () => {
       console.log(error);
     },
   });
-
-  console.log("Re-rendering...");
 
   useQuery(gql(GET_MENU), {
     skip: !settings?.brand?.id,
