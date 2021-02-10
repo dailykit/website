@@ -15,12 +15,12 @@ import { SettingsProvider, MenuProvider, CustomerProvider } from "./context";
 import App from "./App";
 
 const wssClient = new SubscriptionClient(
-  `${process.env.REACT_APP_DATA_HUB_SUBSCRIPTIONS_URI}`,
+  `${process.env.REACT_APP_DATAHUB_SUBSCRIPTIONS_URL}`,
   {
     reconnect: true,
     connectionParams: {
       headers: {
-        "x-hasura-admin-secret": `${process.env.REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET}`,
+        "x-hasura-admin-secret": `${process.env.REACT_APP_DATAHUB_ADMIN_SECRET}`,
       },
     },
   }
@@ -30,13 +30,13 @@ const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers }) => ({
     headers: {
       ...headers,
-      "x-hasura-admin-secret": `${process.env.REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET}`,
+      "x-hasura-admin-secret": `${process.env.REACT_APP_DATAHUB_ADMIN_SECRET}`,
     },
   }));
   return forward(operation);
 });
 const httpLink = createHttpLink({
-  uri: `${process.env.REACT_APP_DATA_HUB_URI}`,
+  uri: `${process.env.REACT_APP_DATAHUB_URL}`,
 });
 
 const splitLink = split(
