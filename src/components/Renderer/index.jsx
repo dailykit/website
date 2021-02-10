@@ -10,6 +10,8 @@ const Renderer = ({ filePath, variables }) => {
   const [, theme, folder, file] = filePath.split("/");
   const [name] = file.split(".").slice(0, 1);
 
+  console.log(`Loading ${name}...`);
+
   const { settings } = React.useContext(SettingsContext);
   const { menu } = React.useContext(MenuContext);
   const { customer } = React.useContext(CustomerContext);
@@ -34,15 +36,12 @@ const Renderer = ({ filePath, variables }) => {
     onSubscriptionData: ({
       subscriptionData: { data: { orders = [] } = {} } = {},
     } = {}) => {
-      console.log(orders);
       setOrderHistory(orders);
     },
     onError: (error) => {
       console.log(error);
     },
   });
-
-  console.log("runningOrderHistoryQuery", runningOrderHistoryQuery);
 
   React.useEffect(() => {
     (async () => {

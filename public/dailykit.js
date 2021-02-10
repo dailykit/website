@@ -49,15 +49,25 @@ const useMutation = async (mutation, args) => {
 };
 
 // Global Functions
-const addProductToCart = async (
+const addProductToCart = async ({
   cartId,
   productId,
   productType,
   optionId,
-  quantity
-) => {
+  quantity,
+  customizableProductId,
+  customizableProductOptionId,
+}) => {
   try {
-    console.log({ cartId, productId, productType, optionId, quantity });
+    console.log({
+      cartId,
+      productId,
+      productType,
+      optionId,
+      quantity,
+      customizableProductId,
+      customizableProductOptionId,
+    });
 
     const isValid = [cartId, productId, productType, optionId, quantity].every(
       Boolean
@@ -73,6 +83,8 @@ const addProductToCart = async (
           productType,
           optionId,
           quantity,
+          customizableProductId,
+          customizableProductOptionId,
         },
       },
     });
