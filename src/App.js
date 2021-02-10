@@ -7,16 +7,17 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import { GET_MENU, GET_STORE_DATA } from "./graphql";
+import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 
 import { Renderer, Loader } from "./components";
-import { SettingsContext, MenuContext } from "./context";
+import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
 
 import "./styles.css";
 
 const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
+  const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
 
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
@@ -46,8 +47,32 @@ const App = () => {
                 email: res.settings.brand.contact.email,
               },
               routes: [
-                { title: "Cart", link: `${window.location.origin}/cart` },
-                { title: "Profile", link: `${window.location.origin}/profile` },
+                {
+                  display: "left",
+                  title: "About Us",
+                  link: `https://www.dailykit.org`,
+                },
+                {
+                  display: "left",
+                  title:
+                    "<i class='fas fa-search' style='color:rgb(102,102,102)'></i> Search",
+                  link: `${window.location.origin}/cart`,
+                },
+                {
+                  display: "right",
+                  title: "Orders",
+                  link: `${window.location.origin}/orderHistory`,
+                },
+                {
+                  display: "right",
+                  title: "Profile",
+                  link: `${window.location.origin}/profile`,
+                },
+                {
+                  display: "right",
+                  title: "<i class='fas fa-shopping-cart'></i>",
+                  link: `${window.location.origin}/cart`,
+                },
               ],
             },
           },
@@ -58,8 +83,6 @@ const App = () => {
       console.log(error);
     },
   });
-
-  console.log("Re-rendering...");
 
   useQuery(gql(GET_MENU), {
     skip: !settings?.brand?.id,
@@ -78,6 +101,23 @@ const App = () => {
           payload: { menu },
         });
       }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  useQuery(gql(CUSTOMER), {
+    skip: !settings?.brand?.id,
+    variables: {
+      brandId: settings?.brand?.id,
+      keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
+    },
+    onCompleted: ({ customer }) => {
+      customerDispatch({
+        type: "SEED",
+        payload: customer,
+      });
     },
     onError: (error) => {
       console.log(error);
