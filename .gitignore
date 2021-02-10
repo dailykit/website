@@ -7,6 +7,7 @@ logs
 
 # temporary
 public/components
+public/client.js
 
 node_modules
 bower_components
