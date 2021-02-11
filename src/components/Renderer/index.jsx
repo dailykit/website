@@ -83,7 +83,10 @@ const Renderer = ({ filePath, variables }) => {
         ...(displayConfig && { local: displayConfig }),
         ...(name === "collections" && { categories: menu.categories }),
         ...(name === "profile" && {
-          customer: customer.platform_customer,
+          customer: {
+            ...customer.platform_customer,
+            keycloakId: customer.keycloakId,
+          },
           customerReferralDetails: customer.customerReferralDetails,
         }),
         ...(name === "orders" && { orderHistory: orderHistory }),

@@ -25,6 +25,23 @@ const MUTATIONS = {
          }
       }
    `,
+  UpdateCustomerDetail: `
+      mutation platform_updateCustomer(
+        $keycloakId: String!
+        $_set: platform_customer_set_input!
+    ) {
+        platform_updateCustomer(
+          _set: $_set
+          pk_columns: { keycloakId: $keycloakId }
+        ) {
+          email
+          lastName
+          firstName
+          keycloakId
+          phoneNumber
+        }
+    }
+  `,
 };
 
 const useMutation = async (mutation, args) => {
@@ -88,6 +105,80 @@ const addProductToCart = async ({
         },
       },
     });
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const updateCustomerDetails = async ({
+  keycloakId,
+  firstName,
+  lastName,
+  phoneNumber,
+  email,
+}) => {
+  try {
+    console.log(keycloakId, firstName, lastName, phoneNumber, email);
+    const isValid = [keycloakId, firstName, lastName, phoneNumber].every(
+      Boolean
+    );
+    if (!isValid) throw Error("Missing values for mutation!");
+    const data = await useMutation(MUTATIONS.UpdateCustomerDetail, {
+      variables: {
+        keycloakId,
+        _set: {
+          firstName,
+          lastName,
+          phoneNumber,
+        },
+      },
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+const updateCustomerDefaultAddress = async ({
+  keycloakId,
+  defaultCustomerAddressId,
+}) => {
+  try {
+    console.log(keycloakId, defaultCustomerAddressId);
+    const isValid = [keycloakId, defaultCustomerAddressId].every(Boolean);
+    if (!isValid) throw Error("Missing values for mutation!");
+    const data = await useMutation(MUTATIONS.UpdateCustomerDetail, {
+      variables: {
+        keycloakId,
+        _set: {
+          defaultCustomerAddressId,
+        },
+      },
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+const updateCustomerDefaultPayment = async ({
+  keycloakId,
+  defaultPaymentMethodId,
+}) => {
+  try {
+    console.log(keycloakId, defaultPaymentMethodId);
+    const isValid = [keycloakId, defaultPaymentMethodId].every(Boolean);
+    if (!isValid) throw Error("Missing values for mutation!");
+    const data = await useMutation(MUTATIONS.UpdateCustomerDetail, {
+      variables: {
+        keycloakId,
+        _set: {
+          defaultPaymentMethodId,
+        },
+      },
+    });
+    console.log(data);
     return data;
   } catch (error) {
     console.error(error.message);
