@@ -82,6 +82,7 @@ const Renderer = ({ filePath, variables }) => {
         ...settings,
         ...(displayConfig && { local: displayConfig }),
         ...(name === "collections" && { categories: menu.categories }),
+        ...(name === "categoryProductsPage" && { categories: menu.categories }),
         ...(name === "profile" && {
           customer: {
             ...customer.platform_customer,

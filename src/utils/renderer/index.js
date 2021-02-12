@@ -15,28 +15,28 @@ export const DailyKit = {
 
       if (ext === "pug") {
         const compiled = `${pug.compile(source)(data)}`;
-        const html = parseHTML(compiled);
+        const html = parseHTML(compiled, document, true);
         if (html?.length === 0) throw Error("Empty file!");
         return html;
       }
 
       if (ext === "ejs") {
         const compiled = `${ejs.render(source, data)}`;
-        const html = parseHTML(compiled);
+        const html = parseHTML(compiled, document, true);
         if (html?.length === 0) throw Error("Empty file!");
         return html;
       }
 
       if (ext === "liquid") {
         const compiled = await liquid.parseAndRender(source, data);
-        const html = parseHTML(compiled);
+        const html = parseHTML(compiled, document, true);
         if (html?.length === 0) throw Error("Empty file!");
         return html;
       }
 
       if (ext === "mustache") {
         const compiled = await Mustache.render(source, data);
-        const html = parseHTML(compiled);
+        const html = parseHTML(compiled, document, true);
         if (html?.length === 0) throw Error("Empty file!");
         return html;
       }

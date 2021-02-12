@@ -70,7 +70,8 @@ const App = () => {
                 },
                 {
                   display: "right",
-                  title: "<i class='fas fa-shopping-cart'></i>",
+                  title:
+                    "<i class='fas fa-shopping-cart' style='font-size:20px'><span id='cart-count' class='badge cart-count'>0</span></i>",
                   link: `${window.location.origin}/cart`,
                 },
               ],
@@ -138,7 +139,7 @@ const App = () => {
               </Route>
             </Switch>
           </div>
-          <Renderer filePath="/default/components/footer.liquid" />
+          <Renderer filePath="/default/components/footer.ejs" />
         </>
       )}
     </Router>
