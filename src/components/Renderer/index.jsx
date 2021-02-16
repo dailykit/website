@@ -16,6 +16,7 @@ const Renderer = ({ filePath, variables }) => {
   const { menu } = React.useContext(MenuContext);
   const { customer } = React.useContext(CustomerContext);
   const [loading, setLoading] = React.useState(true);
+  const [domNodes, setDomNodes] = React.useState([]);
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
 
@@ -93,20 +94,31 @@ const Renderer = ({ filePath, variables }) => {
         ...(name === "orders" && { orderHistory: orderHistory }),
         ...(queryData && { ...queryData }),
       });
-      // setHtml(parsedHtml);
+      setDomNodes(parsedHtml);
       setLoading(false);
-      let element = document.getElementById(name);
-      if (element && parsedHtml.length) {
-        removeChildren(element);
-        for (let el of parsedHtml) {
-          element.appendChild(el);
-        }
-      }
     })();
   }, [settings, menu, queryData]);
 
-  if (loading || runningQuery || runningOrderHistoryQuery) return <Loader />;
-  return <div className="Wrapper" id={name}></div>;
+  React.useLayoutEffect(() => {
+    if (!loading) {
+      let element = document.querySelector(`#${name}`);
+      console.log({ name, element, domNodes });
+      if (element && domNodes.length) {
+        removeChildren(element);
+        for (let el of domNodes) {
+          element.appendChild(el);
+        }
+      }
+    }
+  }, [loading, domNodes]);
+
+  return (
+    <div className="Wrapper" id={name}>
+      <div>
+        {(loading || runningQuery || runningOrderHistoryQuery) && <Loader />}
+      </div>
+    </div>
+  );
 };
 
 export default Renderer;
