@@ -6,6 +6,7 @@ import { parseHTML } from "jquery";
 import { fileAgent } from "../fetch";
 
 const liquid = new Liquid();
+// console.log('hello')
 
 export const DailyKit = {
   engine: async (path, data) => {

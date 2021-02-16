@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useLazyQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
-import { ORDERS } from "../../graphql";
+import { ORDERS, ALL_COUPONS } from "../../graphql";
 import { Loader } from "..";
 
 const Renderer = ({ filePath, variables }) => {
@@ -18,6 +18,7 @@ const Renderer = ({ filePath, variables }) => {
   const [loading, setLoading] = React.useState(true);
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
+  const [availableCoupons,setAvailableCoupons] = React.useState([]);
 
   const [runDynamicQuery, { loading: runningQuery }] = useLazyQuery(
     dynamicQuery.current,
@@ -42,6 +43,34 @@ const Renderer = ({ filePath, variables }) => {
       console.log(error);
     },
   });
+
+  const { loading1 } = useSubscription(gql(ALL_COUPONS), {
+    variables: {
+       brandId:1,
+    },
+    onSubscriptionData: ({
+      subscriptionData: { data: { coupons = [] } = {} } = {},
+    } = {}) => {
+      console.log(coupons);
+      setAvailableCoupons([...coupons])
+    },
+    onError: error => {
+       console.log(error)
+    },
+  })
+  // const { loading2 } = useSubscription(gql(CAMPAIGNS), {
+  //   variables: {
+  //     brandId:1,
+  //   },
+  //   onSubscriptionData: ({
+  //     subscriptionData: { data: { campaigns = [] } = {} } = {},
+  //   } = {}) => {
+  //     setAvailableCampaigns([...campaigns])
+  //   },
+  //   onError: error => {
+  //     console.log(error)
+  //   },
+  // })
 
   React.useEffect(() => {
     (async () => {
@@ -92,6 +121,7 @@ const Renderer = ({ filePath, variables }) => {
         }),
         ...(name === "orders" && { orderHistory: orderHistory }),
         ...(queryData && { ...queryData }),
+        ...(name === "offers" && { couponData: availableCoupons }),
       });
       // setHtml(parsedHtml);
       setLoading(false);
