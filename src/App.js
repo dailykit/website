@@ -56,7 +56,7 @@ const App = () => {
                   display: "left",
                   title:
                     "<i class='fas fa-search' style='color:rgb(102,102,102)'></i> Search",
-                  link: `${window.location.origin}/cart`,
+                  link: `${window.location.origin}/search`,
                 },
                 {
                   display: "right",
@@ -108,7 +108,7 @@ const App = () => {
     },
   });
 
-  useQuery(gql(CUSTOMER), {
+  const { loading: customerLoading } = useQuery(gql(CUSTOMER), {
     skip: !settings?.brand?.id,
     variables: {
       brandId: settings?.brand?.id,
@@ -127,11 +127,11 @@ const App = () => {
 
   return (
     <Router>
-      {loading ? (
+      {loading || customerLoading ? (
         <Loader />
       ) : (
         <>
-          <Renderer filePath="/default/components/navbar.liquid" />
+          {/* <Renderer filePath="/default/components/navbar.liquid" /> */}
           <div className="App">
             <Switch>
               <Route path="/">
@@ -139,7 +139,7 @@ const App = () => {
               </Route>
             </Switch>
           </div>
-          <Renderer filePath="/default/components/footer.ejs" />
+          {/* <Renderer filePath="/default/components/footer.ejs" /> */}
         </>
       )}
     </Router>

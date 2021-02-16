@@ -5,12 +5,12 @@ import { DailyKit, fileAgent, removeChildren } from "../../utils";
 import { ORDERS } from "../../graphql";
 import { Loader } from "..";
 
-const Renderer = ({ filePath, variables }) => {
+const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
-  const [, theme, folder, file] = filePath.split("/");
+  const [, theme, folder, file] = moduleFile.path.split("/");
   const [name] = file.split(".").slice(0, 1);
 
-  console.log(`Loading ${name}...`);
+  const wrapperRef = React.useRef();
 
   const { settings } = React.useContext(SettingsContext);
   const { menu } = React.useContext(MenuContext);
@@ -29,22 +29,25 @@ const Renderer = ({ filePath, variables }) => {
     }
   );
 
-  const { loading: runningOrderHistoryQuery } = useSubscription(gql(ORDERS), {
-    variables: {
-      brandId: 1,
-      keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
-    },
-    onSubscriptionData: ({
-      subscriptionData: { data: { orders = [] } = {} } = {},
-    } = {}) => {
-      setOrderHistory(orders);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const { loading: runningOrderHistoryQuery, error } = useSubscription(
+    gql(ORDERS),
+    {
+      variables: {
+        brandId: 1,
+        keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
+      },
+      onSubscriptionData: ({
+        subscriptionData: { data: { orders = [] } = {} } = {},
+      } = {}) => {
+        setOrderHistory(orders);
+      },
+    }
+  );
+
+  console.log("Orders error: ", error);
 
   React.useEffect(() => {
+    console.log(`Loading ${name}...`);
     (async () => {
       let displayConfig;
 
@@ -79,11 +82,12 @@ const Renderer = ({ filePath, variables }) => {
         console.log(error);
       }
 
-      const parsedHtml = await DailyKit.engine(filePath, {
+      const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...settings,
         ...(displayConfig && { local: displayConfig }),
         ...(name === "collections" && { categories: menu.categories }),
         ...(name === "categoryProductsPage" && { categories: menu.categories }),
+        ...(name === "search" && { categories: menu.categories }),
         ...(name === "profile" && {
           customer: {
             ...customer.platform_customer,
@@ -94,6 +98,7 @@ const Renderer = ({ filePath, variables }) => {
         ...(name === "orders" && { orderHistory: orderHistory }),
         ...(queryData && { ...queryData }),
       });
+      console.log("Control reached here for: ", { name, parsedHtml });
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
@@ -101,7 +106,8 @@ const Renderer = ({ filePath, variables }) => {
 
   React.useLayoutEffect(() => {
     if (!loading) {
-      let element = document.querySelector(`#${name}`);
+      let element = document.getElementById(`${moduleId}`);
+      // let element = wrapperRef.current;
       console.log({ name, element, domNodes });
       if (element && domNodes.length) {
         removeChildren(element);
@@ -112,13 +118,8 @@ const Renderer = ({ filePath, variables }) => {
     }
   }, [loading, domNodes]);
 
-  return (
-    <div className="Wrapper" id={name}>
-      <div>
-        {(loading || runningQuery || runningOrderHistoryQuery) && <Loader />}
-      </div>
-    </div>
-  );
+  if (loading || runningQuery || runningOrderHistoryQuery) return <Loader />;
+  return null;
 };
 
 export default Renderer;

@@ -11,6 +11,7 @@ const Main = () => {
   let { pathname } = useLocation();
   const { settings } = React.useContext(SettingsContext);
 
+  const [modules, setModules] = React.useState([]);
   const [files, setFiles] = React.useState([]);
   const [cssFiles, setCssFiles] = React.useState([]);
   const [jsFiles, setJsFiles] = React.useState([]);
@@ -22,21 +23,32 @@ const Main = () => {
       route: pathname,
     },
     onCompleted: (data) => {
-      const modules =
+      const pageModules =
         data.website_website[0]?.websitePages[0]?.websitePageModules;
-      const fetchedFiles = modules
+      console.log(
+        "🚀 ~ file: index.jsx ~ line 27 ~ const{loading}=useQuery ~ pageModules",
+        pageModules
+      );
+      setModules(pageModules);
+      // pageModules.forEach((module) => {
+      //   const div = document.createElement("div");
+      //   div.setAttribute("id", module.id);
+      //   document.body.appendChild(div);
+      // });
+
+      const fetchedFiles = pageModules
         .filter((module) => module.moduleType === "file")
         .map(({ file }) => {
           return { path: file.path, variables: file.variables };
         });
-      const fetchedLinkedCssFiles = modules
+      const fetchedLinkedCssFiles = pageModules
         .map((module) => {
           return module.file.linkedCssFiles.map((file) => {
             return file.cssFile.path;
           });
         })
         .flat(1);
-      const fetchedLinkedJsFiles = modules
+      const fetchedLinkedJsFiles = pageModules
         .map((module) => {
           return module.file.linkedJsFiles.map((file) => {
             return file.jsFile.path;
@@ -72,8 +84,11 @@ const Main = () => {
   }
   return (
     <>
-      {files.map(({ path, variables }, index) => (
-        <Renderer filePath={path} key={index} variables={variables} />
+      {modules.map(({ id, moduleType, file }) => (
+        <>
+          <div id={id}></div>
+          <Renderer moduleId={id} moduleType={moduleType} moduleFile={file} />
+        </>
       ))}
     </>
   );
