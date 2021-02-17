@@ -23,6 +23,7 @@ const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
+  const [pathName, setPathName] = React.useState("/");
 
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
 
@@ -133,7 +134,8 @@ const App = () => {
     var element = document.getElementById("root");
     element.addEventListener("yo", function (e) {
       console.log(e.detail.pathname);
-      history.replace(e.detail.pathname);
+      setPathName(e.detail.pathname);
+      history.push(e.detail.pathname);
     });
     return () => {
       element.removeEventListener("yo", () => {
@@ -148,18 +150,14 @@ const App = () => {
   if (loading || customerLoading) return <Loader />;
   return (
     <>
+      <div id="headerDiv"></div>
       <Renderer moduleId="headerDiv" moduleFile={headerPath} />
       <Switch>
-        <Route exact path="/">
-          <Main route="/" />
-        </Route>
-        <Route exact path="/search">
-          <Main route="/search" />
-        </Route>
-        <Route exact path="/profile">
-          <Main route="/profile" />
+        <Route path="/">
+          <Main />
         </Route>
       </Switch>
+      <div id="footerDiv"></div>
       <Renderer moduleId="footerDiv" moduleFile={footerPath} />
     </>
   );

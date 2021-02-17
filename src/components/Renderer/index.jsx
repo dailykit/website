@@ -81,7 +81,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
-
+      console.log("from renderer", moduleFile.path);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...settings,
         ...(displayConfig && { local: displayConfig }),
@@ -102,9 +102,9 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
-  }, [settings, menu, queryData]);
+  }, [settings, menu, queryData, moduleFile.path]);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!loading) {
       let element = document.getElementById(`${moduleId}`);
       // let element = wrapperRef.current;

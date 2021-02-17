@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 import { Loader, Renderer } from "../../components";
 import { getFullPath } from "../../utils";
 
-const Main = ({ route }) => {
+const Main = () => {
   let { pathname } = useLocation();
   const history = useHistory();
   const { settings } = React.useContext(SettingsContext);
@@ -22,11 +22,12 @@ const Main = ({ route }) => {
     skip: !settings?.brand?.id,
     variables: {
       brandId: settings?.brand?.id,
-      route,
+      route: pathname,
     },
     onError: (error) => {
       console.log(error);
     },
+    fetchPolicy: "network-only",
   });
 
   React.useEffect(() => {
@@ -94,16 +95,14 @@ const Main = ({ route }) => {
     return <Loader />;
   }
   return (
-    <>
+    <div class="WebsiteWrapper">
       {modules?.map(({ id, moduleType, file }) => (
-        <div class="WebsiteWrapper">
-          <div id="headerDiv"></div>
-          <div id={id}></div>
-          <div id="footerDiv"></div>
+        <>
+          <div id={id} className={file.path.split("/").pop()}></div>
           <Renderer moduleId={id} moduleType={moduleType} moduleFile={file} />
-        </div>
+        </>
       ))}
-    </>
+    </div>
   );
 };
 
