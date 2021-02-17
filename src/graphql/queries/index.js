@@ -28,8 +28,8 @@ export const GET_PAGE_MODULES = `
           templateId
           internalModuleIdentifier
           file {
+             id
             path
-            variables
             linkedCssFiles(order_by: { position: desc_nulls_last }) {
               cssFile {
                 path
