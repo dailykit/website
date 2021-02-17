@@ -3,12 +3,14 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { SettingsContext } from "../../context";
 import { GET_PAGE_MODULES } from "../../graphql";
+import { useHistory } from "react-router-dom";
 
 import { Loader, Renderer } from "../../components";
 import { getFullPath } from "../../utils";
 
-const Main = () => {
+const Main = ({ route }) => {
   let { pathname } = useLocation();
+  const history = useHistory();
   const { settings } = React.useContext(SettingsContext);
 
   const [modules, setModules] = React.useState([]);
@@ -16,15 +18,21 @@ const Main = () => {
   const [cssFiles, setCssFiles] = React.useState([]);
   const [jsFiles, setJsFiles] = React.useState([]);
 
-  const { loading } = useQuery(gql(GET_PAGE_MODULES), {
+  const { loading, data } = useQuery(gql(GET_PAGE_MODULES), {
     skip: !settings?.brand?.id,
     variables: {
       brandId: settings?.brand?.id,
-      route: pathname,
+      route,
     },
-    onCompleted: (data) => {
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  React.useEffect(() => {
+    if (!loading) {
       const pageModules =
-        data.website_website[0]?.websitePages[0]?.websitePageModules;
+        data?.website_website[0]?.websitePages[0]?.websitePageModules;
       console.log(
         "🚀 ~ file: index.jsx ~ line 27 ~ const{loading}=useQuery ~ pageModules",
         pageModules
@@ -37,32 +45,29 @@ const Main = () => {
       // });
 
       const fetchedFiles = pageModules
-        .filter((module) => module.moduleType === "file")
-        .map(({ file }) => {
+        ?.filter((module) => module?.moduleType === "file")
+        ?.map(({ file }) => {
           return { path: file.path, variables: file.variables };
         });
       const fetchedLinkedCssFiles = pageModules
-        .map((module) => {
-          return module.file.linkedCssFiles.map((file) => {
-            return file.cssFile.path;
+        ?.map((module) => {
+          return module?.file?.linkedCssFiles?.map((file) => {
+            return file?.cssFile?.path;
           });
         })
-        .flat(1);
+        ?.flat(1);
       const fetchedLinkedJsFiles = pageModules
-        .map((module) => {
-          return module.file.linkedJsFiles.map((file) => {
-            return file.jsFile.path;
+        ?.map((module) => {
+          return module?.file?.linkedJsFiles?.map((file) => {
+            return file?.jsFile?.path;
           });
         })
-        .flat(1);
+        ?.flat(1);
       setFiles(fetchedFiles);
       setCssFiles(fetchedLinkedCssFiles);
       setJsFiles(fetchedLinkedJsFiles);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+    }
+  }, [loading, data]);
 
   React.useEffect(() => {
     if (cssFiles?.length || jsFiles?.length) {
@@ -79,16 +84,24 @@ const Main = () => {
     }
   }, [cssFiles, jsFiles]);
 
+  React.useEffect(() => {
+    const node = document.getElementsByClassName("WebsiteWraaper")[0];
+    if (node) {
+      node.remove();
+    }
+  }, []);
   if (loading) {
     return <Loader />;
   }
   return (
     <>
-      {modules.map(({ id, moduleType, file }) => (
-        <>
+      {modules?.map(({ id, moduleType, file }) => (
+        <div class="WebsiteWrapper">
+          <div id="headerDiv"></div>
           <div id={id}></div>
+          <div id="footerDiv"></div>
           <Renderer moduleId={id} moduleType={moduleType} moduleFile={file} />
-        </>
+        </div>
       ))}
     </>
   );

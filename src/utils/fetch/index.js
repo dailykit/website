@@ -5,6 +5,7 @@ export const getFullPath = (path) => {
       : window.location.origin;
 
   const url = `${host}/template/files${path}`;
+  console.log("from Fetch util", path, url);
   return url;
 };
 

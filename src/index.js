@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
 import {
   split,
   ApolloClient,
@@ -62,7 +63,11 @@ ReactDOM.render(
     <SettingsProvider>
       <MenuProvider>
         <CustomerProvider>
-          <App />
+          <Router>
+            <Switch>
+              <App />
+            </Switch>
+          </Router>
         </CustomerProvider>
       </MenuProvider>
     </SettingsProvider>

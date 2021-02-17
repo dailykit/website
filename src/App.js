@@ -5,6 +5,8 @@ import {
   Switch,
   Route,
   Redirect,
+  useHistory,
+  Link,
 } from "react-router-dom";
 
 import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
@@ -12,10 +14,12 @@ import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 import { Renderer, Loader } from "./components";
 import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
+import Test from "./test";
 
 import "./styles.css";
 
 const App = () => {
+  const history = useHistory();
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
@@ -125,24 +129,39 @@ const App = () => {
     },
   });
 
+  React.useEffect(() => {
+    var element = document.getElementById("root");
+    element.addEventListener("yo", function (e) {
+      console.log(e.detail.pathname);
+      history.replace(e.detail.pathname);
+    });
+    return () => {
+      element.removeEventListener("yo", () => {
+        console.log("kk");
+      });
+    };
+  }, []);
+
+  const headerPath = { path: "/default/components/navbar.liquid" };
+  const footerPath = { path: "/default/components/footer.ejs" };
+
+  if (loading || customerLoading) return <Loader />;
   return (
-    <Router>
-      {loading || customerLoading ? (
-        <Loader />
-      ) : (
-        <>
-          {/* <Renderer filePath="/default/components/navbar.liquid" /> */}
-          <div className="App">
-            <Switch>
-              <Route path="/">
-                <Main />
-              </Route>
-            </Switch>
-          </div>
-          {/* <Renderer filePath="/default/components/footer.ejs" /> */}
-        </>
-      )}
-    </Router>
+    <>
+      <Renderer moduleId="headerDiv" moduleFile={headerPath} />
+      <Switch>
+        <Route exact path="/">
+          <Main route="/" />
+        </Route>
+        <Route exact path="/search">
+          <Main route="/search" />
+        </Route>
+        <Route exact path="/profile">
+          <Main route="/profile" />
+        </Route>
+      </Switch>
+      <Renderer moduleId="footerDiv" moduleFile={footerPath} />
+    </>
   );
 };
 

@@ -9,7 +9,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
   const [, theme, folder, file] = moduleFile.path.split("/");
   const [name] = file.split(".").slice(0, 1);
-
+  // console.log("From Renderer", moduleFile);
   const wrapperRef = React.useRef();
 
   const { settings } = React.useContext(SettingsContext);
