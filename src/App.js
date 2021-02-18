@@ -60,23 +60,23 @@ const App = () => {
                   display: "left",
                   title:
                     "<i class='fas fa-search' style='color:rgb(102,102,102)'></i> Search",
-                  link: `${window.location.origin}/search`,
+                  link: `/search`,
                 },
                 {
                   display: "right",
                   title: "Orders",
-                  link: `${window.location.origin}/orderHistory`,
+                  link: `/orderHistory`,
                 },
                 {
                   display: "right",
                   title: "Profile",
-                  link: `${window.location.origin}/profile`,
+                  link: `/profile`,
                 },
                 {
                   display: "right",
                   title:
                     "<i class='fas fa-shopping-cart' style='font-size:20px'><span id='cart-count' class='badge cart-count'>0</span></i>",
-                  link: `${window.location.origin}/cart`,
+                  link: `/cart`,
                 },
               ],
             },

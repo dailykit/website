@@ -87,7 +87,7 @@ const Main = () => {
 
   React.useEffect(() => {
     var element = document.getElementById("root");
-    element.addEventListener("yo", function (e) {
+    element.addEventListener("navigator", function (e) {
       console.log(e.detail.pathname);
       setLoading(true);
       history.push(e.detail.pathname);

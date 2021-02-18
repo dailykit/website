@@ -5,9 +5,15 @@ const CONSTANTS = {
 
 const rootDiv = document.getElementById("root");
 const onNavigate = (pathname) => {
-  const event = new CustomEvent("yo", { detail: { pathname } });
+  const event = new CustomEvent("navigator", { detail: { pathname } });
   rootDiv.dispatchEvent(event);
 };
+
+// window.onpopstate = (e) => {
+//   console.log(
+//     "location: " + document.location + ", state: " + JSON.stringify(e.state)
+//   );
+// };
 
 const QUERIES = {
   AddProductToCart: `
