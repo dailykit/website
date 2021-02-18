@@ -4,15 +4,14 @@ const CONSTANTS = {
 };
 
 const rootDiv = document.getElementById("root");
-const onNavigate = (pathname) => {
-  const event = new CustomEvent("navigator", { detail: { pathname } });
+const onNavigate = (pathname, query) => {
+  console.log(pathname, query);
+  const event = new CustomEvent("navigator", { detail: { pathname, query } });
   rootDiv.dispatchEvent(event);
 };
 
 // window.onpopstate = (e) => {
-//   console.log(
-//     "location: " + document.location + ", state: " + JSON.stringify(e.state)
-//   );
+//   history.back();
 // };
 
 const QUERIES = {

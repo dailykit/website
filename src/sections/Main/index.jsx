@@ -88,9 +88,9 @@ const Main = () => {
   React.useEffect(() => {
     var element = document.getElementById("root");
     element.addEventListener("navigator", function (e) {
-      console.log(e.detail.pathname);
+      console.log("from main", e.detail.pathname, e.detail.query);
       setLoading(true);
-      history.push(e.detail.pathname);
+      history.push({ pathname: e.detail.pathname, search: e.detail.query });
     });
     return () => {
       element.removeEventListener("yo", () => {
