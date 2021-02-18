@@ -23,7 +23,6 @@ const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
-  const [pathName, setPathName] = React.useState("/");
 
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
 
@@ -129,20 +128,6 @@ const App = () => {
       console.log(error);
     },
   });
-
-  React.useEffect(() => {
-    var element = document.getElementById("root");
-    element.addEventListener("yo", function (e) {
-      console.log(e.detail.pathname);
-      setPathName(e.detail.pathname);
-      history.push(e.detail.pathname);
-    });
-    return () => {
-      element.removeEventListener("yo", () => {
-        console.log("kk");
-      });
-    };
-  }, []);
 
   const headerPath = { path: "/default/components/navbar.liquid" };
   const footerPath = { path: "/default/components/footer.ejs" };

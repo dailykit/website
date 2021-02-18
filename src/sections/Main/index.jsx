@@ -17,21 +17,15 @@ const Main = () => {
   const [files, setFiles] = React.useState([]);
   const [cssFiles, setCssFiles] = React.useState([]);
   const [jsFiles, setJsFiles] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const { loading, data } = useQuery(gql(GET_PAGE_MODULES), {
+  const { loading: pageModuleLoading, data } = useQuery(gql(GET_PAGE_MODULES), {
     skip: !settings?.brand?.id,
     variables: {
       brandId: settings?.brand?.id,
       route: pathname,
     },
-    onError: (error) => {
-      console.log(error);
-    },
-    fetchPolicy: "network-only",
-  });
-
-  React.useEffect(() => {
-    if (!loading) {
+    onCompleted: (data) => {
       const pageModules =
         data?.website_website[0]?.websitePages[0]?.websitePageModules;
       console.log(
@@ -39,12 +33,6 @@ const Main = () => {
         pageModules
       );
       setModules(pageModules);
-      // pageModules.forEach((module) => {
-      //   const div = document.createElement("div");
-      //   div.setAttribute("id", module.id);
-      //   document.body.appendChild(div);
-      // });
-
       const fetchedFiles = pageModules
         ?.filter((module) => module?.moduleType === "file")
         ?.map(({ file }) => {
@@ -67,13 +55,24 @@ const Main = () => {
       setFiles(fetchedFiles);
       setCssFiles(fetchedLinkedCssFiles);
       setJsFiles(fetchedLinkedJsFiles);
-    }
-  }, [loading, data]);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    fetchPolicy: "network-only",
+  });
 
   React.useEffect(() => {
     if (cssFiles?.length || jsFiles?.length) {
       const body = document.querySelector("body");
-
+      cssFiles.forEach(async (filePath) => {
+        const linkNode = document.createElement("link");
+        linkNode.href = await getFullPath(filePath);
+        linkNode.rel = "stylesheet";
+        linkNode.type = "text/css";
+        console.log(linkNode);
+        document.head.appendChild(linkNode);
+      });
       // attach js files
       const fragment = document.createDocumentFragment();
       jsFiles.forEach((filePath) => {
@@ -83,24 +82,33 @@ const Main = () => {
       });
       body.appendChild(fragment);
     }
+    setLoading(false);
   }, [cssFiles, jsFiles]);
 
   React.useEffect(() => {
-    const node = document.getElementsByClassName("WebsiteWraaper")[0];
-    if (node) {
-      node.remove();
-    }
+    var element = document.getElementById("root");
+    element.addEventListener("yo", function (e) {
+      console.log(e.detail.pathname);
+      setLoading(true);
+      history.push(e.detail.pathname);
+    });
+    return () => {
+      element.removeEventListener("yo", () => {
+        console.log("kk");
+      });
+    };
   }, []);
-  if (loading) {
+
+  if (pageModuleLoading || loading) {
     return <Loader />;
   }
   return (
-    <div class="WebsiteWrapper">
+    <div id="WebsiteWrapper">
       {modules?.map(({ id, moduleType, file }) => (
-        <>
+        <React.Fragment key="id">
           <div id={id} className={file.path.split("/").pop()}></div>
           <Renderer moduleId={id} moduleType={moduleType} moduleFile={file} />
-        </>
+        </React.Fragment>
       ))}
     </div>
   );

@@ -20,7 +20,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
 
-  const [runDynamicQuery, { loading: runningQuery }] = useLazyQuery(
+  const [runDynamicQuery, { loading: lazyQueryLoading }] = useLazyQuery(
     dynamicQuery.current,
     {
       onCompleted: (data) => {
@@ -29,17 +29,12 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
     }
   );
 
-  const { loading: runningOrderHistoryQuery, error } = useSubscription(
+  const { loading: ordersQueryLoading, error, data } = useSubscription(
     gql(ORDERS),
     {
       variables: {
         brandId: 1,
         keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
-      },
-      onSubscriptionData: ({
-        subscriptionData: { data: { orders = [] } = {} } = {},
-      } = {}) => {
-        setOrderHistory(orders);
       },
     }
   );
@@ -95,7 +90,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
           },
           customerReferralDetails: customer.customerReferralDetails,
         }),
-        ...(name === "orders" && { orderHistory: orderHistory }),
+        ...(name === "orders" && { orderHistory: data?.orders }),
         ...(queryData && { ...queryData }),
       });
       console.log("Control reached here for: ", { name, parsedHtml });
@@ -116,10 +111,13 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         }
       }
     }
-  }, [loading, domNodes]);
+  }, [loading, moduleId, domNodes]);
 
-  if (loading || runningQuery || runningOrderHistoryQuery) return <Loader />;
-  return null;
+  if (loading || lazyQueryLoading || ordersQueryLoading) {
+    return <Loader />;
+  } else {
+    return null;
+  }
 };
 
 export default Renderer;
