@@ -5,7 +5,6 @@ const CONSTANTS = {
 
 const rootDiv = document.getElementById("root");
 const onNavigate = (pathname, query) => {
-  console.log(pathname, query);
   const event = new CustomEvent("navigator", { detail: { pathname, query } });
   rootDiv.dispatchEvent(event);
 };

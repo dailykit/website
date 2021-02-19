@@ -14,12 +14,10 @@ import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 import { Renderer, Loader } from "./components";
 import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
-import Test from "./test";
 
 import "./styles.css";
 
 const App = () => {
-  const history = useHistory();
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);

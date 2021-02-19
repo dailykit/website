@@ -36,6 +36,11 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         brandId: 1,
         keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
       },
+      onSubscriptionData: ({
+        subscriptionData: { data: { orders = [] } = {} } = {},
+      } = {}) => {
+        setOrderHistory(orders);
+      },
     }
   );
 
@@ -90,14 +95,14 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
           },
           customerReferralDetails: customer.customerReferralDetails,
         }),
-        ...(name === "orders" && { orderHistory: data?.orders }),
+        ...(name === "orders" && { orderHistory }),
         ...(queryData && { ...queryData }),
       });
       console.log("Control reached here for: ", { name, parsedHtml });
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
-  }, [settings, menu, queryData, moduleFile.path]);
+  }, [settings, menu, queryData, orderHistory, moduleFile.path]);
 
   React.useEffect(() => {
     if (!loading) {
@@ -115,9 +120,8 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
 
   if (loading || lazyQueryLoading || ordersQueryLoading) {
     return <Loader />;
-  } else {
-    return null;
   }
+  return null;
 };
 
 export default Renderer;
