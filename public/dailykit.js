@@ -10,7 +10,9 @@ const onNavigate = (pathname, query) => {
 };
 
 // window.onpopstate = (e) => {
-//   history.back();
+//   console.log(e);
+//   e.preventDefault();
+//   history.go(-2);
 // };
 
 const QUERIES = {

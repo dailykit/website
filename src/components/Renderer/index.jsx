@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
@@ -7,6 +8,7 @@ import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
+  const { search } = useLocation();
   const [, theme, folder, file] = moduleFile.path.split("/");
   const [name] = file.split(".").slice(0, 1);
   // console.log("From Renderer", moduleFile);
@@ -102,7 +104,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
-  }, [settings, menu, queryData, orderHistory, moduleFile.path]);
+  }, [settings, menu, queryData, orderHistory, moduleFile.path, search]);
 
   React.useEffect(() => {
     if (!loading) {

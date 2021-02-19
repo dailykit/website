@@ -9,6 +9,7 @@ import { Loader, Renderer } from "../../components";
 import { getFullPath } from "../../utils";
 
 const Main = () => {
+  console.log("main render......");
   let { pathname, search } = useLocation();
   const history = useHistory();
   const { settings } = React.useContext(SettingsContext);
@@ -84,14 +85,18 @@ const Main = () => {
     var element = document.getElementById("root");
     element.addEventListener("navigator", function (e) {
       // setLoading(true);
+      console.log("Event running..", e);
       history.push({ pathname: e.detail.pathname, search: e.detail.query });
     });
-    return () => {
-      element.removeEventListener("yo", () => {
+    return () =>
+      element.removeEventListener("navigator", () => {
         console.log("unmount eventlistener......");
       });
-    };
   }, []);
+
+  // React.useEffect(() => {
+  //   console.log(search);
+  // }, [search]);
 
   if (loading) {
     return <Loader />;
