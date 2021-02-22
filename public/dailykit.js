@@ -3,6 +3,18 @@ const CONSTANTS = {
   DATAHUB_ADMIN_SECRET: "60ea76ab-5ab6-4f09-ad44-efeb00f978ce",
 };
 
+const rootDiv = document.getElementById("root");
+const onNavigate = (pathname, query) => {
+  const event = new CustomEvent("navigator", { detail: { pathname, query } });
+  rootDiv.dispatchEvent(event);
+};
+
+// window.onpopstate = (e) => {
+//   console.log(e);
+//   e.preventDefault();
+//   history.go(-2);
+// };
+
 const QUERIES = {
   AddProductToCart: `
    query AddProductToCard($params: jsonb!) {

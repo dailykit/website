@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
@@ -7,9 +8,10 @@ import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
+  const { search, pathname } = useLocation();
   const [, theme, folder, file] = moduleFile.path.split("/");
   const [name] = file.split(".").slice(0, 1);
-
+  // console.log("From Renderer", moduleFile);
   const wrapperRef = React.useRef();
 
   const { settings } = React.useContext(SettingsContext);
@@ -21,7 +23,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const [orderHistory, setOrderHistory] = React.useState([]);
   const [availableCoupons,setAvailableCoupons] = React.useState([]);
 
-  const [runDynamicQuery, { loading: runningQuery }] = useLazyQuery(
+  const [runDynamicQuery, { loading: lazyQueryLoading }] = useLazyQuery(
     dynamicQuery.current,
     {
       onCompleted: (data) => {
@@ -30,7 +32,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
     }
   );
 
-  const { loading: runningOrderHistoryQuery, error } = useSubscription(
+  const { loading: ordersQueryLoading, error, data } = useSubscription(
     gql(ORDERS),
     {
       variables: {
@@ -110,7 +112,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
-
+      console.log("from renderer", moduleFile.path);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...settings,
         ...(displayConfig && { local: displayConfig }),
@@ -124,7 +126,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
           },
           customerReferralDetails: customer.customerReferralDetails,
         }),
-        ...(name === "orders" && { orderHistory: orderHistory }),
+        ...(name === "orders" && { orderHistory }),
         ...(queryData && { ...queryData }),
         ...(name === "offers" && { couponData: availableCoupons }),
       });
@@ -132,9 +134,17 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
-  }, [settings, menu, queryData]);
+  }, [
+    settings,
+    menu,
+    queryData,
+    orderHistory,
+    moduleFile.path,
+    search,
+    pathname,
+  ]);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!loading) {
       let element = document.getElementById(`${moduleId}`);
       // let element = wrapperRef.current;
@@ -146,9 +156,11 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         }
       }
     }
-  }, [loading, domNodes]);
+  }, [loading, moduleId, domNodes]);
 
-  if (loading || runningQuery || runningOrderHistoryQuery) return <Loader />;
+  if (loading || lazyQueryLoading || ordersQueryLoading) {
+    return <Loader />;
+  }
   return null;
 };
 
