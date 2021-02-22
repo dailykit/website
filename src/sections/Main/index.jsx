@@ -18,6 +18,7 @@ const Main = () => {
   const [cssFiles, setCssFiles] = React.useState([]);
   const [jsFiles, setJsFiles] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [render, setRender] = React.useState(0);
 
   useQuery(gql(GET_PAGE_MODULES), {
     skip: !settings?.brand?.id,
@@ -80,36 +81,23 @@ const Main = () => {
     }
     setLoading(false);
   }, [cssFiles, jsFiles]);
+  console.log(render);
 
   React.useEffect(() => {
     var element = document.getElementById("root");
     element.addEventListener("navigator", function (e) {
-      // setLoading(true);
-      console.log("Event running..", e);
       history.push({ pathname: e.detail.pathname, search: e.detail.query });
     });
+
     return () =>
       element.removeEventListener("navigator", () => {
         console.log("unmount eventlistener......");
       });
   }, []);
 
-  // React.useEffect(() => {
-  //   console.log(search);
-  // }, [search]);
-
   if (loading) {
     return <Loader />;
   }
-  // if (pageModuleLoading || loading) {
-  //   console.log("loading", pageModuleLoading, loading);
-  //   return (
-  //     <h1 style={{ marginTop: "6rem" }}>
-  //       loading...pageModuleLoading:{pageModuleLoading.toString()} loading:
-  //       {loading.toString()}
-  //     </h1>
-  //   );
-  // }
   return (
     <div id="WebsiteWrapper">
       {modules?.map(({ id, moduleType, file }) => (

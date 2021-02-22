@@ -8,7 +8,7 @@ import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
-  const { search } = useLocation();
+  const { search, pathname } = useLocation();
   const [, theme, folder, file] = moduleFile.path.split("/");
   const [name] = file.split(".").slice(0, 1);
   // console.log("From Renderer", moduleFile);
@@ -104,7 +104,15 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
-  }, [settings, menu, queryData, orderHistory, moduleFile.path, search]);
+  }, [
+    settings,
+    menu,
+    queryData,
+    orderHistory,
+    moduleFile.path,
+    search,
+    pathname,
+  ]);
 
   React.useEffect(() => {
     if (!loading) {

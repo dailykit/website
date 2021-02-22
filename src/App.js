@@ -14,6 +14,7 @@ import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 import { Renderer, Loader } from "./components";
 import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
+import useLocationBlocker from "./locationBlocker";
 
 import "./styles.css";
 
@@ -21,8 +22,12 @@ const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
-
+  const headerPath = { path: "/default/components/navbar.liquid" };
+  const footerPath = { path: "/default/components/footer.ejs" };
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
+
+  // block pushing double history
+  useLocationBlocker();
 
   const { loading } = useQuery(gql(GET_STORE_DATA), {
     variables: {
@@ -126,10 +131,6 @@ const App = () => {
       console.log(error);
     },
   });
-
-  const headerPath = { path: "/default/components/navbar.liquid" };
-  const footerPath = { path: "/default/components/footer.ejs" };
-
   if (loading || customerLoading) return <Loader />;
   return (
     <>
