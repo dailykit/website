@@ -1,9 +1,9 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { gql, useLazyQuery, useSubscription } from "@apollo/client";
+import { gql, useLazyQuery, useQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
-import { ORDERS, ALL_COUPONS } from "../../graphql";
+import { ORDERS, ALL_COUPONS, CAMPAIGNS } from "../../graphql";
 import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleFile }) => {
@@ -22,6 +22,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
   const [availableCoupons,setAvailableCoupons] = React.useState([]);
+  const [availableCampaigns,setAvailableCampaigns] = React.useState([]);
 
   const [runDynamicQuery, { loading: lazyQueryLoading }] = useLazyQuery(
     dynamicQuery.current,
@@ -49,33 +50,32 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
 
   console.log("Orders error: ", error);
 
-  const { loading1 } = useSubscription(gql(ALL_COUPONS), {
+  const { loading: couponLoading } = useQuery(gql(ALL_COUPONS), {
     variables: {
        brandId:1,
     },
-    onSubscriptionData: ({
-      subscriptionData: { data: { coupons = [] } = {} } = {},
-    } = {}) => {
+    onCompleted: ({ coupons = []}) => {
       console.log(coupons);
-      setAvailableCoupons([...coupons])
+      setAvailableCoupons(coupons)
     },
     onError: error => {
-       console.log(error)
-    },
+      console.error(error)
+    }
   })
-  // const { loading2 } = useSubscription(gql(CAMPAIGNS), {
-  //   variables: {
-  //     brandId:1,
-  //   },
-  //   onSubscriptionData: ({
-  //     subscriptionData: { data: { campaigns = [] } = {} } = {},
-  //   } = {}) => {
-  //     setAvailableCampaigns([...campaigns])
-  //   },
-  //   onError: error => {
-  //     console.log(error)
-  //   },
-  // })
+
+  const { loading: campaignLoading } = useQuery(gql(CAMPAIGNS), {
+    variables: {
+      brandId:1,
+    },
+    onCompleted: ({ campaigns = []}) => {
+      console.log(campaigns);
+      setAvailableCampaigns(campaigns)
+    },
+    onError: error => {
+      console.error(error)
+    }
+
+  })
 
   React.useEffect(() => {
     console.log(`Loading ${name}...`);
@@ -128,7 +128,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         }),
         ...(name === "orders" && { orderHistory }),
         ...(queryData && { ...queryData }),
-        ...(name === "offers" && { couponData: availableCoupons }),
+        ...(name === "offers" && { couponData: availableCoupons , campaignData: availableCampaigns  }),
       });
       console.log("Control reached here for: ", { name, parsedHtml });
       setDomNodes(parsedHtml);
@@ -158,7 +158,7 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
     }
   }, [loading, moduleId, domNodes]);
 
-  if (loading || lazyQueryLoading || ordersQueryLoading) {
+  if (loading || lazyQueryLoading || ordersQueryLoading || couponLoading || campaignLoading) {
     return <Loader />;
   }
   return null;

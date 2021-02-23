@@ -189,3 +189,19 @@ export const ALL_COUPONS = `
     }
   }
 `
+
+export const CAMPAIGNS = `
+query Campaigns($brandId: Int!) {
+   campaigns(
+      where : { 
+         isActive : { _eq : true}
+         isArchived : { _eq : false } 
+         brands : { brandId : { _eq :$brandId } }  
+      }
+      ) {
+         id
+         metaDetails
+         type
+   }
+ }
+` 
