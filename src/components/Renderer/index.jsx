@@ -6,7 +6,7 @@ import { DailyKit, fileAgent, removeChildren } from "../../utils";
 import { ORDERS, ALL_COUPONS, CAMPAIGNS } from "../../graphql";
 import { Loader } from "..";
 
-const Renderer = ({ moduleId, moduleType, moduleFile }) => {
+const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   const dynamicQuery = React.useRef(null);
   const { search, pathname } = useLocation();
   const [, theme, folder, file] = moduleFile.path.split("/");
@@ -21,8 +21,10 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
   const [domNodes, setDomNodes] = React.useState([]);
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
-  const [availableCoupons,setAvailableCoupons] = React.useState([]);
-  const [availableCampaigns,setAvailableCampaigns] = React.useState([]);
+  const [availableCoupons, setAvailableCoupons] = React.useState([]);
+  const [availableCampaigns, setAvailableCampaigns] = React.useState([]);
+
+  console.log("config Data", moduleConfig);
 
   const [runDynamicQuery, { loading: lazyQueryLoading }] = useLazyQuery(
     dynamicQuery.current,
@@ -52,30 +54,29 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
 
   const { loading: couponLoading } = useQuery(gql(ALL_COUPONS), {
     variables: {
-       brandId:1,
+      brandId: 1,
     },
-    onCompleted: ({ coupons = []}) => {
+    onCompleted: ({ coupons = [] }) => {
       console.log(coupons);
-      setAvailableCoupons(coupons)
+      setAvailableCoupons(coupons);
     },
-    onError: error => {
-      console.error(error)
-    }
-  })
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   const { loading: campaignLoading } = useQuery(gql(CAMPAIGNS), {
     variables: {
-      brandId:1,
+      brandId: 1,
     },
-    onCompleted: ({ campaigns = []}) => {
+    onCompleted: ({ campaigns = [] }) => {
       console.log(campaigns);
-      setAvailableCampaigns(campaigns)
+      setAvailableCampaigns(campaigns);
     },
-    onError: error => {
-      console.error(error)
-    }
-
-  })
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   React.useEffect(() => {
     console.log(`Loading ${name}...`);
@@ -100,22 +101,22 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         }
 
         // check for config file
-        const configResponse = await fileAgent(
-          `/${theme}/${folder}/config/${name}.json`
-        );
-        if (configResponse.status === 200) {
-          const configObject = await configResponse.json();
-          if (configObject.display) {
-            displayConfig = configObject.display;
-          }
-        }
+        // const configResponse = await fileAgent(
+        //   `/${theme}/${folder}/config/${name}.json`
+        // );
+        // if (configResponse.status === 200) {
+        //   const configObject = await configResponse.json();
+        //   if (configObject.display) {
+        //     displayConfig = configObject.display;
+        //   }
+        // }
       } catch (error) {
         console.log(error);
       }
       console.log("from renderer", moduleFile.path);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...settings,
-        ...(displayConfig && { local: displayConfig }),
+        ...(moduleConfig && { config: moduleConfig }),
         ...(name === "collections" && { categories: menu.categories }),
         ...(name === "categoryProductsPage" && { categories: menu.categories }),
         ...(name === "search" && { categories: menu.categories }),
@@ -128,7 +129,10 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
         }),
         ...(name === "orders" && { orderHistory }),
         ...(queryData && { ...queryData }),
-        ...(name === "offers" && { couponData: availableCoupons , campaignData: availableCampaigns  }),
+        ...(name === "offers" && {
+          couponData: availableCoupons,
+          campaignData: availableCampaigns,
+        }),
       });
       console.log("Control reached here for: ", { name, parsedHtml });
       setDomNodes(parsedHtml);
@@ -158,7 +162,13 @@ const Renderer = ({ moduleId, moduleType, moduleFile }) => {
     }
   }, [loading, moduleId, domNodes]);
 
-  if (loading || lazyQueryLoading || ordersQueryLoading || couponLoading || campaignLoading) {
+  if (
+    loading ||
+    lazyQueryLoading ||
+    ordersQueryLoading ||
+    couponLoading ||
+    campaignLoading
+  ) {
     return <Loader />;
   }
   return null;

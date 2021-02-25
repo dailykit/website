@@ -4,7 +4,7 @@ export const GET_STORE_DATA = `
          brandId
          settings
       }
-   }   
+   }
 `;
 
 export const GET_MENU = `
@@ -22,6 +22,7 @@ export const GET_PAGE_MODULES = `
         id
         websitePageModules(order_by: { position: desc_nulls_last }) {
           id
+          config
           position
           moduleType
           fileId
@@ -188,15 +189,15 @@ export const ALL_COUPONS = `
       metaDetails
     }
   }
-`
+`;
 
 export const CAMPAIGNS = `
 query Campaigns($brandId: Int!) {
    campaigns(
-      where : { 
+      where : {
          isActive : { _eq : true}
-         isArchived : { _eq : false } 
-         brands : { brandId : { _eq :$brandId } }  
+         isArchived : { _eq : false }
+         brands : { brandId : { _eq :$brandId } }
       }
       ) {
          id
@@ -204,4 +205,4 @@ query Campaigns($brandId: Int!) {
          type
    }
  }
-` 
+`;

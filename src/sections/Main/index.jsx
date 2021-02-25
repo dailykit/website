@@ -100,10 +100,15 @@ const Main = () => {
   }
   return (
     <div id="WebsiteWrapper">
-      {modules?.map(({ id, moduleType, file }) => (
+      {modules?.map(({ id, config, moduleType, file }) => (
         <React.Fragment key={id}>
           <div id={id} className={file.path.split("/").pop()}></div>
-          <Renderer moduleId={id} moduleType={moduleType} moduleFile={file} />
+          <Renderer
+            moduleId={id}
+            moduleType={moduleType}
+            moduleFile={file}
+            moduleConfig={config}
+          />
         </React.Fragment>
       ))}
     </div>
