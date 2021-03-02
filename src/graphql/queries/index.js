@@ -206,3 +206,118 @@ query Campaigns($brandId: Int!) {
    }
  }
 `;
+
+export const PRODUCTS = `
+  query Products($ids: [Int!]!) {
+    products(
+      where: {
+        isArchived: { _eq: false }
+        #   isPublished: { _eq: true }
+        id: { _in: $ids }
+      }
+    ) {
+      id
+      name
+      type
+      assets
+      tags
+      additionalText
+      description
+      price
+      discount
+      isPopupAllowed
+      isPublished
+      productOptions(
+        where: { isArchived: { _eq: false } }
+        order_by: { position: desc_nulls_last }
+      ) {
+        id
+        position
+        type
+        label
+        price
+        discount
+        quantity
+        simpleRecipeYield {
+          id
+          yield
+          simpleRecipe {
+            id
+            name
+          }
+        }
+        supplierItem {
+          id
+          name
+          unit
+          unitSize
+        }
+        sachetItem {
+          id
+          bulkItem {
+            processingName
+            supplierItem {
+              name
+            }
+          }
+          unit
+          unitSize
+        }
+        modifier {
+          id
+          name
+          data
+        }
+        operationConfig {
+          id
+          name
+        }
+      }
+      customizableProductComponents(
+        where: { isArchived: { _eq: false } }
+        order_by: { position: desc_nulls_last }
+      ) {
+        id
+        options
+        selectedOptions {
+          productOption {
+            id
+            label
+            quantity
+          }
+          price
+          discount
+        }
+        linkedProduct {
+          id
+          name
+          type
+          assets
+        }
+      }
+      comboProductComponents(
+        where: { isArchived: { _eq: false } }
+        order_by: { position: desc_nulls_last }
+      ) {
+        id
+        label
+        options
+        selectedOptions {
+          productOption {
+            id
+            label
+            quantity
+          }
+          price
+          discount
+        }
+        linkedProduct {
+          id
+          name
+          type
+          assets
+        }
+      }
+    }
+  }
+`;

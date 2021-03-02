@@ -4,26 +4,14 @@ export const MenuContext = React.createContext();
 
 const initialState = {
   categories: [],
+  allProductIds: [],
 };
 
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case "SEED": {
-      const updatedMenu = [];
-      for (let category of payload.menu) {
-        const products = [];
-        for (let product of category.products) {
-          products.push({
-            ...product,
-            jsonData: JSON.stringify(product),
-          });
-        }
-        updatedMenu.push({
-          ...category,
-          products,
-        });
-      }
-      return { ...state, categories: updatedMenu };
+      const ids = payload.menu.map((category) => category.products).flat();
+      return { ...state, categories: payload.menu, allProductIds: ids };
     }
     default:
       return state;
