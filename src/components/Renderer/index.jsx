@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
-import { ORDERS, ALL_COUPONS, CAMPAIGNS } from "../../graphql";
+import { ORDERS, ALL_COUPONS, CAMPAIGNS, PRODUCTS } from "../../graphql";
 import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
@@ -17,12 +17,14 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   const { settings } = React.useContext(SettingsContext);
   const { menu } = React.useContext(MenuContext);
   const { customer } = React.useContext(CustomerContext);
+
   const [loading, setLoading] = React.useState(true);
   const [domNodes, setDomNodes] = React.useState([]);
   const [queryData, setQueryData] = React.useState(null);
   const [orderHistory, setOrderHistory] = React.useState([]);
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [availableCampaigns, setAvailableCampaigns] = React.useState([]);
+  const [hydratedMenu, setHydratedMenu] = React.useState([]);
 
   console.log("config Data", moduleConfig);
 
@@ -78,6 +80,35 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     },
   });
 
+  const { loading: productsLoading } = useQuery(gql(PRODUCTS), {
+    skip: name !== "collections",
+    variables: {
+      ids: menu.allProductIds,
+    },
+    onCompleted: (data) => {
+      const updatedMenu = menu.categories.map((category) => {
+        const updatedProducts = category.products
+          .map((productId) => {
+            const found = data.products.find(({ id }) => id === productId);
+            if (found) {
+              return found;
+            }
+            return null;
+          })
+          .filter(Boolean);
+        return {
+          ...category,
+          products: updatedProducts,
+        };
+      });
+
+      setHydratedMenu(updatedMenu);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
   React.useEffect(() => {
     console.log(`Loading ${name}...`);
     (async () => {
@@ -117,8 +148,8 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...settings,
         ...(moduleConfig && { config: moduleConfig }),
-        ...(name === "collections" && { categories: menu.categories }),
-        ...(name === "categoryProductsPage" && { categories: menu.categories }),
+        ...(name === "collections" && { categories: hydratedMenu }),
+        ...(name === "categoryProductsPage" && { categories: hydratedMenu }),
         ...(name === "search" && { categories: menu.categories }),
         ...(name === "profile" && {
           customer: {
@@ -167,7 +198,8 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     lazyQueryLoading ||
     ordersQueryLoading ||
     couponLoading ||
-    campaignLoading
+    campaignLoading ||
+    productsLoading
   ) {
     return <Loader />;
   }
