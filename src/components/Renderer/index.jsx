@@ -171,12 +171,12 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     })();
   }, [
     settings,
-    menu,
     queryData,
     orderHistory,
     moduleFile.path,
     search,
     pathname,
+    hydratedMenu,
   ]);
 
   React.useEffect(() => {
