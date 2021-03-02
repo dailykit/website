@@ -28,12 +28,10 @@ const QUERIES = {
 };
 
 const MUTATIONS = {
-  UpdateCart: `
-      mutation UpdateCart($id: Int!, $set: crm_orderCart_set_input) {
-         updateCart(where: { id: { _eq: $id } }, _set: $set) {
-            returning {
-               id
-            }
+  CreateCartItem: `
+      mutation CreateCartItem($object: order_cartItem_insert_input!) {
+         createCartItem(object: $object) {
+            id
          }
       }
    `,
@@ -104,17 +102,20 @@ const addProductToCart = async ({
 
     if (!isValid) throw Error("Missing values for mutation!");
 
-    const data = await useMutation(QUERIES.AddProductToCart, {
+    const object = {
+      orderCartId: cartId,
+      productId,
+      childs: {
+        data: Array.from({ length: quantity }).map((_) => ({
+          productOptionId: optionId,
+          orderCartId: cartId,
+        })),
+      },
+    };
+
+    const data = await useMutation(MUTATIONS.CreateCartItem, {
       variables: {
-        params: {
-          cartId,
-          productId,
-          productType,
-          optionId,
-          quantity,
-          customizableProductId,
-          customizableProductOptionId,
-        },
+        object,
       },
     });
     return data;
