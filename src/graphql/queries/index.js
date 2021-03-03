@@ -316,6 +316,28 @@ export const PRODUCTS = `
           name
           type
           assets
+          customizableProductComponents(
+            where: { isArchived: { _eq: false } }
+            order_by: { position: desc_nulls_last }
+          ) {
+            id
+            options
+            selectedOptions {
+              productOption {
+                id
+                label
+                quantity
+              }
+              price
+              discount
+            }
+            linkedProduct {
+              id
+              name
+              type
+              assets
+            }
+          }
         }
       }
     }

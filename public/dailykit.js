@@ -82,8 +82,8 @@ const addProductToCart = async ({
   productType,
   optionId,
   quantity,
-  customizableProductId,
-  customizableProductOptionId,
+  customizableComponentId,
+  comboComponentSelections,
 }) => {
   try {
     console.log({
@@ -92,27 +92,64 @@ const addProductToCart = async ({
       productType,
       optionId,
       quantity,
-      customizableProductId,
-      customizableProductOptionId,
+      customizableComponentId,
+      comboComponentSelections,
     });
 
-    const isValid = [cartId, productId, productType, optionId, quantity].every(
-      Boolean
-    );
+    const isValid = [cartId, productId, productType, quantity].every(Boolean);
 
     if (!isValid) throw Error("Missing values for mutation!");
 
-    const object = {
-      orderCartId: cartId,
-      productId,
-      childs: {
-        data: Array.from({ length: quantity }).map((_) => ({
-          productOptionId: optionId,
-          orderCartId: cartId,
-        })),
-      },
-    };
+    let object;
 
+    switch (productType) {
+      case "simple": {
+        object = {
+          orderCartId: cartId,
+          productId,
+          childs: {
+            data: Array.from({ length: quantity }).map((_) => ({
+              productOptionId: optionId,
+              cartId,
+            })),
+          },
+        };
+        break;
+      }
+      case "customizable": {
+        object = {
+          cartId,
+          productId,
+          childs: {
+            data: Array.from({ length: quantity }).map((_) => ({
+              customizableProductComponentId: customizableComponentId,
+              productOptionId: optionId,
+              orderCartId: cartId,
+            })),
+          },
+        };
+        break;
+      }
+      case "combo": {
+        let components = comboComponentSelections.map((s) => ({
+          comboProductComponentId: s.comboComponentId,
+          productOptionId: s.selectedOptionId,
+          cartId,
+        }));
+        object = {
+          cartId,
+          productId,
+          childs: {
+            data: Array.from({ length: quantity }).fill(components).flat(),
+          },
+        };
+        break;
+      }
+      default:
+        return console.log("Invalid product type!");
+    }
+
+    console.log(object);
     const data = await useMutation(MUTATIONS.CreateCartItem, {
       variables: {
         object,
