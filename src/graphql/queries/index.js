@@ -237,40 +237,11 @@ export const PRODUCTS = `
         label
         price
         discount
-        quantity
-        simpleRecipeYield {
-          id
-          yield
-          simpleRecipe {
-            id
-            name
-          }
-        }
-        supplierItem {
-          id
-          name
-          unit
-          unitSize
-        }
-        sachetItem {
-          id
-          bulkItem {
-            processingName
-            supplierItem {
-              name
-            }
-          }
-          unit
-          unitSize
-        }
+        cartItem
         modifier {
           id
           name
           data
-        }
-        operationConfig {
-          id
-          name
         }
       }
       customizableProductComponents(

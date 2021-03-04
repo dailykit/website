@@ -28,10 +28,12 @@ const QUERIES = {
 };
 
 const MUTATIONS = {
-  CreateCartItem: `
-      mutation CreateCartItem($object: order_cartItem_insert_input!) {
-         createCartItem(object: $object) {
-            id
+  CreateCartItems: `
+      mutation CreateCartItems($objects: [order_cartItem_insert_input!]!) {
+         createCartItems(objects: $objects) {
+            returning {
+               id
+            }
          }
       }
    `,
@@ -76,83 +78,74 @@ const useMutation = async (mutation, args) => {
 };
 
 // Global Functions
-const addProductToCart = async ({
-  cartId,
-  productId,
-  productType,
-  optionId,
-  quantity,
-  customizableComponentId,
-  comboComponentSelections,
-}) => {
+const addProductToCart = async ({ cartId, cartItem, quantity }) => {
   try {
     console.log({
       cartId,
-      productId,
-      productType,
-      optionId,
+      cartItem,
       quantity,
-      customizableComponentId,
-      comboComponentSelections,
     });
 
-    const isValid = [cartId, productId, productType, quantity].every(Boolean);
+    const isValid = [cartId, Object.keys(cartItem).length].every(Boolean);
 
     if (!isValid) throw Error("Missing values for mutation!");
 
-    let object;
+    //  let object;
 
-    switch (productType) {
-      case "simple": {
-        object = {
-          orderCartId: cartId,
-          productId,
-          childs: {
-            data: Array.from({ length: quantity }).map((_) => ({
-              productOptionId: optionId,
-              cartId,
-            })),
-          },
-        };
-        break;
-      }
-      case "customizable": {
-        object = {
-          cartId,
-          productId,
-          childs: {
-            data: Array.from({ length: quantity }).map((_) => ({
-              customizableProductComponentId: customizableComponentId,
-              productOptionId: optionId,
-              orderCartId: cartId,
-            })),
-          },
-        };
-        break;
-      }
-      case "combo": {
-        let components = comboComponentSelections.map((s) => ({
-          comboProductComponentId: s.comboComponentId,
-          productOptionId: s.selectedOptionId,
-          cartId,
-        }));
-        object = {
-          cartId,
-          productId,
-          childs: {
-            data: Array.from({ length: quantity }).fill(components).flat(),
-          },
-        };
-        break;
-      }
-      default:
-        return console.log("Invalid product type!");
-    }
+    //  switch (productType) {
+    //    case "simple": {
+    //      object = {
+    //        orderCartId: cartId,
+    //        productId,
+    //        childs: {
+    //          data: Array.from({ length: quantity }).map((_) => ({
+    //            productOptionId: optionId,
+    //            cartId,
+    //          })),
+    //        },
+    //      };
+    //      break;
+    //    }
+    //    case "customizable": {
+    //      object = {
+    //        cartId,
+    //        productId,
+    //        childs: {
+    //          data: Array.from({ length: quantity }).map((_) => ({
+    //            customizableProductComponentId: customizableComponentId,
+    //            productOptionId: optionId,
+    //            orderCartId: cartId,
+    //          })),
+    //        },
+    //      };
+    //      break;
+    //    }
+    //    case "combo": {
+    //      let components = comboComponentSelections.map((s) => ({
+    //        comboProductComponentId: s.comboComponentId,
+    //        productOptionId: s.selectedOptionId,
+    //        cartId,
+    //      }));
+    //      object = {
+    //        cartId,
+    //        productId,
+    //        childs: {
+    //          data: Array.from({ length: quantity }).fill(components).flat(),
+    //        },
+    //      };
+    //      break;
+    //    }
+    //    default:
+    //      return console.log("Invalid product type!");
+    //  }
 
-    console.log(object);
-    const data = await useMutation(MUTATIONS.CreateCartItem, {
+    const objects = Array.from({ length: quantity }).fill({
+      ...cartItem,
+      cartId,
+    });
+    const data = await useMutation(MUTATIONS.CreateCartItems, {
       variables: {
-        object,
+        objects,
       },
     });
     return data;
