@@ -9,12 +9,6 @@ const onNavigate = (pathname, query) => {
   rootDiv.dispatchEvent(event);
 };
 
-// window.onpopstate = (e) => {
-//   console.log(e);
-//   e.preventDefault();
-//   history.go(-2);
-// };
-
 const QUERIES = {
   AddProductToCart: `
    query AddProductToCard($params: jsonb!) {
@@ -89,55 +83,6 @@ const addProductToCart = async ({ cartId, cartItem, quantity }) => {
     const isValid = [cartId, Object.keys(cartItem).length].every(Boolean);
 
     if (!isValid) throw Error("Missing values for mutation!");
-
-    //  let object;
-
-    //  switch (productType) {
-    //    case "simple": {
-    //      object = {
-    //        orderCartId: cartId,
-    //        productId,
-    //        childs: {
-    //          data: Array.from({ length: quantity }).map((_) => ({
-    //            productOptionId: optionId,
-    //            cartId,
-    //          })),
-    //        },
-    //      };
-    //      break;
-    //    }
-    //    case "customizable": {
-    //      object = {
-    //        cartId,
-    //        productId,
-    //        childs: {
-    //          data: Array.from({ length: quantity }).map((_) => ({
-    //            customizableProductComponentId: customizableComponentId,
-    //            productOptionId: optionId,
-    //            orderCartId: cartId,
-    //          })),
-    //        },
-    //      };
-    //      break;
-    //    }
-    //    case "combo": {
-    //      let components = comboComponentSelections.map((s) => ({
-    //        comboProductComponentId: s.comboComponentId,
-    //        productOptionId: s.selectedOptionId,
-    //        cartId,
-    //      }));
-    //      object = {
-    //        cartId,
-    //        productId,
-    //        childs: {
-    //          data: Array.from({ length: quantity }).fill(components).flat(),
-    //        },
-    //      };
-    //      break;
-    //    }
-    //    default:
-    //      return console.log("Invalid product type!");
-    //  }
 
     const objects = Array.from({ length: quantity }).fill({
       ...cartItem,

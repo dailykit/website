@@ -258,6 +258,7 @@ export const PRODUCTS = `
           }
           price
           discount
+          cartItem
         }
         linkedProduct {
           id
@@ -281,6 +282,7 @@ export const PRODUCTS = `
           }
           price
           discount
+          cartItem
         }
         linkedProduct {
           id
@@ -301,6 +303,7 @@ export const PRODUCTS = `
               }
               price
               discount
+              comboCartItem
             }
             linkedProduct {
               id

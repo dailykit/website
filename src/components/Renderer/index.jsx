@@ -85,27 +85,29 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     variables: {
       ids: menu.allProductIds,
     },
+    fetchPolicy: "network-only",
     onCompleted: (data) => {
-      const updatedMenu = menu.categories.map((category) => {
-        const updatedProducts = category.products
-          .map((productId) => {
-            const found = data.products.find(({ id }) => id === productId);
-            if (found) {
-              return found;
-            }
-            return null;
-          })
-          .filter(Boolean);
-        return {
-          ...category,
-          products: updatedProducts,
-        };
-      });
-
-      setHydratedMenu(updatedMenu);
+      if (data && data.products.length) {
+        const updatedMenu = menu.categories.map((category) => {
+          const updatedProducts = category.products
+            .map((productId) => {
+              const found = data.products.find(({ id }) => id === productId);
+              if (found) {
+                return found;
+              }
+              return null;
+            })
+            .filter(Boolean);
+          return {
+            ...category,
+            products: updatedProducts,
+          };
+        });
+        setHydratedMenu(updatedMenu);
+      }
     },
     onError: (error) => {
-      console.log(error);
+      console.log("Error: ", error);
     },
   });
 
