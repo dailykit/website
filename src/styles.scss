@@ -4,6 +4,7 @@
   --color-white: #ffffff;
   --color-black: #111;
   --color-primary: #11192c;
+  --color-body-bg: #e9ecee;
 }
 
 * {
@@ -13,6 +14,8 @@
 
 .App {
   margin-top: 64px;
+  min-height: calc(100vh - 64px);
+  background: var(--color-body-bg);
 }
 
 .SiteLoader {
