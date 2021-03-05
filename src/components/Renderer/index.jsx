@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
-import { ORDERS, ALL_COUPONS, CAMPAIGNS, PRODUCTS } from "../../graphql";
+import { ORDERS, ALL_COUPONS, CAMPAIGNS, PRODUCTS, CARTS } from "../../graphql";
 import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
@@ -25,6 +25,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [availableCampaigns, setAvailableCampaigns] = React.useState([]);
   const [hydratedMenu, setHydratedMenu] = React.useState([]);
+  const [cart, setCart] = React.useState(null);
 
   console.log("config Data", moduleConfig);
 
@@ -111,6 +112,22 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     },
   });
 
+  const { loading: cartsLoading } = useSubscription(gql(CARTS), {
+    skip: name !== "cart",
+    variables: {
+      customerId: 838,
+    },
+    onSubscriptionData: ({
+      subscriptionData: { data: { carts = [] } = {} } = {},
+    } = {}) => {
+      console.log(carts);
+      if (carts.length > 1) {
+        console.log("Merge carts");
+      }
+      setCart(carts[0]);
+    },
+  });
+
   React.useEffect(() => {
     console.log(`Loading ${name}...`);
     (async () => {
@@ -152,6 +169,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
         ...(moduleConfig && { config: moduleConfig }),
         ...(name === "collections" && { categories: hydratedMenu }),
         ...(name === "categoryProductsPage" && { categories: hydratedMenu }),
+        ...(name === "cart" && { cart }),
         ...(name === "search" && { categories: menu.categories }),
         ...(name === "profile" && {
           customer: {
@@ -201,7 +219,8 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     ordersQueryLoading ||
     couponLoading ||
     campaignLoading ||
-    productsLoading
+    productsLoading ||
+    cartsLoading
   ) {
     return <Loader />;
   }

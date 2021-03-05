@@ -12,6 +12,7 @@ import {
 import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 
 import { Renderer, Loader } from "./components";
+import { Checkout } from "./pages";
 import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
 import useLocationBlocker from "./locationBlocker";
@@ -137,6 +138,9 @@ const App = () => {
       <div id="headerDiv"></div>
       <Renderer moduleId="headerDiv" moduleFile={headerPath} />
       <Switch>
+        <Route exact path="/checkout">
+          <Checkout />
+        </Route>
         <Route path="/">
           <Main />
         </Route>
