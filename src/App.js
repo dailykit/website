@@ -11,7 +11,7 @@ import {
 
 import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
 
-import { Renderer, Loader } from "./components";
+import { Renderer, Loader, NavBar } from "./components";
 import { Checkout } from "./pages";
 import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
@@ -50,39 +50,12 @@ const App = () => {
               },
               brand: {
                 id: res.brandId,
+                logo:
+                  "https://dailykit-133-test.s3.us-east-2.amazonaws.com/images/59439-1603377412818.jpg",
                 name: res.settings.brand.name,
                 phone: res.settings.brand.contact.phoneNo,
                 email: res.settings.brand.contact.email,
               },
-              routes: [
-                {
-                  display: "left",
-                  title: "About Us",
-                  link: `https://www.dailykit.org`,
-                },
-                {
-                  display: "left",
-                  title:
-                    "<i class='fas fa-search' style='color:rgb(102,102,102)'></i> Search",
-                  link: `/search`,
-                },
-                {
-                  display: "right",
-                  title: "Orders",
-                  link: `/orderHistory`,
-                },
-                {
-                  display: "right",
-                  title: "Profile",
-                  link: `/profile`,
-                },
-                {
-                  display: "right",
-                  title:
-                    "<i class='fas fa-shopping-cart' style='font-size:20px'><span id='cart-count' class='badge cart-count'>0</span></i>",
-                  link: `/cart`,
-                },
-              ],
             },
           },
         });
@@ -135,8 +108,7 @@ const App = () => {
   if (loading || customerLoading) return <Loader />;
   return (
     <>
-      <div id="headerDiv"></div>
-      <Renderer moduleId="headerDiv" moduleFile={headerPath} />
+      <NavBar />
       <Switch>
         <Route exact path="/checkout">
           <Checkout />

@@ -5,7 +5,6 @@ export const SettingsContext = React.createContext();
 const initialState = {
   theme: null,
   brand: null,
-  routes: null,
 };
 
 const reducer = (state = initialState, { type, payload }) => {

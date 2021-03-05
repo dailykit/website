@@ -1,0 +1,44 @@
+.NavBar {
+  height: 64px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+  background: var(--color-white);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  a {
+    text-decoration: none;
+    color: var(--color-black);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+
+    &-logo {
+      height: 48px;
+      width: 48px;
+      object-fit: cover;
+      border-radius: 24px;
+      margin-right: 16px;
+    }
+
+    &-name {
+      font-weight: normal;
+    }
+  }
+
+  &__nav-list {
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+
+    &-item:not(:last-child) {
+      margin-right: 32px;
+    }
+  }
+}
