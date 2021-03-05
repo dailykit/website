@@ -40,5 +40,11 @@
     &-item:not(:last-child) {
       margin-right: 32px;
     }
+
+    &:hover {
+      a {
+        color: var(--color-primary);
+      }
+    }
   }
 }

@@ -17,7 +17,8 @@ import { SettingsContext, MenuContext, CustomerContext } from "./context";
 import { Main } from "./sections";
 import useLocationBlocker from "./locationBlocker";
 
-import "./styles.css";
+import "./styles.scss";
+import Footer from "./components/Footer";
 
 const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
@@ -109,16 +110,17 @@ const App = () => {
   return (
     <>
       <NavBar />
-      <Switch>
-        <Route exact path="/checkout">
-          <Checkout />
-        </Route>
-        <Route path="/">
-          <Main />
-        </Route>
-      </Switch>
-      <div id="footerDiv"></div>
-      <Renderer moduleId="footerDiv" moduleFile={footerPath} />
+      <div className="App">
+        <Switch>
+          <Route exact path="/checkout">
+            <Checkout />
+          </Route>
+          <Route path="/">
+            <Main />
+          </Route>
+        </Switch>
+      </div>
+      <Footer />
     </>
   );
 };
