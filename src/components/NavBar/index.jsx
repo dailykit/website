@@ -7,7 +7,7 @@ import "./NavBar.scss";
 
 const NavBar = () => {
   const { settings } = React.useContext(SettingsContext);
-  const { isAuthenticated } = React.useContext(AuthContext);
+  const { isAuthenticated, logout } = React.useContext(AuthContext);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = React.useState(false);
@@ -34,19 +34,22 @@ const NavBar = () => {
         <h3 className="NavBar__brand-name">{settings.brand?.name}</h3>
       </Link>
       <ul className="NavBar__nav-list">
-        {isAuthenticated && (
-          <>
-            <li className="NavBar__nav-list-item">
-              <Link to="/cart">Profile</Link>
-            </li>
-            <li className="NavBar__nav-list-item">
-              <Link to="/cart">Orders</Link>
-            </li>
-          </>
-        )}
         <li className="NavBar__nav-list-item">
           <Link to="/cart">Cart</Link>
         </li>
+        {isAuthenticated && (
+          <>
+            <li className="NavBar__nav-list-item">
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li className="NavBar__nav-list-item">
+              <Link to="/orders">Orders</Link>
+            </li>
+            <Button className="NavBar__nav-list-item" onClick={logout}>
+              Logout
+            </Button>
+          </>
+        )}
         {!isAuthenticated && (
           <>
             <Button

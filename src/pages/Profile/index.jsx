@@ -1,10 +1,8 @@
 import React from "react";
-import { Renderer } from "../../components";
+
+import "./Profile.scss";
+
 const Profile = () => {
-  return (
-    <div>
-      <Renderer filePath="components/profile.liquid" />
-    </div>
-  );
+  return <div className="Profile"></div>;
 };
 export default Profile;

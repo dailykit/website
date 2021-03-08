@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
     });
   const logout = async () => {
     localStorage.removeItem("token");
-    window.location.href = `${window.location.origin}/store`;
+    window.location.href = `${window.location.origin}`;
   };
   const register = () =>
     keycloak.register({
