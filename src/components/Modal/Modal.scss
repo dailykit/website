@@ -1,0 +1,25 @@
+.Modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+
+  &__close-icon {
+    cursor: pointer;
+    position: absolute;
+    top: -40px;
+    right: 0;
+    font-size: 32px;
+    color: var(--color-white);
+  }
+
+  &__content {
+    position: relative;
+    background: var(--color-white);
+    margin: 15% auto;
+    width: 60%;
+  }
+}

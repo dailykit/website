@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "..";
+import { Button, LoginForm, SignUpForm, Modal } from "..";
 import { SettingsContext, AuthContext } from "../../context";
 
 import "./NavBar.scss";
@@ -8,6 +8,20 @@ import "./NavBar.scss";
 const NavBar = () => {
   const { settings } = React.useContext(SettingsContext);
   const { isAuthenticated } = React.useContext(AuthContext);
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = React.useState(false);
+
+  const toggleModal = (modal) => {
+    switch (modal) {
+      case "login":
+        return setIsLoginModalOpen(!isLoginModalOpen);
+      case "signup":
+        return setIsSignUpModalOpen(!isSignUpModalOpen);
+      default:
+        return null;
+    }
+  };
 
   return (
     <nav className="NavBar">
@@ -35,8 +49,32 @@ const NavBar = () => {
         </li>
         {!isAuthenticated && (
           <>
-            <Button className="NavBar__nav-list-item">Login</Button>
-            <Button className="NavBar__nav-list-item">Sign Up</Button>
+            <Button
+              className="NavBar__nav-list-item"
+              onClick={() => toggleModal("login")}
+            >
+              Login
+            </Button>
+            {isLoginModalOpen && (
+              <>
+                <Modal close={() => toggleModal("login")}>
+                  <LoginForm />
+                </Modal>
+              </>
+            )}
+            <Button
+              className="NavBar__nav-list-item"
+              onClick={() => toggleModal("signup")}
+            >
+              Sign Up
+            </Button>
+            {isSignUpModalOpen && (
+              <>
+                <Modal close={() => toggleModal("signup")}>
+                  <SignUpForm />
+                </Modal>
+              </>
+            )}
           </>
         )}
       </ul>
