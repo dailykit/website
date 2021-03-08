@@ -53,7 +53,7 @@ export const GET_PAGE_MODULES = `
 `;
 
 export const CUSTOMER = `
-query Customer($keycloakId: String!, $brandId: Int!) {
+query Customer($keycloakId: String!) {
   customer(keycloakId: $keycloakId) {
     id
     email
@@ -120,26 +120,6 @@ query Customer($keycloakId: String!, $brandId: Int!) {
         expYear
         brand
       }
-    }
-    orderCarts(where: {status: {_eq: "PENDING"}, cartSource: {_eq: "a-la-carte"}, brandId: {_eq: $brandId}}, order_by: {created_at: desc}) {
-      id
-      address
-      customerInfo
-      cartInfo
-      customerId
-      isValid
-      paymentMethodId
-      stripeCustomerId
-      fulfillmentInfo
-      deliveryPrice
-      itemTotal
-      tip
-      taxPercent
-      tax
-      totalPrice
-      status
-      paymentStatus
-      orderId
     }
   }
 }
@@ -317,3 +297,13 @@ export const PRODUCTS = `
     }
   }
 `;
+
+export const QUERY = {
+  STRIPE_PK: `
+   query StripePublishableKey {
+      organizations {
+         stripePublishableKey
+      }
+   }
+   `,
+};

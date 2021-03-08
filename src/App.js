@@ -20,7 +20,10 @@ import "./styles.scss";
 const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { user, isInitialized } = React.useContext(AuthContext);
-  const { customer, customerDispatch } = React.useContext(CustomerContext);
+  const {
+    customer: { customer = {} },
+    customerDispatch,
+  } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
 
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
@@ -93,12 +96,12 @@ const App = () => {
   });
 
   const { loading: customerLoading } = useQuery(gql(CUSTOMER), {
-    skip: !(settings?.brand?.id && customer?.id && user?.id),
+    skip: !(customer?.id && user?.id),
     variables: {
-      brandId: settings?.brand?.id,
       keycloakId: user?.id,
     },
     onCompleted: ({ customer }) => {
+      console.log("Customer: ", customer);
       customerDispatch({
         type: "CUSTOMER",
         payload: customer,
@@ -107,7 +110,6 @@ const App = () => {
     onError: (error) => {
       console.log(error);
     },
-    fetchPolicy: "network-only",
   });
 
   if (loading || customerLoading) return <Loader />;

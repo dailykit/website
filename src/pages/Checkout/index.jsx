@@ -1,8 +1,11 @@
 import React from "react";
+import clsx from "clsx";
 
 import { AuthContext, CustomerContext } from "../../context";
-import { Button } from "../../components";
+import { Button, Icon, Modal, ProfileForm } from "../../components";
 
+import Fulfillment from "./Fulfillment";
+import PaymentCardTile from "./PaymentCardTile";
 import "./Checkout.scss";
 
 const Checkout = () => {
@@ -10,6 +13,8 @@ const Checkout = () => {
   const {
     customer: { cart = {} },
   } = React.useContext(CustomerContext);
+
+  const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
 
   const renderLeft = () => {
     return (
@@ -19,15 +24,37 @@ const Checkout = () => {
           {isAuthenticated ? (
             <div className="Checkout__details-card-body">
               {cart?.customerInfo?.customerFirstName ? (
-                <>
-                  <h3 className="Checkout__details-card-body-customer-name">
-                    {cart.customerInfo?.customerFirstName}
-                  </h3>
-                </>
+                <div className="Checkout__details-card-body-customer">
+                  <div className="Checkout__details-card-body-customer-details">
+                    <h3 className="Checkout__details-card-body-customer-name">
+                      {`${cart.customerInfo?.customerFirstName} ${cart.customerInfo?.customerLastName}`}
+                    </h3>
+                    <p className="Checkout__details-card-body-customer-email">
+                      {cart.customerInfo?.customerEmail}
+                    </p>
+                    <p className="Checkout__details-card-body-customer-phone">
+                      {cart.customerInfo?.customerPhoneNo}
+                    </p>
+                  </div>
+                  <Icon
+                    name="edit"
+                    onClick={() => setIsProfileModalOpen(true)}
+                  />
+                </div>
               ) : (
-                <Button className="Checkout__button-tile">
+                <Button
+                  className="Checkout__button-tile"
+                  onClick={() => setIsProfileModalOpen(true)}
+                >
                   Add Basic Information
                 </Button>
+              )}
+              {isProfileModalOpen && (
+                <Modal close={() => setIsProfileModalOpen(false)}>
+                  <ProfileForm
+                    onCompleted={() => setIsProfileModalOpen(false)}
+                  />
+                </Modal>
               )}
             </div>
           ) : (
@@ -44,6 +71,43 @@ const Checkout = () => {
                   Sign Up
                 </Button>
               </div>
+            </div>
+          )}
+        </div>
+        <div className="Checkout__details-card">
+          <h2
+            className={clsx(
+              "Checkout__details-card-heading",
+              !isAuthenticated && "Checkout__details-card-heading--disabled"
+            )}
+          >
+            Fulfillment
+          </h2>
+          {isAuthenticated && (
+            <div className="Checkout__details-card-body">
+              <Fulfillment />
+            </div>
+          )}
+        </div>
+        <div className="Checkout__details-card">
+          <h2
+            className={clsx(
+              "Checkout__details-card-heading",
+              !isAuthenticated && "Checkout__details-card-heading--disabled"
+            )}
+          >
+            Payment
+          </h2>
+          {isAuthenticated && cart.fulfillmentInfo && (
+            <div className="Checkout__details-card-body">
+              {process.env.REACT_APP_CURRENCY === "INR" ? (
+                <div id="payment" />
+              ) : (
+                <>
+                  <PaymentCardTile />
+                  <Button className="Checkout__cta">Pay Now</Button>
+                </>
+              )}
             </div>
           )}
         </div>

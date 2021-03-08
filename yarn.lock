@@ -1476,6 +1476,18 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@stripe/react-stripe-js@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@stripe/react-stripe-js/-/react-stripe-js-1.4.0.tgz#a67e72202297fc409dc2c8c4f3fb98e0b61fa06d"
+  integrity sha512-Pz5QmG8PgJ3pi8gOWxlngk+ns63p2L1Ds192fn55ykZNRKfGz3G6sfssUVThHn/NAt2Hp1eCEsy/hvlKnXJI6g==
+  dependencies:
+    prop-types "^15.7.2"
+
+"@stripe/stripe-js@^1.13.1":
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-1.13.1.tgz#71384666dbd575f154bcdf923f5aa0f7be22d31c"
+  integrity sha512-mmW+38/RJiWP0B7jmekL+MTDpkDMi34ygZ3j0NIoGa/h6eAXlGDA4lOqqg6aMH9Jd2RzDUndKxvSPPQnFnpdqw==
+
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@surma/rollup-plugin-off-main-thread/-/rollup-plugin-off-main-thread-1.4.2.tgz#e6786b6af5799f82f7ab3a82e53f6182d2b91a58"
@@ -3856,6 +3868,11 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
+
+date-fns@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.19.0.tgz#65193348635a28d5d916c43ec7ce6fbd145059e1"
+  integrity sha512-X3bf2iTPgCAQp9wvjOQytnf5vO5rESYRXlPIVcgSbtT5OTScPcsf9eZU+B/YIkKAtYr5WeCii58BgATrNitlWg==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
@@ -7079,6 +7096,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+luxon@^1.21.3:
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.26.0.tgz#d3692361fda51473948252061d0f8561df02b578"
+  integrity sha512-+V5QIQ5f6CDXQpWNICELwjwuHdqeJM1UenlZWx5ujcRMc9venvluCjFb4t5NYLhb6IhkbMVOxzVuOqkgMxee2A==
+
 magic-string@^0.25.0, magic-string@^0.25.7:
   version "0.25.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.7.tgz#3f497d6fd34c669c6798dcb821f2ef31f5445051"
@@ -9744,6 +9766,15 @@ rollup@^1.31.1:
     "@types/estree" "*"
     "@types/node" "*"
     acorn "^7.1.0"
+
+rrule@^2.6.8:
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.8.tgz#c61714f246e7676e8efa16c2baabac199f20f6db"
+  integrity sha512-cUaXuUPrz9d1wdyzHsBfT1hptKlGgABeCINFXFvulEPqh9Np9BnF3C3lrv9uO54IIr8VDb58tsSF3LhsW+4VRw==
+  dependencies:
+    tslib "^1.10.0"
+  optionalDependencies:
+    luxon "^1.21.3"
 
 rsvp@^4.8.4:
   version "4.8.5"

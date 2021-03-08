@@ -19,25 +19,49 @@
     grid-template-columns: auto 480px;
     grid-gap: 32px;
     height: 100%;
+  }
 
-    &-left,
-    &-right {
-      background: var(--color-white);
-    }
+  &__cta {
+    padding: 16px;
+    width: 100%;
   }
 
   &__details-card {
     padding: 16px 28px;
     border-radius: 4px;
+    margin-bottom: 16px;
+    background: var(--color-white);
 
     &-heading {
       color: rgb(40, 44, 63);
       font-size: 24px;
       font-weight: 600;
       margin-bottom: 16px;
+
+      &--disabled {
+        color: rgb(147, 149, 159);
+      }
     }
 
     &-body {
+      &-customer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &-name {
+          font-size: 20px;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+
+        &-email,
+        &-phone {
+          color: rgb(147, 128, 140);
+          font-weight: 500;
+        }
+      }
+
       &-text {
         margin-bottom: 24px;
         color: rgb(126, 128, 140);

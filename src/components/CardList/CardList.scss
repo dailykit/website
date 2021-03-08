@@ -1,0 +1,12 @@
+.CardList {
+  position: relative;
+  padding: 16px 32px;
+  padding-bottom: 32px;
+
+  &__cta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+}

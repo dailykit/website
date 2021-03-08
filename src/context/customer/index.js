@@ -1,7 +1,7 @@
 import React from "react";
 import { gql, useSubscription } from "@apollo/client";
 
-import { CARTS } from "../../graphql";
+import { SUBSCRIPTION } from "../../graphql";
 import { AuthContext } from "../auth";
 import { SettingsContext } from "../settings";
 
@@ -31,7 +31,7 @@ export const CustomerProvider = ({ children }) => {
   const { user } = React.useContext(AuthContext);
   const { settings } = React.useContext(SettingsContext);
 
-  const { loading } = useSubscription(gql(CARTS), {
+  const { loading } = useSubscription(gql(SUBSCRIPTION.CARTS.FETCH), {
     skip: !(settings?.brand?.id && user?.id),
     variables: {
       brandId: settings?.brand?.id,

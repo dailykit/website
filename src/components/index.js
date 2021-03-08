@@ -5,8 +5,12 @@ import Button from "./Button";
 import Modal from "./Modal";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
+import ProfileForm from "./ProfileForm";
 import Input from "./Input";
 import Footer from "./Footer";
+import Icon from "./Icon";
+import CardList from "./CardList";
+import AddCard from "./AddCard";
 
 export {
   Renderer,
@@ -16,6 +20,10 @@ export {
   Modal,
   LoginForm,
   SignUpForm,
+  ProfileForm,
   Input,
   Footer,
+  Icon,
+  CardList,
+  AddCard,
 };

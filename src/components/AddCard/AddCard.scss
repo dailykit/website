@@ -1,0 +1,19 @@
+.AddCard {
+  padding: 16px 32px;
+
+  &__heading {
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  &__cta {
+    margin-top: 16px;
+    width: 100%;
+  }
+
+  &__error {
+    display: block;
+    color: #ff5a52;
+    margin-bottom: 8px;
+  }
+}

@@ -7,8 +7,11 @@
   "main": "src/index.js",
   "dependencies": {
     "@apollo/client": "^3.3.7",
+    "@stripe/react-stripe-js": "^1.4.0",
+    "@stripe/stripe-js": "^1.13.1",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
+    "date-fns": "^2.19.0",
     "ejs": "^3.1.5",
     "graphql": "^15.5.0",
     "jquery": "^3.5.1",
@@ -21,6 +24,7 @@
     "react-dom": "17.0.1",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.0",
+    "rrule": "^2.6.8",
     "sass": "^1.32.8",
     "subscriptions-transport-ws": "^0.9.18"
   },
