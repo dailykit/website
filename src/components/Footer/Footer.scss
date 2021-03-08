@@ -6,11 +6,19 @@
   background: var(--color-primary);
   color: #fff;
 
+  &__help-text {
+    margin-bottom: 8px;
+  }
+
   &__brand-name {
     margin-bottom: 16px;
   }
 
   &__brand-phone {
     font-weight: bold;
+  }
+
+  &__brand-email {
+    font-style: italic;
   }
 }

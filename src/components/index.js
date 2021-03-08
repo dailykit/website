@@ -6,6 +6,7 @@ import Modal from "./Modal";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
 import Input from "./Input";
+import Footer from "./Footer";
 
 export {
   Renderer,
@@ -16,4 +17,5 @@ export {
   LoginForm,
   SignUpForm,
   Input,
+  Footer,
 };

@@ -5,12 +5,16 @@ export const SettingsContext = React.createContext();
 const initialState = {
   theme: null,
   brand: null,
+  app: null,
+  availability: null,
+  rewards: null,
 };
 
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case "SEED": {
-      return { ...state, ...payload.settings };
+      console.log(payload);
+      return { ...state, ...payload };
     }
     default:
       return state;

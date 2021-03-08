@@ -25,7 +25,6 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [availableCampaigns, setAvailableCampaigns] = React.useState([]);
   const [hydratedMenu, setHydratedMenu] = React.useState([]);
-  const [cart, setCart] = React.useState(null);
 
   console.log("config Data", moduleConfig);
 
@@ -112,22 +111,6 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     },
   });
 
-  const { loading: cartsLoading } = useSubscription(gql(CARTS), {
-    skip: name !== "cart",
-    variables: {
-      customerId: 838,
-    },
-    onSubscriptionData: ({
-      subscriptionData: { data: { carts = [] } = {} } = {},
-    } = {}) => {
-      console.log(carts);
-      if (carts.length > 1) {
-        console.log("Merge carts");
-      }
-      setCart(carts[0]);
-    },
-  });
-
   React.useEffect(() => {
     console.log(`Loading ${name}...`);
     (async () => {
@@ -163,13 +146,12 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
-      console.log("from renderer", moduleFile.path);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
+        ...{ cart: customer.cart },
         ...settings,
         ...(moduleConfig && { config: moduleConfig }),
         ...(name === "collections" && { categories: hydratedMenu }),
         ...(name === "categoryProductsPage" && { categories: hydratedMenu }),
-        ...(name === "cart" && { cart }),
         ...(name === "search" && { categories: menu.categories }),
         ...(name === "profile" && {
           customer: {
@@ -185,7 +167,6 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
           campaignData: availableCampaigns,
         }),
       });
-      console.log("Control reached here for: ", { name, parsedHtml });
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
@@ -197,6 +178,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     search,
     pathname,
     hydratedMenu,
+    customer.cart,
   ]);
 
   React.useEffect(() => {
@@ -219,8 +201,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     ordersQueryLoading ||
     couponLoading ||
     campaignLoading ||
-    productsLoading ||
-    cartsLoading
+    productsLoading
   ) {
     return <Loader />;
   }

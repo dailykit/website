@@ -13,8 +13,11 @@ const Footer = () => {
         <h3 className="Footer__brand-name">{settings.brand?.name}</h3>
         <p className="Footer__help-text">
           Have trouble placing an order? Call{" "}
-          <span className="Footer__brand-phone">{settings.brand?.phone}</span>
+          <span className="Footer__brand-phone">
+            {settings.brand?.contact?.phoneNo}
+          </span>
         </p>
+        <p className="Footer__brand-email">{settings.brand?.contact?.email}</p>
       </div>
       <div className="Footer__right">
         <h5>Powered by DailyKIT</h5>

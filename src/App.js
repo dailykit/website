@@ -1,71 +1,73 @@
-import { gql, useQuery } from "@apollo/client";
 import React from "react";
+import { gql, useQuery } from "@apollo/client";
+import { Switch, Route } from "react-router-dom";
+
+import { getStoreData } from "./api/store";
+import { Loader, NavBar, Footer } from "./components";
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-  useHistory,
-  Link,
-} from "react-router-dom";
-
-import { GET_MENU, GET_STORE_DATA, CUSTOMER } from "./graphql";
-
-import { Renderer, Loader, NavBar } from "./components";
-import { Checkout } from "./pages";
-import { SettingsContext, MenuContext, CustomerContext } from "./context";
-import { Main } from "./sections";
+  SettingsContext,
+  MenuContext,
+  CustomerContext,
+  AuthContext,
+} from "./context";
+import { GET_MENU, CUSTOMER } from "./graphql";
 import useLocationBlocker from "./locationBlocker";
+import { Checkout } from "./pages";
+import { Main } from "./sections";
 
 import "./styles.scss";
-import Footer from "./components/Footer";
 
 const App = () => {
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
+  const { user, isInitialized } = React.useContext(AuthContext);
   const { customer, customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
-  const headerPath = { path: "/default/components/navbar.liquid" };
-  const footerPath = { path: "/default/components/footer.ejs" };
+
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
+
+  const [loading, setLoading] = React.useState(true);
 
   // block pushing double history
   useLocationBlocker();
 
-  const { loading } = useQuery(gql(GET_STORE_DATA), {
-    variables: {
-      domain: window.location.host,
-    },
-    onCompleted: (data) => {
-      if (data.onDemand_getStoreData?.length) {
-        const [res] = data.onDemand_getStoreData;
-        settingsDispatch({
-          type: "SEED",
-          payload: {
-            settings: {
-              theme: {
-                color: {
-                  primary: res.settings.visual.color,
-                  navbar: { bg: res.settings.visual.color },
-                  footer: { bg: res.settings.visual.color },
+  React.useEffect(() => {
+    (async () => {
+      if (isInitialized) {
+        try {
+          const data = await getStoreData({
+            clientId: process.env.REACT_APP_CLIENTID,
+            domain: window.location.hostname,
+            email: user.email,
+            keycloakId: user.id,
+          });
+          if (data.success) {
+            const { settings: fetchedSettings, brandId, customer } = data.data;
+            settingsDispatch({
+              type: "SEED",
+              payload: {
+                brand: {
+                  id: brandId,
+                  ...fetchedSettings.brand,
                 },
+                theme: fetchedSettings.visual,
+                app: fetchedSettings.appSettings,
+                availability: fetchedSettings.availability,
+                rewards: fetchedSettings.rewardsSettings,
               },
-              brand: {
-                id: res.brandId,
-                logo:
-                  "https://dailykit-133-test.s3.us-east-2.amazonaws.com/images/59439-1603377412818.jpg",
-                name: res.settings.brand.name,
-                phone: res.settings.brand.contact.phoneNo,
-                email: res.settings.brand.contact.email,
-              },
-            },
-          },
-        });
+            });
+            customerDispatch({
+              type: "CUSTOMER",
+              payload: customer,
+            });
+          }
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setLoading(false);
+        }
       }
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+    })();
+  }, [isInitialized]);
 
   useQuery(gql(GET_MENU), {
     skip: !settings?.brand?.id,
@@ -91,21 +93,23 @@ const App = () => {
   });
 
   const { loading: customerLoading } = useQuery(gql(CUSTOMER), {
-    skip: !settings?.brand?.id,
+    skip: !(settings?.brand?.id && customer?.id && user?.id),
     variables: {
       brandId: settings?.brand?.id,
-      keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
+      keycloakId: user?.id,
     },
     onCompleted: ({ customer }) => {
       customerDispatch({
-        type: "SEED",
+        type: "CUSTOMER",
         payload: customer,
       });
     },
     onError: (error) => {
       console.log(error);
     },
+    fetchPolicy: "network-only",
   });
+
   if (loading || customerLoading) return <Loader />;
   return (
     <>
