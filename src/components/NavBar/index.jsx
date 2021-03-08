@@ -1,33 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SettingsContext } from "../../context";
+import { Button } from "..";
+import { SettingsContext, AuthContext } from "../../context";
 
 import "./NavBar.scss";
 
 const NavBar = () => {
   const { settings } = React.useContext(SettingsContext);
-
-  const navLinks = [
-    {
-      title: "Profile",
-      pathname: "/profile",
-    },
-    {
-      title: "Orders",
-      pathname: "/orders",
-    },
-    {
-      title: "Cart",
-      pathname: "/cart",
-    },
-  ];
-
-  const renderNavLinks = () =>
-    navLinks.map((navLink) => (
-      <li className="NavBar__nav-list-item">
-        <Link to={navLink.pathname}>{navLink.title}</Link>
-      </li>
-    ));
+  const { isAuthenticated } = React.useContext(AuthContext);
 
   return (
     <nav className="NavBar">
@@ -39,7 +19,27 @@ const NavBar = () => {
         />
         <h3 className="NavBar__brand-name">{settings.brand?.name}</h3>
       </Link>
-      <ul className="NavBar__nav-list">{renderNavLinks()}</ul>
+      <ul className="NavBar__nav-list">
+        {isAuthenticated && (
+          <>
+            <li className="NavBar__nav-list-item">
+              <Link to="/cart">Profile</Link>
+            </li>
+            <li className="NavBar__nav-list-item">
+              <Link to="/cart">Orders</Link>
+            </li>
+          </>
+        )}
+        <li className="NavBar__nav-list-item">
+          <Link to="/cart">Cart</Link>
+        </li>
+        {!isAuthenticated && (
+          <>
+            <Button className="NavBar__nav-list-item">Login</Button>
+            <Button className="NavBar__nav-list-item">Sign Up</Button>
+          </>
+        )}
+      </ul>
     </nav>
   );
 };

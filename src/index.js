@@ -12,7 +12,12 @@ import {
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { SubscriptionClient } from "subscriptions-transport-ws";
-import { SettingsProvider, MenuProvider, CustomerProvider } from "./context";
+import {
+  SettingsProvider,
+  MenuProvider,
+  CustomerProvider,
+  AuthProvider,
+} from "./context";
 import App from "./App";
 
 const wssClient = new SubscriptionClient(
@@ -60,15 +65,17 @@ const client = new ApolloClient({
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <SettingsProvider>
-      <MenuProvider>
-        <CustomerProvider>
-          <Router>
-            <App />
-          </Router>
-        </CustomerProvider>
-      </MenuProvider>
-    </SettingsProvider>
+    <AuthProvider>
+      <SettingsProvider>
+        <MenuProvider>
+          <CustomerProvider>
+            <Router>
+              <App />
+            </Router>
+          </CustomerProvider>
+        </MenuProvider>
+      </SettingsProvider>
+    </AuthProvider>
   </ApolloProvider>,
   root
 );
