@@ -1,0 +1,14 @@
+.LoginForm {
+  padding: 32px;
+
+  &__button {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  &__heading {
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+}

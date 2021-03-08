@@ -5,5 +5,15 @@ import Button from "./Button";
 import Modal from "./Modal";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
+import Input from "./Input";
 
-export { Renderer, Loader, NavBar, Button, Modal, LoginForm, SignUpForm };
+export {
+  Renderer,
+  Loader,
+  NavBar,
+  Button,
+  Modal,
+  LoginForm,
+  SignUpForm,
+  Input,
+};
