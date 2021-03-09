@@ -1,7 +1,7 @@
 import React from "react";
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 
-import { SUBSCRIPTION } from "../../graphql";
+import { CUSTOMER, MUTATION, SUBSCRIPTION } from "../../graphql";
 import { AuthContext } from "../auth";
 import { SettingsContext } from "../settings";
 
@@ -51,8 +51,29 @@ export const CustomerProvider = ({ children }) => {
     },
   });
 
+  console.log(customer?.id, user?.id);
+  // ! removed check for customer.id
+  const { refetch: refetchCustomer } = useQuery(gql(CUSTOMER), {
+    variables: {
+      keycloakId: user?.id,
+    },
+    onCompleted: ({ customer }) => {
+      console.log("Customer: ", customer);
+      customerDispatch({
+        type: "CUSTOMER",
+        payload: customer,
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
   return (
-    <CustomerContext.Provider value={{ customer, customerDispatch }}>
+    <CustomerContext.Provider
+      value={{ customer, refetchCustomer, customerDispatch }}
+    >
       {children}
     </CustomerContext.Provider>
   );

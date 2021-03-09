@@ -5,31 +5,35 @@ import GoogleMapReact from "google-map-react";
 
 import { Button, Input, Loader } from "..";
 import { AuthContext, CustomerContext, SettingsContext } from "../../context";
-import { MUTATION } from "../../graphql";
+import { CUSTOMER, MUTATION } from "../../graphql";
 import { useScript } from "../../utils";
 
 import "./AddAddress.scss";
 
-const AddAddress = () => {
+const AddAddress = ({ onCompleted }) => {
   const [loaded, error] = useScript(
     `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_MAPS_API_KEY}&libraries=places`
-  );
-
-  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE));
-  const [createCustomerAddress] = useMutation(
-    gql(MUTATION.PLATFORM.ADDRESS.CREATE),
-    {
-      refetchQueries: ["customer"],
-    }
   );
 
   const { user } = React.useContext(AuthContext);
   const {
     customer: { customer = {} },
+    refetchCustomer,
   } = React.useContext(CustomerContext);
   const {
     settings: { availability = {} },
   } = React.useContext(SettingsContext);
+
+  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE));
+  const [createCustomerAddress] = useMutation(
+    gql(MUTATION.PLATFORM.ADDRESS.CREATE),
+    {
+      onCompleted: () => {
+        refetchCustomer();
+        onCompleted();
+      },
+    }
+  );
 
   const [mode, setMode] = React.useState("UNKNOWN");
   const [tracking, setTracking] = React.useState(false);

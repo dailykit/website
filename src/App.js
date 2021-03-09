@@ -95,24 +95,7 @@ const App = () => {
     },
   });
 
-  const { loading: customerLoading } = useQuery(gql(CUSTOMER), {
-    skip: !(customer?.id && user?.id),
-    variables: {
-      keycloakId: user?.id,
-    },
-    onCompleted: ({ customer }) => {
-      console.log("Customer: ", customer);
-      customerDispatch({
-        type: "CUSTOMER",
-        payload: customer,
-      });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  if (loading || customerLoading) return <Loader />;
+  if (loading) return <Loader />;
   return (
     <>
       <NavBar />

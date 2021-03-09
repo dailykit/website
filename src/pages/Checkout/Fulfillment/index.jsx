@@ -360,6 +360,11 @@ const Fulfillment = () => {
         </div>
       ) : (
         <form className="Fulfillment__selection" onSubmit={handleSubmit}>
+          <Icon
+            name="close"
+            className="Fulfillment__close"
+            onClick={() => setIsEditing(false)}
+          />
           <p className="Fulfillment__selection-text">
             Help us know your preference
           </p>
@@ -394,7 +399,7 @@ const Fulfillment = () => {
           {type === "DELIVERY" && (
             <div className="Fulfillment__selection-section">
               <h5 className="Fulfillment__selection-section-heading">
-                Select an address
+                Address for delivery
               </h5>
               <div className="Fulfillment__selection-section-body">
                 <AddressTile />

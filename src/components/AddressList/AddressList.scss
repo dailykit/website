@@ -1,12 +1,44 @@
 .AddressList {
   position: relative;
   padding: 16px 32px;
-  padding-bottom: 32px;
+  padding-bottom: 40px;
+  height: 100%;
 
   &__cta {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    bottom: 16px;
+    left: 32px;
+    right: 32px;
+    width: calc(100% - 64px);
+  }
+
+  &__address {
+    padding: 8px;
+    border: 1px solid #efefef;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: 0.2s ease border-color;
+    position: relative;
+
+    &:hover {
+      border-color: var(--color-primary);
+    }
+
+    &-default-icon {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      color: var(--color-primary);
+    }
+
+    &-label {
+      color: var(--color-light-gray);
+      margin-bottom: 8px;
+    }
+
+    &-notes {
+      color: var(--color-light-gray);
+      font-size: 14px;
+    }
   }
 }

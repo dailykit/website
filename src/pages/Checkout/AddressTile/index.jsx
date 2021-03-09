@@ -1,6 +1,7 @@
 import React from "react";
 import { AddressList, Button, Icon, Modal } from "../../../components";
 import { CustomerContext } from "../../../context";
+import { addressToString } from "../../../utils";
 
 import "./AddressTile.scss";
 
@@ -17,7 +18,9 @@ const AddressTile = () => {
     <div className="AddressTile">
       {cart.address ? (
         <div className="AddressTile__address">
-          <div className="AddressTile__address-details"></div>
+          <div className="AddressTile__address-details">
+            {addressToString(cart.address)}
+          </div>
           <Icon name="edit" onClick={() => setIsAddressListModalOpen(true)} />
         </div>
       ) : (
@@ -30,7 +33,7 @@ const AddressTile = () => {
       )}
       {isAddressListModalOpen && (
         <Modal close={() => setIsAddressListModalOpen(false)}>
-          <AddressList />
+          <AddressList onCompleted={() => setIsAddressListModalOpen(false)} />
         </Modal>
       )}
     </div>

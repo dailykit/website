@@ -1,4 +1,9 @@
 .Fulfillment {
+  &__close {
+    position: absolute;
+    right: 0;
+  }
+
   &__cta {
     width: 100%;
 
@@ -24,6 +29,8 @@
   }
 
   &__selection {
+    position: relative;
+
     &-section {
       margin-bottom: 16px;
 
@@ -62,7 +69,12 @@
 
     &-text {
       color: rgb(126, 128, 140);
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
+  }
+
+  &__error {
+    color: var(--color-error);
+    margin-bottom: 8px;
   }
 }
