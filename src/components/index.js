@@ -11,6 +11,8 @@ import Footer from "./Footer";
 import Icon from "./Icon";
 import CardList from "./CardList";
 import AddCard from "./AddCard";
+import AddressList from "./AddressList";
+import AddAddress from "./AddAddress";
 
 export {
   Renderer,
@@ -26,4 +28,6 @@ export {
   Icon,
   CardList,
   AddCard,
+  AddressList,
+  AddAddress,
 };

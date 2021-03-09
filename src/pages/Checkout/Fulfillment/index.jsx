@@ -17,6 +17,7 @@ import { CustomerContext, SettingsContext } from "../../../context";
 import { Button, Icon } from "../../../components";
 
 import "./Fulfillment.scss";
+import AddressTile from "../AddressTile";
 
 const Fulfillment = () => {
   const {
@@ -308,10 +309,6 @@ const Fulfillment = () => {
     }
   };
 
-  const renderAddress = () => {
-    return <p>Address here</p>;
-  };
-
   const renderFulfillmentType = (type) => {
     switch (type) {
       case "ONDEMAND_DELIVERY":
@@ -400,7 +397,7 @@ const Fulfillment = () => {
                 Select an address
               </h5>
               <div className="Fulfillment__selection-section-body">
-                {renderAddress()}
+                <AddressTile />
               </div>
             </div>
           )}

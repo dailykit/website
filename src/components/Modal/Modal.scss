@@ -10,8 +10,8 @@
   &__close-icon {
     cursor: pointer;
     position: absolute;
-    top: -40px;
-    right: 0;
+    top: 5vh;
+    right: 20%;
     font-size: 32px;
     color: var(--color-white);
   }
@@ -19,8 +19,11 @@
   &__content {
     position: relative;
     background: var(--color-white);
-    margin: 15% auto;
+    margin: 10vh auto;
     width: 60%;
     border-radius: 4px;
+    min-height: 50vh;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 }

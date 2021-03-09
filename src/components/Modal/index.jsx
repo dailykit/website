@@ -9,12 +9,10 @@ const Modal = ({ className, children, close, ...props }) => {
     <>
       {createPortal(
         <div className={clsx("Modal", className)} {...props}>
-          <div className="Modal__content">
-            <span className="Modal__close-icon" onClick={close}>
-              &times;
-            </span>
-            {children}
-          </div>
+          <span className="Modal__close-icon" onClick={close}>
+            &times;
+          </span>
+          <div className="Modal__content">{children}</div>
         </div>,
         document.getElementById("modal-root")
       )}

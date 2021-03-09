@@ -9,11 +9,12 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 
 import { createSetupIntent } from "../../api";
-import { CustomerContext } from "../../context";
+import { AuthContext, CustomerContext } from "../../context";
 import { MUTATION, QUERY } from "../../graphql";
 import { Button, Input, Loader } from "..";
 
 import "./AddCard.scss";
+import axios from "axios";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -62,6 +63,7 @@ const CardForm = () => {
   const {
     customer: { customer = {} },
   } = React.useContext(CustomerContext);
+  const { user } = React.useContext(AuthContext);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -73,14 +75,21 @@ const CardForm = () => {
   const [saving, setSaving] = React.useState(false);
   const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE));
   const [createPaymentMethod] = useMutation(
-    gql(MUTATION.STRIPE.PAYMENT_METHOD.CREATE)
+    gql(MUTATION.PLATFORM.PAYMENT_METHOD.CREATE),
+    {
+      refetchQueries: ["customer"],
+    }
   );
 
   React.useEffect(() => {
-    if (customer?.stripeCustomerId) {
+    console.log("customer", customer);
+    console.log("customer?.stripeCustomerId", customer?.stripeCustomerId);
+    if (customer?.platform_customer?.stripeCustomerId) {
       (async () => {
         try {
-          const intent = await createSetupIntent(customer?.stripeCustomerId);
+          const intent = await createSetupIntent(
+            customer?.platform_customer?.stripeCustomerId
+          );
           if (intent.id) {
             setIntent(intent);
             setStatus("SUCCESS");
@@ -148,12 +157,12 @@ const CardForm = () => {
                   cvcCheck: data.card.cvc_check,
                   expMonth: data.card.exp_month,
                   stripePaymentMethodId: data.id,
-                  keycloakId: user.sub || user.id,
+                  keycloakId: user.id,
                   cardHolderName: data.billing_details.name,
                 },
               },
             });
-            if (!customer.defaultPaymentMethodId) {
+            if (!customer.platform_customer.defaultPaymentMethodId) {
               await updateCustomer({
                 variables: {
                   keycloakId: user.id,

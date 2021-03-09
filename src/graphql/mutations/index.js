@@ -27,7 +27,7 @@ export const MUTATION = {
       }
       `,
   },
-  STRIPE: {
+  PLATFORM: {
     PAYMENT_METHOD: {
       CREATE: `
          mutation paymentMethod($object: platform_stripePaymentMethod_insert_input!) {
@@ -37,6 +37,28 @@ export const MUTATION = {
             }
          }
          `,
+    },
+    ADDRESS: {
+      CREATE: `
+        mutation platform_createCustomerAddress(
+         $object: platform_customerAddress_insert_input!
+      ) {
+         platform_createCustomerAddress(object: $object) {
+            id
+            lat
+            lng
+            line1
+            line2
+            city
+            state
+            landmark
+            country
+            zipcode
+            label
+            notes
+         }
+      }
+        `,
     },
   },
 };

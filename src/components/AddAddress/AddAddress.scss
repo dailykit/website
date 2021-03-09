@@ -1,0 +1,61 @@
+.AddAddress {
+  padding: 16px 32px;
+
+  &__choice {
+    &-options-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
+    &-option {
+      &:not(:last-child) {
+        margin-right: 16px;
+      }
+    }
+
+    &-text {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+  }
+
+  &__heading {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  &__cta {
+    width: 100%;
+  }
+
+  &__google-autocomplete {
+    margin-bottom: 16px;
+  }
+
+  &__map {
+    height: 160px;
+
+    &-container {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__field {
+    margin-bottom: 16px;
+
+    &-grid {
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 16px;
+    }
+
+    &-input {
+      margin-bottom: 0;
+    }
+
+    &-limit {
+      float: right;
+    }
+  }
+}
