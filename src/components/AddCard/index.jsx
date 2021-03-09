@@ -32,7 +32,7 @@ const CARD_ELEMENT_OPTIONS = {
   },
 };
 
-const AddCard = () => {
+const AddCard = ({ onCompleted }) => {
   const [stripePromise, setStripePromise] = React.useState(undefined);
 
   const { loading } = useQuery(gql(QUERY.STRIPE_PK), {
@@ -52,16 +52,17 @@ const AddCard = () => {
   if (loading || !stripePromise) return <Loader />;
   return (
     <Elements stripe={stripePromise}>
-      <CardForm />
+      <CardForm onCompleted={onCompleted} />
     </Elements>
   );
 };
 
 export default AddCard;
 
-const CardForm = () => {
+const CardForm = ({ onCompleted }) => {
   const {
     customer: { customer = {} },
+    refetchCustomer,
   } = React.useContext(CustomerContext);
   const { user } = React.useContext(AuthContext);
 
@@ -73,11 +74,13 @@ const CardForm = () => {
   const [error, setError] = React.useState("");
   const [name, setName] = React.useState("");
   const [saving, setSaving] = React.useState(false);
-  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE));
+  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
+    onCompleted,
+  });
   const [createPaymentMethod] = useMutation(
     gql(MUTATION.PLATFORM.PAYMENT_METHOD.CREATE),
     {
-      refetchQueries: ["customer"],
+      onCompleted: refetchCustomer,
     }
   );
 
@@ -171,6 +174,8 @@ const CardForm = () => {
                   },
                 },
               });
+            } else {
+              onCompleted();
             }
           } else {
             throw Error("Couldn't complete card setup, please try again");

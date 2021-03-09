@@ -1,12 +1,42 @@
 .CardList {
   position: relative;
   padding: 16px 32px;
-  padding-bottom: 32px;
+  padding-bottom: 40px;
 
   &__cta {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    bottom: 16px;
+    left: 32px;
+    width: calc(100% - 64px);
+  }
+
+  &__card {
+    padding: 8px;
+    border: 1px solid #efefef;
+    margin-bottom: 16px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.2s ease border-color;
+
+    &-default-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      color: var(--color-primary);
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+    }
+
+    &-brand {
+      color: var(--color-light-gray);
+      margin-bottom: 8px;
+    }
+
+    &-expiry {
+      color: var(--color-light-gray);
+      font-size: 14px;
+    }
   }
 }

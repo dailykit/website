@@ -1,3 +1,9 @@
 .PaymentCardTile {
   margin-bottom: 16px;
+
+  &__payment-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }

@@ -6,13 +6,19 @@ import "./PaymentCardTile.scss";
 
 const PaymentCardTile = () => {
   const {
-    customer: { cart = {} },
+    customer: { cart = {}, customer = {} },
   } = React.useContext(CustomerContext);
 
   const [isCardListModalOpen, setIsCardListModalOpen] = React.useState(false);
 
   const renderSelectedCard = () => {
-    return "haha";
+    const found = customer?.platform_customer?.stripePaymentMethods?.find(
+      (card) => card.stripePaymentMethodId === cart?.paymentMethodId
+    );
+    if (found) {
+      return `XXXX XXXX XXXX ${found.last4}`;
+    }
+    return "-";
   };
 
   return (
@@ -22,7 +28,7 @@ const PaymentCardTile = () => {
           <div className="PaymentCardTile__payment-card">
             {renderSelectedCard()}
           </div>
-          <Icon name="icon" onClick={() => setIsCardListModalOpen(true)} />
+          <Icon name="edit" onClick={() => setIsCardListModalOpen(true)} />
         </div>
       ) : (
         <Button
@@ -34,7 +40,7 @@ const PaymentCardTile = () => {
       )}
       {isCardListModalOpen && (
         <Modal close={() => setIsCardListModalOpen(false)}>
-          <CardList />
+          <CardList onCompleted={() => setIsCardListModalOpen(false)} />
         </Modal>
       )}
     </div>

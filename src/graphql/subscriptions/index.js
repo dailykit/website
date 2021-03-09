@@ -13,6 +13,7 @@ export const SUBSCRIPTION = {
                fulfillmentInfo
                customerInfo
                address
+               paymentMethodId
             }
          }
       `,
