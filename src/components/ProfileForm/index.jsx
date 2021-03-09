@@ -9,15 +9,22 @@ import "./ProfileForm.scss";
 const ProfileForm = ({ onCompleted }) => {
   const { user } = React.useContext(AuthContext);
   const {
-    customer: { cart = {} },
+    customer: { cart = {}, customer = {} },
+    refetchCustomer,
   } = React.useContext(CustomerContext);
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [firstname, setFirstname] = React.useState("");
-  const [lastname, setLastname] = React.useState("");
+  const [firstname, setFirstname] = React.useState(
+    customer?.platform_customer?.firstName || ""
+  );
+  const [lastname, setLastname] = React.useState(
+    customer?.platform_customer?.lastName || ""
+  );
   const [email, setEmail] = React.useState(user.email);
-  const [phone, setPhone] = React.useState("");
+  const [phone, setPhone] = React.useState(
+    customer?.platform_customer?.phoneNumber || ""
+  );
 
   const [updateCart] = useMutation(gql(MUTATION.CART.UPDATE), {
     onCompleted: () => {
@@ -32,7 +39,7 @@ const ProfileForm = ({ onCompleted }) => {
 
   const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
     onCompleted: () => {
-      console.log("Profile saved!");
+      refetchCustomer();
       if (cart.id) {
         updateCart({
           variables: {
