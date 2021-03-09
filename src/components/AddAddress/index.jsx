@@ -246,17 +246,17 @@ const AddAddress = ({ onCompleted }) => {
           <div className="AddAddress__google-autocomplete">
             <GooglePlacesAutocomplete
               apiKey={process.env.REACT_APP_MAPS_API_KEY}
-              debounce={300}
-              autocompletionRequest={{
-                location: populated?.lat
-                  ? `${populated.lat},${populated.lng}`
-                  : `${availability.location.lat},${availability.location.lng}`,
-                componentRestrictions: {
-                  country: process.env.CURRENCY === "INR" ? "in" : "us",
-                },
-                radius: 30000,
-                types: "geocode",
+              selectProps={{
+                onChange: (data) => formatAddress(data),
+                placeholder: "Search address on google...",
               }}
+              debounce={300}
+              //   autocompletionRequest={{
+              //     componentRestrictions: {
+              //       country: process.env.CURRENCY === "INR" ? "in" : "us",
+              //     },
+              //     types: "geocode",
+              //   }}
             />
           </div>
         )}
