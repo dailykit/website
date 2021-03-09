@@ -381,6 +381,7 @@ const Fulfillment = () => {
                     "Fulfillment__selection-section-option--active"
                 )}
                 onClick={() => setType("DELIVERY")}
+                type="button"
               >
                 Delivery
               </Button>
@@ -391,6 +392,7 @@ const Fulfillment = () => {
                     "Fulfillment__selection-section-option--active"
                 )}
                 onClick={() => setType("PICKUP")}
+                type="button"
               >
                 Pickup
               </Button>
@@ -418,6 +420,7 @@ const Fulfillment = () => {
                     "Fulfillment__selection-section-option--active"
                 )}
                 onClick={() => setTime("ONDEMAND")}
+                type="button"
               >
                 Now
               </Button>
@@ -428,6 +431,7 @@ const Fulfillment = () => {
                     "Fulfillment__selection-section-option--active"
                 )}
                 onClick={() => setTime("PREORDER")}
+                type="button"
               >
                 Later
               </Button>
