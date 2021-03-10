@@ -113,7 +113,7 @@ const AddAddress = ({ onCompleted }) => {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?key=${
         process.env.REACT_APP_MAPS_API_KEY
-      }&address=${encodeURIComponent(address.description)}`
+      }&address=${encodeURIComponent(address.value.description)}`
     );
     const data = await response.json();
     resolveAddress(data);
