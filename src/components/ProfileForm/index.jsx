@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
+import { toast } from "react-toastify";
 import { Button, Input } from "..";
 import { AuthContext, CustomerContext } from "../../context";
 import { MUTATION } from "../../graphql";
@@ -39,6 +40,7 @@ const ProfileForm = ({ onCompleted }) => {
 
   const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
     onCompleted: () => {
+      toast("Account details updated!");
       refetchCustomer();
       if (cart.id) {
         updateCart({

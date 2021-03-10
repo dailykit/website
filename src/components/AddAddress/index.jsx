@@ -9,6 +9,7 @@ import { CUSTOMER, MUTATION } from "../../graphql";
 import { useScript } from "../../utils";
 
 import "./AddAddress.scss";
+import { toast } from "react-toastify";
 
 const AddAddress = ({ onCompleted }) => {
   const [loaded, error] = useScript(
@@ -24,14 +25,13 @@ const AddAddress = ({ onCompleted }) => {
     settings: { availability = {} },
   } = React.useContext(SettingsContext);
 
-  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE));
+  const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
+    onCompleted,
+  });
   const [createCustomerAddress] = useMutation(
     gql(MUTATION.PLATFORM.ADDRESS.CREATE),
     {
-      onCompleted: () => {
-        refetchCustomer();
-        onCompleted();
-      },
+      onCompleted: refetchCustomer,
     }
   );
 
@@ -156,6 +156,7 @@ const AddAddress = ({ onCompleted }) => {
         },
       });
       if (address.id) {
+        toast("Address added!");
         if (!customer?.platform_customer?.defaultCustomerAddress) {
           updateCustomer({
             variables: {
@@ -165,6 +166,8 @@ const AddAddress = ({ onCompleted }) => {
               },
             },
           });
+        } else {
+          onCompleted();
         }
       } else {
         throw Error("An error occurred, please try again!");

@@ -15,6 +15,7 @@ import { Button, Input, Loader } from "..";
 
 import "./AddCard.scss";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -147,9 +148,7 @@ const CardForm = ({ onCompleted }) => {
             `${process.env.REACT_APP_PAYMENTS_API_URL}/api/payment-method/${setupIntent.payment_method}`
           );
           if (success) {
-            const {
-              data: { paymentMethod = {} } = {},
-            } = await createPaymentMethod({
+            const { data } = await createPaymentMethod({
               variables: {
                 object: {
                   last4: data.card.last4,
@@ -165,17 +164,22 @@ const CardForm = ({ onCompleted }) => {
                 },
               },
             });
-            if (!customer.platform_customer.defaultPaymentMethodId) {
-              await updateCustomer({
-                variables: {
-                  keycloakId: user.id,
-                  _set: {
-                    defaultPaymentMethodId: data.id,
+            if (data.id) {
+              toast("Payment card added!");
+              if (!customer.platform_customer.defaultPaymentMethodId) {
+                await updateCustomer({
+                  variables: {
+                    keycloakId: user.id,
+                    _set: {
+                      defaultPaymentMethodId: data.id,
+                    },
                   },
-                },
-              });
+                });
+              } else {
+                onCompleted();
+              }
             } else {
-              onCompleted();
+              throw Error("Failed to add card!");
             }
           } else {
             throw Error("Couldn't complete card setup, please try again");

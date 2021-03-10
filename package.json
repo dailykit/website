@@ -26,6 +26,7 @@
     "react-google-places-autocomplete": "^3.2.2",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.0",
+    "react-toastify": "^7.0.3",
     "rrule": "^2.6.8",
     "sass": "^1.32.8",
     "subscriptions-transport-ws": "^0.9.18"
