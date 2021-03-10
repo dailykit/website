@@ -148,7 +148,7 @@ const CardForm = ({ onCompleted }) => {
             `${process.env.REACT_APP_PAYMENTS_API_URL}/api/payment-method/${setupIntent.payment_method}`
           );
           if (success) {
-            const { data } = await createPaymentMethod({
+            const { data: response } = await createPaymentMethod({
               variables: {
                 object: {
                   last4: data.card.last4,
@@ -164,7 +164,7 @@ const CardForm = ({ onCompleted }) => {
                 },
               },
             });
-            if (data.id) {
+            if (response?.paymentMethod?.stripePaymentMethodId) {
               toast("Payment card added!");
               if (!customer.platform_customer.defaultPaymentMethodId) {
                 await updateCustomer({
