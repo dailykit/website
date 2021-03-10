@@ -10,9 +10,9 @@ import {
   CustomerContext,
   AuthContext,
 } from "./context";
-import { GET_MENU, CUSTOMER } from "./graphql";
+import { GET_MENU } from "./graphql";
 import useLocationBlocker from "./locationBlocker";
-import { Checkout } from "./pages";
+import { Checkout, Profile } from "./pages";
 import { Main } from "./sections";
 
 import "./styles.scss";
@@ -103,6 +103,9 @@ const App = () => {
         <Switch>
           <Route exact path="/checkout">
             <Checkout />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
           </Route>
           <Route path="/">
             <Main />

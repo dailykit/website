@@ -76,7 +76,10 @@ const CardForm = ({ onCompleted }) => {
   const [name, setName] = React.useState("");
   const [saving, setSaving] = React.useState(false);
   const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
-    onCompleted,
+    onCompleted: () => {
+      refetchCustomer();
+      onCompleted();
+    },
   });
   const [createPaymentMethod] = useMutation(
     gql(MUTATION.PLATFORM.PAYMENT_METHOD.CREATE),

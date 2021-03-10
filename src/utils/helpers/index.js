@@ -1,4 +1,6 @@
 export const addressToString = (address) => {
+  if (!address) return null;
+
   let str = `${address.line1}, `;
 
   if (address.line2) {

@@ -1,2 +1,73 @@
 .Profile {
+  margin: 8px auto;
+  max-width: 768px;
+  background: var(--color-white);
+  border-radius: 4px;
+
+  &__button-tile {
+    width: 100%;
+    background: var(--color--white);
+    box-shadow: rgba(204, 204, 204, 0.75) 1px 1px 5px;
+    padding: 16px;
+    color: rgb(102, 102, 102);
+    border-radius: 2px;
+  }
+
+  &__banner {
+    height: 160px;
+    background: var(--color-primary);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: var(--color-white);
+    padding: 16px;
+
+    &-hello {
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    &-name {
+      font-size: 32px;
+    }
+  }
+
+  &__body {
+    padding: 16px;
+
+    &-section {
+      padding: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #efefef;
+
+      &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        &-name {
+          color: var(--color-light-gray);
+        }
+      }
+
+      &-body {
+        &-label {
+          text-transform: uppercase;
+          color: var(--color-light-gray);
+          font-size: 10px;
+        }
+
+        &-row {
+          margin-bottom: 8px;
+
+          &-icon {
+            margin-right: 8px;
+            color: var(--color-primary);
+          }
+        }
+      }
+    }
+  }
 }

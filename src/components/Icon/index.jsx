@@ -12,6 +12,14 @@ const Icon = ({ name, className, ...props }) => {
         return <i class="far fa-check-circle" />;
       case "close":
         return <i class="far fa-times-circle"></i>;
+      case "email":
+        return <i class="fas fa-envelope" />;
+      case "home":
+        return <i class="fas fa-home" />;
+      case "card":
+        return <i class="fas fa-credit-card" />;
+      case "phone":
+        return <i class="fas fa-phone" />;
       default:
         return null;
     }

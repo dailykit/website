@@ -26,7 +26,10 @@ const AddAddress = ({ onCompleted }) => {
   } = React.useContext(SettingsContext);
 
   const [updateCustomer] = useMutation(gql(MUTATION.CUSTOMER.UPDATE), {
-    onCompleted,
+    onCompleted: () => {
+      refetchCustomer();
+      onCompleted();
+    },
   });
   const [createCustomerAddress] = useMutation(
     gql(MUTATION.PLATFORM.ADDRESS.CREATE),
