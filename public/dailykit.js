@@ -19,6 +19,186 @@ const QUERIES = {
       }
     }
    `,
+  GetProduct: `
+  query Products($ids: [Int!]!) {
+    products(where: {isArchived: {_eq: false}, id: {_in: $ids}}) {
+      id
+      name
+      type
+      assets
+      tags
+      additionalText
+      description
+      price
+      discount
+      isPopupAllowed
+      isPublished
+      defaultProductOptionId
+      productOptions(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+        id
+        position
+        type
+        label
+        price
+        discount
+        cartItem
+        modifier {
+          id
+          name
+          categories(where: {isVisible: {_eq: true}}) {
+            name
+            isRequired
+            type
+            limits
+            options(where: {isVisible: {_eq: true}}) {
+              id
+              name
+              price
+              discount
+              quantity
+              image
+              isActive
+              supplierItemId
+              sachetItemId
+              ingredientSachetId
+              cartItem
+            }
+          }
+        }
+      }
+      customizableProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+        id
+        options
+        selectedOptions {
+          productOption {
+            id
+            label
+            quantity
+            modifier {
+              id
+              name
+              categories(where: {isVisible: {_eq: true}}) {
+                name
+                isRequired
+                type
+                limits
+                options(where: {isVisible: {_eq: true}}) {
+                  id
+                  name
+                  price
+                  discount
+                  quantity
+                  image
+                  isActive
+                  supplierItemId
+                  sachetItemId
+                  ingredientSachetId
+                  cartItem
+                }
+              }
+            }
+          }
+          price
+          discount
+          cartItem
+        }
+        linkedProduct {
+          id
+          name
+          type
+          assets
+        }
+      }
+      comboProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+        id
+        label
+        options
+        selectedOptions {
+          productOption {
+            id
+            label
+            quantity
+            modifier {
+              id
+              name
+              categories(where: {isVisible: {_eq: true}}) {
+                name
+                isRequired
+                type
+                limits
+                options(where: {isVisible: {_eq: true}}) {
+                  id
+                  name
+                  price
+                  discount
+                  quantity
+                  image
+                  isActive
+                  supplierItemId
+                  sachetItemId
+                  ingredientSachetId
+                  cartItem
+                }
+              }
+            }
+          }
+          price
+          discount
+          cartItem
+        }
+        linkedProduct {
+          id
+          name
+          type
+          assets
+          customizableProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+            id
+            options
+            selectedOptions {
+              productOption {
+                id
+                label
+                quantity
+                modifier {
+                  id
+                  name
+                  categories(where: {isVisible: {_eq: true}}) {
+                    name
+                    isRequired
+                    type
+                    limits
+                    options(where: {isVisible: {_eq: true}}) {
+                      id
+                      name
+                      price
+                      discount
+                      quantity
+                      image
+                      isActive
+                      supplierItemId
+                      sachetItemId
+                      ingredientSachetId
+                      cartItem
+                    }
+                  }
+                }
+              }
+              price
+              discount
+              comboCartItem
+            }
+            linkedProduct {
+              id
+              name
+              type
+              assets
+            }
+          }
+        }
+      }
+    }
+  }
+   `,
 };
 
 const MUTATIONS = {
@@ -164,6 +344,23 @@ const updateCustomerDefaultPayment = async ({
         _set: {
           defaultPaymentMethodId,
         },
+      },
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const getProductData = async (productId) => {
+  try {
+    console.log("from dailykit", productId);
+    const isValid = [productId].every(Boolean);
+    if (!isValid) throw Error("Missing values for mutation!");
+    const data = await useMutation(QUERIES.GetProduct, {
+      variables: {
+        ids: [productId],
       },
     });
     console.log(data);

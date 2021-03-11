@@ -25,7 +25,8 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [availableCampaigns, setAvailableCampaigns] = React.useState([]);
   const [hydratedMenu, setHydratedMenu] = React.useState([]);
-
+  const [productData, setProductData] = React.useState({});
+  const searchParams = new URLSearchParams(search);
   console.log("config Data", moduleConfig);
 
   const [runDynamicQuery, { loading: lazyQueryLoading }] = useLazyQuery(
@@ -77,6 +78,18 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     },
     onError: (error) => {
       console.error(error);
+    },
+  });
+
+  const { loading: productLoading } = useQuery(gql(PRODUCTS), {
+    skip: name !== "productPage",
+    variables: {
+      ids: [searchParams.get("id")],
+    },
+    onCompleted: (data) => {
+      if (data && data?.products.length) {
+        setProductData(data?.products[0]);
+      }
     },
   });
 
@@ -166,6 +179,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
           couponData: availableCoupons,
           campaignData: availableCampaigns,
         }),
+        ...(name === "productPage" && { product: productData }),
       });
       setDomNodes(parsedHtml);
       setLoading(false);
@@ -191,6 +205,10 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
         for (let el of domNodes) {
           element.appendChild(el);
         }
+        const event = new CustomEvent("componentLoad", {
+          detail: { name, element },
+        });
+        element.dispatchEvent(event);
       }
     }
   }, [loading, moduleId, domNodes]);

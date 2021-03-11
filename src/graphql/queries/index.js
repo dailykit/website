@@ -188,114 +188,182 @@ query Campaigns($brandId: Int!) {
 `;
 
 export const PRODUCTS = `
-  query Products($ids: [Int!]!) {
-    products(
-      where: {
-        isArchived: { _eq: false }
-        #   isPublished: { _eq: true }
-        id: { _in: $ids }
-      }
-    ) {
+query Products($ids: [Int!]!) {
+  products(where: {isArchived: {_eq: false}, id: {_in: $ids}}) {
+    id
+    name
+    type
+    assets
+    tags
+    additionalText
+    description
+    price
+    discount
+    isPopupAllowed
+    isPublished
+    defaultProductOptionId
+    productOptions(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
       id
-      name
+      position
       type
-      assets
-      tags
-      additionalText
-      description
+      label
       price
       discount
-      isPopupAllowed
-      isPublished
-      productOptions(
-        where: { isArchived: { _eq: false } }
-        order_by: { position: desc_nulls_last }
-      ) {
+      cartItem
+      modifier {
         id
-        position
-        type
-        label
+        name
+        categories(where: {isVisible: {_eq: true}}) {
+          name
+          isRequired
+          type
+          limits
+          options(where: {isVisible: {_eq: true}}) {
+            id
+            name
+            price
+            discount
+            quantity
+            image
+            isActive
+            supplierItemId
+            sachetItemId
+            ingredientSachetId
+          }
+        }
+      }
+    }
+    customizableProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+      id
+      options
+      selectedOptions {
+        productOption {
+          id
+          label
+          quantity
+          modifier {
+            id
+            name
+            categories(where: {isVisible: {_eq: true}}) {
+              name
+              isRequired
+              type
+              limits
+              options(where: {isVisible: {_eq: true}}) {
+                id
+                name
+                price
+                discount
+                quantity
+                image
+                isActive
+                supplierItemId
+                sachetItemId
+                ingredientSachetId
+              }
+            }
+          }
+        }
         price
         discount
         cartItem
-        modifier {
-          id
-          name
-          data
-        }
       }
-      customizableProductComponents(
-        where: { isArchived: { _eq: false } }
-        order_by: { position: desc_nulls_last }
-      ) {
+      linkedProduct {
         id
-        options
-        selectedOptions {
-          productOption {
-            id
-            label
-            quantity
-          }
-          price
-          discount
-          cartItem
-        }
-        linkedProduct {
-          id
-          name
-          type
-          assets
-        }
+        name
+        type
+        assets
       }
-      comboProductComponents(
-        where: { isArchived: { _eq: false } }
-        order_by: { position: desc_nulls_last }
-      ) {
-        id
-        label
-        options
-        selectedOptions {
-          productOption {
-            id
-            label
-            quantity
-          }
-          price
-          discount
-          cartItem
-        }
-        linkedProduct {
+    }
+    comboProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+      id
+      label
+      options
+      selectedOptions {
+        productOption {
           id
-          name
-          type
-          assets
-          customizableProductComponents(
-            where: { isArchived: { _eq: false } }
-            order_by: { position: desc_nulls_last }
-          ) {
+          label
+          quantity
+          modifier {
             id
-            options
-            selectedOptions {
-              productOption {
-                id
-                label
-                quantity
-              }
-              price
-              discount
-              comboCartItem
-            }
-            linkedProduct {
-              id
+            name
+            categories(where: {isVisible: {_eq: true}}) {
               name
+              isRequired
               type
-              assets
+              limits
+              options(where: {isVisible: {_eq: true}}) {
+                id
+                name
+                price
+                discount
+                quantity
+                image
+                isActive
+                supplierItemId
+                sachetItemId
+                ingredientSachetId
+              }
             }
+          }
+        }
+        price
+        discount
+        cartItem
+      }
+      linkedProduct {
+        id
+        name
+        type
+        assets
+        customizableProductComponents(where: {isArchived: {_eq: false}}, order_by: {position: desc_nulls_last}) {
+          id
+          options
+          selectedOptions {
+            productOption {
+              id
+              label
+              quantity
+              modifier {
+                id
+                name
+                categories(where: {isVisible: {_eq: true}}) {
+                  name
+                  isRequired
+                  type
+                  limits
+                  options(where: {isVisible: {_eq: true}}) {
+                    id
+                    name
+                    price
+                    discount
+                    quantity
+                    image
+                    isActive
+                    supplierItemId
+                    sachetItemId
+                    ingredientSachetId
+                  }
+                }
+              }
+            }
+            price
+            discount
+            comboCartItem
+          }
+          linkedProduct {
+            id
+            name
+            type
+            assets
           }
         }
       }
     }
   }
+}
+
+
 `;
 
 export const QUERY = {
