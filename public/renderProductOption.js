@@ -26,36 +26,48 @@ const getCartItemWithModifiers = (
   );
 
   if (type === "combo") {
-    console.log("HETETETET");
     const dataArr = cartItemInput?.childs?.data;
     const dataArrLength = dataArr.length;
     console.log("🚀 dataArrLength", dataArrLength);
-    for (let i = 0; i < dataArrLength; i++) {
-      const objWithModifiers = {
-        ...dataArr[i],
-        childs: {
-          data: combinedModifiers,
-        },
-      };
-      cartItemInput.childs.data[i] = objWithModifiers;
+
+    if (dataArrLength === 0) {
+      cartItemInput.childs.data = combinedModifiers;
+      return cartItemInput;
+    } else {
+      for (let i = 0; i < dataArrLength; i++) {
+        const objWithModifiers = {
+          ...dataArr[i],
+          childs: {
+            data: combinedModifiers,
+          },
+        };
+        cartItemInput.childs.data[i] = objWithModifiers;
+      }
+      return cartItemInput;
     }
-    return cartItemInput;
   } else {
     const dataArr = cartItemInput?.childs?.data[0]?.childs?.data;
     const dataArrLength = dataArr.length;
     console.log("🚀 dataArrLength", dataArrLength);
-    for (let i = 0; i < dataArrLength; i++) {
-      const objWithModifiers = {
-        ...dataArr[i],
-        childs: {
-          data: combinedModifiers,
-        },
-      };
-      console.log(cartItemInput?.childs?.data[0]?.childs?.data);
-      cartItemInput.childs.data[0].childs.data[i] = objWithModifiers;
+
+    if (dataArrLength === 0) {
+      cartItemInput.childs.data[0].childs.data = combinedModifiers;
+      return cartItemInput;
+    } else {
+      for (let i = 0; i < dataArrLength; i++) {
+        const objWithModifiers = {
+          ...dataArr[i],
+          childs: {
+            data: combinedModifiers,
+          },
+        };
+        console.log(cartItemInput?.childs?.data[0]?.childs?.data);
+        cartItemInput.childs.data[0].childs.data[i] = objWithModifiers;
+      }
+      return cartItemInput;
     }
-    return cartItemInput;
   }
+  return cartItemInput;
 };
 
 const addModifier = (modifierOption) => {
@@ -94,7 +106,6 @@ const addProduct = async () => {
     quantity,
   };
   console.log("comboComponentSelections", comboComponentSelections);
-  return;
 
   const response = await addProductToCart(productDetails);
   if (response.data) {
