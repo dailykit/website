@@ -3,29 +3,59 @@ let price = 0;
 let cartItem;
 let comboComponentSelections = [];
 let selectedModifiers = [];
+let comboProductDataForCart = {
+  productId: null,
+  lastComponentId: null,
+  productPrice: null,
+  productDiscount: null,
+};
 
 const resetStore = () => {
   cartItem = undefined;
 };
 
-const getCartItemWithModifiers = (cartItemInput, selectedModifiersInput) => {
+const getCartItemWithModifiers = (
+  cartItemInput,
+  selectedModifiersInput,
+  type
+) => {
+  console.log({ cartItemInput, selectedModifiersInput, type });
   const combinedModifiers = selectedModifiersInput.reduce(
     (acc, obj) => [...acc, ...obj.data],
     []
   );
-  const dataArr = cartItemInput?.childs?.data[0]?.childs?.data;
-  const dataArrLength = cartItemInput?.childs?.data[0]?.childs?.data.length;
-  for (let i = 0; i < dataArrLength; i++) {
-    const objWithModifiers = {
-      ...dataArr[i],
-      childs: {
-        data: combinedModifiers,
-      },
-    };
-    console.log(cartItemInput?.childs?.data[0]?.childs?.data);
-    cartItemInput.childs.data[0].childs.data[i] = objWithModifiers;
+
+  if (type === "combo") {
+    console.log("HETETETET");
+    const dataArr = cartItemInput?.childs?.data;
+    const dataArrLength = dataArr.length;
+    console.log("🚀 dataArrLength", dataArrLength);
+    for (let i = 0; i < dataArrLength; i++) {
+      const objWithModifiers = {
+        ...dataArr[i],
+        childs: {
+          data: combinedModifiers,
+        },
+      };
+      cartItemInput.childs.data[i] = objWithModifiers;
+    }
+    return cartItemInput;
+  } else {
+    const dataArr = cartItemInput?.childs?.data[0]?.childs?.data;
+    const dataArrLength = dataArr.length;
+    console.log("🚀 dataArrLength", dataArrLength);
+    for (let i = 0; i < dataArrLength; i++) {
+      const objWithModifiers = {
+        ...dataArr[i],
+        childs: {
+          data: combinedModifiers,
+        },
+      };
+      console.log(cartItemInput?.childs?.data[0]?.childs?.data);
+      cartItemInput.childs.data[0].childs.data[i] = objWithModifiers;
+    }
+    return cartItemInput;
   }
-  return cartItemInput;
 };
 
 const addModifier = (modifierOption) => {
@@ -48,6 +78,12 @@ const addModifier = (modifierOption) => {
 
 const addProduct = async () => {
   console.log(cartItem);
+
+  if (comboProductDataForCart.productId) {
+    // Working on combo product
+    return addComboProduct();
+  }
+
   const isValid = [quantity, Object.keys(cartItem).length].every(Boolean);
   if (!isValid) return;
   const updatedCartItem = getCartItemWithModifiers(cartItem, selectedModifiers);
@@ -87,20 +123,23 @@ const addCustomizableProduct = async () => {
   }
 };
 
-const addComboProduct = async (
-  productId,
-  productPrice,
-  productDiscount,
-  lastComponentId
-) => {
-  const updatedCartItem = getCartItemWithModifiers(cartItem, selectedModifiers);
+const addComboProduct = async () => {
+  const {
+    productId,
+    productPrice,
+    productDiscount,
+    lastComponentId,
+  } = comboProductDataForCart;
+  const updatedCartItem = getCartItemWithModifiers(
+    cartItem,
+    selectedModifiers,
+    "combo"
+  );
   comboComponentSelections.push({
     ...updatedCartItem,
     comboProductComponentId: lastComponentId,
   });
   comboComponentSelections = comboComponentSelections.filter(Boolean);
-
-  console.log(cartId, comboComponentSelections);
 
   const preparedCartItem = {
     productId,
@@ -110,13 +149,18 @@ const addComboProduct = async (
     },
   };
 
+  console.log(
+    "🚀 ~ file: renderProductOption.js ~ line 119 ~ addComboProduct ~ preparedCartItem",
+    preparedCartItem
+  );
+
   const productDetails = {
     cartId: window.cartId,
     quantity,
     cartItem: preparedCartItem,
   };
 
-  // const isValid = Object.values(productDetails).every(Boolean);
+  const isValid = Object.values(productDetails).every(Boolean);
 
   if (!isValid) return console.log("Missing values!", productDetails);
 
@@ -173,11 +217,19 @@ const updateQtyWithPrice = (operation, oldPrice) => {
 };
 
 const nextComponent = (componentId, currentIndex) => {
-  const updatedCartItem = getCartItemWithModifiers(cartItem, selectedModifiers);
+  console.log("Next component called...");
+  const updatedCartItem = getCartItemWithModifiers(
+    cartItem,
+    selectedModifiers,
+    "combo"
+  );
+  console.log("🚀 nextComponent ~ updatedCartItem", updatedCartItem);
   comboComponentSelections[currentIndex] = {
     ...updatedCartItem,
     comboProductComponentId: componentId,
   };
+  console.log("🚀 comboComponentSelections", comboComponentSelections);
+  selectedModifiers = [];
   setComboComponentIndex(currentIndex + 1);
 };
 
@@ -332,7 +384,7 @@ const getProductOption = (options, metaData) => {
       if (metaData.type === "simple") {
         cartItem = option?.cartItem;
       } else {
-        cartItem = rootOption?.cartItem;
+        cartItem = rootOption?.cartItem || rootOption?.comboCartItem;
       }
       console.log(cartItem);
     });
@@ -360,7 +412,7 @@ const getProductOption = (options, metaData) => {
                       <button class="counter-btn" onclick="updateQtyWithPrice('inc',${price})">+</button>
                       <span class="price" id="price">$${metaData?.price}  </span>
                     </div>
-                    <div class="add-to-cart" onclick="addToCart(metaData.type,componentId,)">
+                    <div class="add-to-cart" onclick="addProduct()">
                       <span class="add-action" >
                         Add to Cart
                         <i class="fas fa-chevron-right"></i>
@@ -464,6 +516,14 @@ const getCustomizableProductNode = (component, metaData) => {
 };
 
 const renderProductOption = async (productId, cartId) => {
+  // Cleaning
+  comboProductDataForCart = {
+    productId: null,
+    productPrice: null,
+    productDiscount: null,
+    lastComponentId: null,
+  };
+
   console.log(productId, cartId);
   window.cartId = cartId;
   quantity = 1;
@@ -557,6 +617,14 @@ const renderProductOption = async (productId, cartId) => {
     }
     case "combo": {
       const length = product.comboProductComponents.length;
+
+      // Cheap Hacks
+      comboProductDataForCart = {
+        productId: product.id,
+        productPrice: product.price,
+        productDiscount: product.discount,
+        lastComponentId: product.comboProductComponents[length - 1].id,
+      };
 
       comboComponentSelections = Array.from({ length }).fill(null);
 
