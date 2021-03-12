@@ -70,22 +70,92 @@ const getCartItemWithModifiers = (
   return cartItemInput;
 };
 
-const addModifier = (modifierOption) => {
-  console.log(modifierOption);
+// 1. selectedModifiers should satisfy isRequired for all the categories
+// 2. limits of multiple
+
+const getModifiersValidator = (modifier) => {
+  const checks = {};
+  for (let category of modifier.categories) {
+    console.log(
+      "🚀 ~ file: renderProductOption.js ~ line 79 ~ getModifiersValidator ~ category",
+      category
+    );
+    checks[category.name] = {};
+    if (category.type === "multiple") {
+      if (category.isRequired) {
+        checks[category.name].min = category.limits.min;
+      } else {
+        checks[category.name].min = 0;
+      }
+      if (category.limits.max === null) {
+        checks[category.name].max = category.options.length;
+      } else {
+        checks[category.name].max = category.limits.max;
+      }
+    }
+    if (category.type === "single") {
+      if (category.isRequired) {
+        checks[category.name].min = 1;
+        checks[category.name].max = 1;
+      } else {
+        checks[category.name].min = 0;
+        checks[category.name].max = 1;
+      }
+    }
+    checks[category.name].optionIds = category.options.map((op) => op.id);
+  }
+
+  console.log("CHECKS: ", checks);
+
+  return (option) => {
+    const [category] = Object.entries(checks).find(([, v]) =>
+      v.optionIds.includes(option.id)
+    );
+
+    console.log("CAT", category);
+
+    const alreadySelectedCount = selectedModifiers.filter((obj) =>
+      checks[category].optionIds.includes(obj.data[0].modifierOptionId)
+    ).length;
+    console.log(
+      "🚀 ~ file: renderProductOption.js ~ line 120 ~ return ~ alreadySelectedCount",
+      alreadySelectedCount
+    );
+    if (alreadySelectedCount === checks[category].max) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+};
+
+const addModifier = (modifierOption, fn) => {
   const modifierIndex = selectedModifiers.findIndex(
     (m) => m?.data[0]?.modifierOptionId === modifierOption.id
   );
   console.log("modifierIndex", modifierIndex);
+  console.log("selectedModifiers", selectedModifiers);
   if (modifierIndex === -1) {
-    selectedModifiers.push(modifierOption.cartItem);
-    price += modifierOption.price;
+    if (fn(modifierOption)) {
+      selectedModifiers.push(modifierOption.cartItem);
+      price += modifierOption.price;
+      document.querySelector(
+        `#modifier-checkbox-${modifierOption.id}`
+      ).checked = true;
+      document.getElementById("price").textContent = `$${price}`;
+    } else {
+      document.querySelector(
+        `#modifier-checkbox-${modifierOption.id}`
+      ).checked = false;
+    }
   } else {
     selectedModifiers.splice(modifierIndex, 1);
     price -= modifierOption.price;
+    document.getElementById("price").textContent = `$${price}`;
+    document.querySelector(
+      `#modifier-checkbox-${modifierOption.id}`
+    ).checked = false;
   }
-  document.getElementById("price").textContent = `$${price}`;
-
-  console.log("modifiers", selectedModifiers);
 };
 
 const addProduct = async () => {
@@ -306,29 +376,32 @@ const getProductOption = (options, metaData) => {
     const makeAddOns = () => {
       console.log("makeAddOns", rootOption?.productOption);
       if (option?.modifier && option?.modifier?.categories.length) {
-        for (let productOption of option?.modifier?.categories) {
+        let isModifierValidFunc = getModifiersValidator(option?.modifier);
+
+        for (let category of option?.modifier?.categories) {
           let spanHtml = "";
           const productOptionEl = document.createElement("div");
           productOptionEl.setAttribute("class", "add-ons-options");
           const productOptionHeaderEl = document.createElement("p");
           productOptionHeaderEl.setAttribute("class", "add-ons-pTag");
-          if (
-            productOption?.limits &&
-            Object.keys(productOption?.limits).length
-          ) {
-            spanHtml = `<span class="addon-validation"> Choose Min:${productOption?.limits?.min} Max:${productOption?.limits?.max} </span>`;
+          if (category?.limits && Object.keys(category?.limits).length) {
+            spanHtml = `<span class="addon-validation"> Choose Min:${category?.limits?.min} Max:${category?.limits?.max} </span>`;
           }
           productOptionHeaderEl.innerHTML = `
-                          ${productOption?.name.toUpperCase()}
+                          ${category?.name.toUpperCase()}
                           ${spanHtml}
                           `;
           productOptionEl.appendChild(productOptionHeaderEl);
-          for (let modifierOption of productOption?.options) {
+          for (let modifierOption of category?.options) {
             const modifierOptionEl = document.createElement("label");
             modifierOptionEl.setAttribute("id", "labelId");
             const checkboxEl = document.createElement("input");
             checkboxEl.setAttribute("type", "checkbox");
             checkboxEl.setAttribute("name", "checkbox");
+            checkboxEl.setAttribute(
+              "id",
+              `modifier-checkbox-${modifierOption.id}`
+            );
             const spanEl = document.createElement("span");
             spanEl.textContent = modifierOption?.name;
             const smallEl = document.createElement("small");
@@ -338,7 +411,7 @@ const getProductOption = (options, metaData) => {
             modifierOptionEl.appendChild(spanEl);
             checkboxEl.addEventListener("click", (e) => {
               e.stopPropagation();
-              addModifier(modifierOption);
+              addModifier(modifierOption, isModifierValidFunc);
             });
             productOptionEl.appendChild(modifierOptionEl);
           }
