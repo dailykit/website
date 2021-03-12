@@ -39,7 +39,11 @@ const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers }) => ({
     headers: {
       ...headers,
-      "x-hasura-admin-secret": `${process.env.REACT_APP_DATAHUB_ADMIN_SECRET}`,
+      Source: "online-store",
+      "Brand-Id": 1,
+      "Keycloak-Id": "ab6eb061-6900-46fc-bf1f-ee0bad277124",
+      "Brand-Customer-Id": 268,
+      "Cart-Id": 24,
     },
   }));
   return forward(operation);
