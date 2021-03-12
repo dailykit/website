@@ -88,6 +88,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     },
     onCompleted: (data) => {
       if (data && data?.products.length) {
+        console.log("rendererrr", data?.products[0]);
         setProductData(data?.products[0]);
       }
     },
@@ -159,6 +160,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
+      console.log("checking...", productData);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...{ cart: customer.cart },
         ...settings,
@@ -181,6 +183,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
         }),
         ...(name === "productPage" && { product: productData }),
       });
+
       setDomNodes(parsedHtml);
       setLoading(false);
     })();
@@ -193,6 +196,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     pathname,
     hydratedMenu,
     customer.cart,
+    productData,
   ]);
 
   React.useEffect(() => {
@@ -206,7 +210,13 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
           element.appendChild(el);
         }
         const event = new CustomEvent("componentLoad", {
-          detail: { name, element },
+          detail: {
+            name,
+            element,
+            cartId: customer.cart.id,
+            moduleId,
+            productType: productData.type,
+          },
         });
         element.dispatchEvent(event);
       }
@@ -219,7 +229,8 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     ordersQueryLoading ||
     couponLoading ||
     campaignLoading ||
-    productsLoading
+    productsLoading ||
+    productLoading
   ) {
     return <Loader />;
   }

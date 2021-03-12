@@ -131,7 +131,6 @@ export const ORDERS = `
          where: {
             keycloakId: { _eq: $keycloakId }
             brandId: { _eq: $brandId }
-            source: { _eq: "a-la-carte" }
          }
          order_by: { created_at: desc }
       ) {
@@ -229,6 +228,7 @@ query Products($ids: [Int!]!) {
             supplierItemId
             sachetItemId
             ingredientSachetId
+            cartItem
           }
         }
       }
@@ -260,6 +260,7 @@ query Products($ids: [Int!]!) {
                 supplierItemId
                 sachetItemId
                 ingredientSachetId
+                cartItem
               }
             }
           }
@@ -303,6 +304,7 @@ query Products($ids: [Int!]!) {
                 supplierItemId
                 sachetItemId
                 ingredientSachetId
+                cartItem
               }
             }
           }
@@ -343,6 +345,7 @@ query Products($ids: [Int!]!) {
                     supplierItemId
                     sachetItemId
                     ingredientSachetId
+                    cartItem
                   }
                 }
               }
