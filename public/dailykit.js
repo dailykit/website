@@ -237,7 +237,11 @@ const useMutation = async (mutation, args) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-hasura-admin-secret": CONSTANTS.DATAHUB_ADMIN_SECRET,
+          Source: "online-store",
+          "Brand-Id": 1,
+          "Keycloak-Id": "ab6eb061-6900-46fc-bf1f-ee0bad277124",
+          "Brand-Customer-Id": 268,
+          "Cart-Id": 24,
         },
         body: JSON.stringify({
           query: mutation,
@@ -262,12 +266,9 @@ const addProductToCart = async ({ cartId, cartItem, quantity }) => {
 
     const isValid = [cartId, Object.keys(cartItem).length].every(Boolean);
 
-    if (!isValid) throw Error("Missing values for mutation!");
+    //  if (!isValid) throw Error("Missing values for mutation!");
 
-    const objects = Array.from({ length: quantity }).fill({
-      ...cartItem,
-      cartId,
-    });
+    const objects = Array.from({ length: quantity }).fill(cartItem);
     const data = await useMutation(MUTATIONS.CreateCartItems, {
       variables: {
         objects,
