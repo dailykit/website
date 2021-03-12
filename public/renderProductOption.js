@@ -9,6 +9,7 @@ let comboProductDataForCart = {
   productPrice: null,
   productDiscount: null,
 };
+let comboComponentIndex = null;
 
 const resetStore = () => {
   cartItem = undefined;
@@ -107,7 +108,7 @@ const getModifiersValidator = (modifier) => {
 
   console.log("CHECKS: ", checks);
 
-  return (option) => {
+  function fn1(option) {
     const [category] = Object.entries(checks).find(([, v]) =>
       v.optionIds.includes(option.id)
     );
@@ -126,17 +127,34 @@ const getModifiersValidator = (modifier) => {
     } else {
       return true;
     }
-  };
+  }
+
+  function fn2() {
+    const isValid = Object.entries(checks).every(([, v]) => {
+      console.log("🚀 ~ v", v);
+      const alreadySelectedCount = selectedModifiers.filter((obj) =>
+        v.optionIds.includes(obj.data[0].modifierOptionId)
+      ).length;
+      console.log("🚀 ~ alreadySelectedCount", alreadySelectedCount);
+      if (alreadySelectedCount < v.min || alreadySelectedCount > v.max) {
+        return false;
+      }
+      return true;
+    });
+    return isValid;
+  }
+
+  return [fn1, fn2];
 };
 
-const addModifier = (modifierOption, fn) => {
+const addModifier = (modifierOption, fn1, fn2) => {
   const modifierIndex = selectedModifiers.findIndex(
     (m) => m?.data[0]?.modifierOptionId === modifierOption.id
   );
   console.log("modifierIndex", modifierIndex);
   console.log("selectedModifiers", selectedModifiers);
   if (modifierIndex === -1) {
-    if (fn(modifierOption)) {
+    if (fn1(modifierOption)) {
       selectedModifiers.push(modifierOption.cartItem);
       price += modifierOption.price;
       document.querySelector(
@@ -155,6 +173,26 @@ const addModifier = (modifierOption, fn) => {
     document.querySelector(
       `#modifier-checkbox-${modifierOption.id}`
     ).checked = false;
+  }
+
+  //  enabling and disabling add to cart button
+  const isModifiersStateValid = fn2();
+  if (comboComponentIndex !== null) {
+    if (isModifiersStateValid) {
+      document.querySelector(
+        `#product-cta-combo-${comboComponentIndex}`
+      ).disabled = false;
+    } else {
+      document.querySelector(
+        `#product-cta-combo-${comboComponentIndex}`
+      ).disabled = true;
+    }
+  } else {
+    if (isModifiersStateValid) {
+      document.querySelector("#product-cta").disabled = false;
+    } else {
+      document.querySelector("#product-cta").disabled = true;
+    }
   }
 };
 
@@ -341,6 +379,12 @@ const setComboComponentIndex = (index) => {
     }
   });
 
+  console.log("Setting index: ", index);
+  if (index === elements.length - 1) {
+    comboComponentIndex = null;
+  } else {
+    comboComponentIndex = index;
+  }
   resetStore();
 };
 
@@ -365,19 +409,23 @@ const getProductOption = (options, metaData) => {
     console.log(option);
     let clickedOptionId = metaData?.defaultProductOptionId;
     let checked = "";
+    let isModifierOptionValidToBeAddedFunc;
+    let isModifierValidFunc;
+
     if (
       option?.modifier &&
       Object.keys(option?.modifier).length &&
       option?.modifier?.categories.length &&
       Object.keys(document.getElementsByClassName("addOnsHeader")).length === 0
     ) {
+      const [fn1, fn2] = getModifiersValidator(option?.modifier);
+      isModifierOptionValidToBeAddedFunc = fn1;
+      isModifierValidFunc = fn2;
       addOnsEl.appendChild(addOnsHeaderEl);
     }
     const makeAddOns = () => {
       console.log("makeAddOns", rootOption?.productOption);
       if (option?.modifier && option?.modifier?.categories.length) {
-        let isModifierValidFunc = getModifiersValidator(option?.modifier);
-
         for (let category of option?.modifier?.categories) {
           let spanHtml = "";
           const productOptionEl = document.createElement("div");
@@ -411,7 +459,11 @@ const getProductOption = (options, metaData) => {
             modifierOptionEl.appendChild(spanEl);
             checkboxEl.addEventListener("click", (e) => {
               e.stopPropagation();
-              addModifier(modifierOption, isModifierValidFunc);
+              addModifier(
+                modifierOption,
+                isModifierOptionValidToBeAddedFunc,
+                isModifierValidFunc
+              );
             });
             productOptionEl.appendChild(modifierOptionEl);
           }
@@ -470,7 +522,36 @@ const getProductOption = (options, metaData) => {
       } else {
         cartItem = rootOption?.cartItem || rootOption?.comboCartItem;
       }
-      console.log(cartItem);
+      // Enabling or Disabling cart button
+      console.log("MAGIC", document.querySelector("#product-cta"));
+      if (!option?.modifier) {
+        console.log("ENABLING");
+        if (comboComponentIndex === null) {
+          document.querySelector("#product-cta").disabled = false;
+        } else {
+          document.querySelector(
+            `#product-cta-combo-${comboComponentIndex}`
+          ).disabled = false;
+        }
+      } else {
+        if (isModifierValidFunc()) {
+          if (comboComponentIndex === null) {
+            document.querySelector("#product-cta").disabled = false;
+          } else {
+            document.querySelector(
+              `#product-cta-combo-${comboComponentIndex}`
+            ).disabled = false;
+          }
+        } else {
+          if (comboComponentIndex === null) {
+            document.querySelector("#product-cta").disabled = true;
+          } else {
+            document.querySelector(
+              `#product-cta-combo-${comboComponentIndex}`
+            ).disabled = true;
+          }
+        }
+      }
     });
     productOptionsEl.appendChild(optionEl);
   }
@@ -496,12 +577,12 @@ const getProductOption = (options, metaData) => {
                       <button class="counter-btn" onclick="updateQtyWithPrice('inc',${price})">+</button>
                       <span class="price" id="price">$${metaData?.price}  </span>
                     </div>
-                    <div class="add-to-cart" onclick="addProduct()">
+                    <button class="add-to-cart" id="product-cta" onclick="addProduct()" disabled>
                       <span class="add-action" >
                         Add to Cart
                         <i class="fas fa-chevron-right"></i>
                       </span>
-                    </div>
+                    </button>
                   </div>
 
               `;
@@ -642,6 +723,7 @@ const renderProductOption = async (productId, cartId) => {
         productOpt: [optionsWrapperEl],
         footerContent: [addToCartBarEl],
       };
+      comboComponentIndex = null;
       break;
     }
     case "customizable": {
@@ -696,7 +778,7 @@ const renderProductOption = async (productId, cartId) => {
           footerContent: [addToCartBarEl],
         };
       });
-
+      comboComponentIndex = null;
       break;
     }
     case "combo": {
@@ -751,11 +833,10 @@ const renderProductOption = async (productId, cartId) => {
           footerBarEl.setAttribute("class", "combo-component-bar proceed-bar");
           footerBarEl.setAttribute("data-index", index);
           footerBarEl.innerHTML = `
-                         <span class="cta" onclick="nextComponent(${component.id}, ${index})">
+                         <button class="cta proceed-btn" id="product-cta-combo-${index}" onclick="nextComponent(${component.id}, ${index})" disabled>
                             Proceed to next item &#62;
 
-                         </span>
-
+                         </button>
                      `;
           returnResult = {
             ...returnResult,
