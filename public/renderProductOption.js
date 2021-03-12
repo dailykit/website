@@ -493,9 +493,9 @@ const getProductOption = (options, metaData) => {
       price += parseFloat(rootOption?.price);
       quantity = 1;
       document.getElementById("quantity").textContent = `${quantity}`;
-      document.getElementById(
-        `product-price-${metaData.componentId}`
-      ).textContent = `$${metaData?.price?.toFixed(2)}`;
+      // document.getElementById(
+      //   `product-price-${metaData.componentId}`
+      // ).textContent = `$${metaData?.price?.toFixed(2)}`;
       document.getElementById("price").textContent = `$${price}`;
       const allOptionsWithCheckIcon = Array.from(
         document.getElementsByClassName("checkedIcon")
@@ -543,6 +543,8 @@ const getProductOption = (options, metaData) => {
             ).disabled = false;
           }
         } else {
+          console.log(comboComponentIndex);
+
           if (comboComponentIndex === null) {
             document.querySelector("#product-cta").disabled = true;
           } else {
@@ -612,11 +614,11 @@ const getSimpleProductNode = (component, metaData) => {
   nameEl.textContent = product.name;
   topEl.appendChild(nameEl);
 
-  const priceEl = document.createElement("h4");
-  priceEl.setAttribute("class", "product-price");
-  priceEl.setAttribute("id", `product-price-${id}`);
-  priceEl.textContent = `$${metaData.price}`;
-  topEl.appendChild(priceEl);
+  // const priceEl = document.createElement("h4");
+  // priceEl.setAttribute("class", "product-price");
+  // priceEl.setAttribute("id", `product-price-${id}`);
+  // priceEl.textContent = `$${metaData.price}`;
+  // topEl.appendChild(priceEl);
 
   node.appendChild(topEl);
   const { optionsWrapperEl, addToCartBarEl } = getProductOption(

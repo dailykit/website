@@ -44,11 +44,11 @@ const openProductModal = async (productData, cartId) => {
       nameEl.setAttribute("class", "product-name");
       nameEl.textContent = productData.name;
       topEl.appendChild(nameEl);
-      const priceEl = document.createElement("h4");
-      priceEl.setAttribute("class", "product-price");
-      priceEl.setAttribute("id", `product-price-${productData.id}`);
-      priceEl.textContent = `$${productData.price}`;
-      topEl.appendChild(priceEl);
+      // const priceEl = document.createElement("h4");
+      // priceEl.setAttribute("class", "product-price");
+      // priceEl.setAttribute("id", `product-price-${productData.id}`);
+      // priceEl.textContent = `$${productData.price}`;
+      // topEl.appendChild(priceEl);
       fragment.appendChild(topEl);
       break;
   }
@@ -63,5 +63,10 @@ const openProductModal = async (productData, cartId) => {
     await footer.appendChild(f);
   });
   body.appendChild(fragment);
-  setComboComponentIndex(0);
+  if (productData.type === "combo") {
+    setComboComponentIndex(0);
+  } else {
+    comboComponentIndex = null;
+  }
+  console.log("comboComponentIndex", comboComponentIndex);
 };
