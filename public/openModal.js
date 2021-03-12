@@ -5,6 +5,9 @@ const openProductModal = async (productData, cartId) => {
   quantity = 1;
   const productModalEl = document.querySelector("#product-modal");
   productModalEl.style.display = "block";
+
+  document.body.style.overflow = "hidden";
+
   //for buy now button(mobile)
   // if (document.getElementById("buy-now-btn") && window.screen.width > 769) {
   //   const buynowBtn = document.getElementById("buy-now-btn");
@@ -14,6 +17,7 @@ const openProductModal = async (productData, cartId) => {
   productModalCloseEl.addEventListener("click", () => {
     selectedModifiers = [];
     productModalEl.style.display = "none";
+    document.body.style.overflow = "auto";
   });
   //for buy now button(mobile)
   // if (document.getElementById("buy-now-btn") && window.screen.width > 769) {
