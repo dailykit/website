@@ -1,31 +1,21 @@
 import styled, { css } from "styled-components";
 
-export const StyledSidebar = styled.div`
-  display: ${(props) => (props.show ? "block" : "none")};
-  background: ${(props) => props.show && "rgba(0,0,0,0.6)"};
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 15;
-`;
+export const StyledSidebar = styled.div``;
 
 export const StyledNav = styled.nav`
+  display: block;
   height: 100%;
   width: 70%;
   max-width: 400px;
   background: #fff;
-  box-shadow: 2px 0 7px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  transform: translateX(-100%);
-  ${(props) =>
-    props.show &&
-    css`
-      transform: translateX(0);
-    `};
-  transition: transform 0.4s ease-out;
-
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  transform: ${(props) =>
+    props.show ? "translate3d(0px, 0px, 0px)" : "translate3d(-100%, 0px, 0px)"};
+  transition: all 0.5s ease 0s;
+  visibility: visible;
   .brand-logo-wrapper {
     border-radius: 40px;
     height: 80px;
