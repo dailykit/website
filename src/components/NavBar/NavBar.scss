@@ -47,4 +47,43 @@
       }
     }
   }
+  &__nav-list-mv {
+    display: none;
+    align-items: center;
+    list-style-type: none;
+
+    &-item:not(:last-child) {
+      margin-right: 32px;
+    }
+
+    &:hover {
+      a {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &__spacer{
+    display: flex;
+    flex:1;
+  }
+
+
+  @media (min-width: 769px) {
+    &__hamburger-wrapper{
+    display: none;
+    }
+  }
+  @media (max-width:769px){
+    &__nav-list{
+      display: none;
+    }
+    &__nav-list-mv{
+      display:flex;
+    }
+    justify-content: flex-start;
+    &__brand{
+      margin-left: 16px;
+    }
+  }
 }

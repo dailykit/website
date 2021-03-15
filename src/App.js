@@ -1,9 +1,9 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 
 import { getStoreData } from "./api/store";
-import { Loader, NavBar, Footer } from "./components";
+import { Loader, NavBar, Footer, Sidebar } from "./components";
 import {
   SettingsContext,
   MenuContext,
@@ -16,8 +16,10 @@ import { Checkout, Profile } from "./pages";
 import { Main } from "./sections";
 
 import "./styles.scss";
+import { NoFragmentCyclesRule } from "graphql";
 
 const App = () => {
+  const { pathname } = useLocation();
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { user, isInitialized } = React.useContext(AuthContext);
   const {
@@ -29,6 +31,17 @@ const App = () => {
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
 
   const [loading, setLoading] = React.useState(true);
+  const [sidebar, setSidebar] = React.useState(false);
+  const toggleSidebar = () => {
+    setSidebar((prev) => !prev);
+  };
+  const closeSidebar = () => {
+    setSidebar(false);
+  };
+
+  React.useEffect(() => {
+    setSidebar(false);
+  }, [pathname]);
 
   // block pushing double history
   useLocationBlocker();
@@ -98,7 +111,8 @@ const App = () => {
   if (loading) return <Loader />;
   return (
     <>
-      <NavBar />
+      <NavBar open={toggleSidebar} />
+      <Sidebar open={sidebar} close={closeSidebar} />
       <div className="App">
         <Switch>
           <Route exact path="/checkout">
