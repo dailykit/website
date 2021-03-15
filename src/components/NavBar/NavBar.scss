@@ -73,6 +73,9 @@
     &__hamburger-wrapper{
     display: none;
     }
+    &__spacer{
+      display: none;
+    }
   }
   @media (max-width:769px){
     &__nav-list{
