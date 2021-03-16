@@ -38,74 +38,23 @@ export const CustomerProvider = ({ children }) => {
   const { user, isAuthenticated } = React.useContext(AuthContext);
   const { settings } = React.useContext(SettingsContext);
 
-  useSubscription(gql(SUBSCRIPTION.CARTS.FETCH), {
-    skip: !(settings?.brand?.id && user?.id),
-    variables: {
-      brandId: settings?.brand?.id,
-      customerKeycloakId: user?.id,
-    },
-    onSubscriptionData: ({
-      subscriptionData: { data: { carts = [] } = {} } = {},
-    } = {}) => {
-      console.log(carts);
-      if (carts.length) {
-        if (storedCartId) {
-          // merge this cart into the one that has customer info
-          console.log("Merge carts");
-        }
-        //  THIS IS NOT DISPATCHED - CART IS CREATED
-        customerDispatch({
-          type: "CART",
-          payload: carts[0],
-        });
-      } else {
-        if (storedCartId) {
-          // update local cart to store customer info
-          console.log("No existing cart but 1 in local storage");
-        }
-      }
-    },
-  });
-
-  useSubscription(gql(SUBSCRIPTION.CART.FETCH), {
-    skip: isAuthenticated || !storedCartId,
-    variables: {
-      id: storedCartId,
-    },
-    onSubscriptionData: ({
-      subscriptionData: { data: { cart = {} } = {} } = {},
-    } = {}) => {
-      customerDispatch({
-        type: "CART",
-        payload: cart,
-      });
-    },
-  });
-
-  console.log(customer?.customer?.id, user?.id);
-  // ! removed check for customer.id
-  const { refetch: refetchCustomer } = useQuery(gql(CUSTOMER), {
-    skip: !customer?.customer?.id,
+  const [updateCart] = useMutation(gql(MUTATION.CART.UPDATE), {
     context: {
       headers: {
-        "Keycloak-Id": user?.id,
+        "Brand-Id": settings?.brand?.id,
+        "Keycloak-Id": isAuthenticated ? user?.id : "",
+        "Cart-Id": storedCartId,
       },
     },
-    variables: {
-      //  cannot remove this as this is required in query
-      keycloakId: user?.id,
-    },
-    onCompleted: ({ customer }) => {
-      console.log("Customer: ", customer);
-      customerDispatch({
-        type: "CUSTOMER",
-        payload: customer,
-      });
+    onCompleted: () => {
+      localStorage.removeItem("cart-id");
+      setStoredCartId(null);
+      console.log("🍾 Cart updated with data!");
     },
     onError: (error) => {
       console.log(error);
+      toast.error("Failed to add cart items!");
     },
-    fetchPolicy: "cache-and-network",
   });
 
   const [createCart] = useMutation(gql(MUTATION.CART.CREATE), {
@@ -141,6 +90,106 @@ export const CustomerProvider = ({ children }) => {
       console.log(error);
       toast.error("Failed to add cart items!");
     },
+  });
+
+  useSubscription(gql(SUBSCRIPTION.CARTS.FETCH), {
+    skip: !(
+      settings?.brand?.id &&
+      user?.id &&
+      customer?.customer?.platform_customer
+    ),
+    variables: {
+      brandId: settings?.brand?.id,
+      customerKeycloakId: user?.id,
+    },
+    onSubscriptionData: ({
+      subscriptionData: { data: { carts = [] } = {} } = {},
+    } = {}) => {
+      console.log(carts);
+      if (carts.length) {
+        if (storedCartId) {
+          // merge this cart into the one that has customer info
+          console.log("Merge carts");
+        }
+        //  THIS IS NOT DISPATCHED - CART IS CREATED
+        customerDispatch({
+          type: "CART",
+          payload: carts[0],
+        });
+      } else {
+        if (storedCartId) {
+          // update local cart to store customer info
+          console.log("No existing cart but 1 in local storage");
+          updateCart({
+            variables: {
+              id: storedCartId,
+              _set: {
+                isTest: customer.customer.isTest,
+                //   to be moved to headers
+                customerId: customer.customer.id,
+                paymentMethodId:
+                  customer.customer.platform_customer.defaultPaymentMethodId,
+                stripeCustomerId:
+                  customer.customer.platform_customer.stripeCustomerId,
+                address:
+                  customer.customer.platform_customer.defaultCustomerAddress,
+                ...(customer.customer.platform_customer.firstName && {
+                  customerInfo: {
+                    customerFirstName:
+                      customer.customer.platform_customer.firstName,
+                    customerLastName:
+                      customer.customer.platform_customer.lastName,
+                    customerEmail: customer.customer.platform_customer.email,
+                    customerPhone:
+                      customer.customer.platform_customer.phoneNumber,
+                  },
+                }),
+              },
+            },
+          });
+        }
+      }
+    },
+  });
+
+  useSubscription(gql(SUBSCRIPTION.CART.FETCH), {
+    skip: isAuthenticated || !storedCartId,
+    variables: {
+      id: storedCartId,
+    },
+    onSubscriptionData: ({
+      subscriptionData: { data: { cart = {} } = {} } = {},
+    } = {}) => {
+      customerDispatch({
+        type: "CART",
+        payload: cart,
+      });
+    },
+  });
+
+  console.log(customer?.customer?.id, user?.id);
+  const { refetch: refetchCustomer } = useQuery(gql(CUSTOMER), {
+    skip: !customer?.customer?.id,
+    context: {
+      headers: {
+        "Keycloak-Id": user?.id,
+      },
+    },
+    variables: {
+      //  cannot remove this as this is required in query
+      keycloakId: user?.id,
+    },
+    onCompleted: ({ customer }) => {
+      console.log("Customer: ", customer);
+      customerDispatch({
+        type: "CUSTOMER",
+        payload: customer,
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    fetchPolicy: "cache-and-network",
   });
 
   const addToCart = React.useCallback(
@@ -194,10 +243,11 @@ export const CustomerProvider = ({ children }) => {
             },
             ...(customer.customer.platform_customer.firstName && {
               customerInfo: {
-                firstName: customer.customer.platform_customer.firstName,
-                lastName: customer.customer.platform_customer.lastName,
-                email: customer.customer.platform_customer.email,
-                phoneNumber: customer.customer.platform_customer.phoneNumber,
+                customerFirstName:
+                  customer.customer.platform_customer.firstName,
+                customerLastName: customer.customer.platform_customer.lastName,
+                customerEmail: customer.customer.platform_customer.email,
+                customerPhone: customer.customer.platform_customer.phoneNumber,
               },
             }),
           };
