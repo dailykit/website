@@ -95,7 +95,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   });
 
   const { loading: productsLoading } = useQuery(gql(PRODUCTS), {
-    skip: name !== "collections",
+    skip: !["collections", "search", "categoryProductsPage"].includes(name),
     variables: {
       ids: menu.allProductIds,
     },
@@ -160,14 +160,14 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
-      console.log("checking...", productData);
+      // console.log("checking...", hydratedMenu, menu);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...{ cart: customer.cart },
         ...settings,
         ...(moduleConfig && { config: moduleConfig }),
         ...(name === "collections" && { categories: hydratedMenu }),
         ...(name === "categoryProductsPage" && { categories: hydratedMenu }),
-        ...(name === "search" && { categories: menu.categories }),
+        ...(name === "search" && { categories: hydratedMenu }),
         ...(name === "profile" && {
           customer: {
             ...customer.platform_customer,

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, LoginForm, SignUpForm, Modal } from "..";
 import { SettingsContext, AuthContext } from "../../context";
-import HamburgerButton from "../hamburger";
+import HamburgerButton from "../Hamburger";
 
 import "./NavBar.scss";
 
@@ -38,6 +38,11 @@ const NavBar = ({ open }) => {
         <h3 className="NavBar__brand-name">{settings.brand?.name}</h3>
       </Link>
       <ul className="NavBar__nav-list">
+        <li className="NavBar__nav-list-item">
+          <Link to="/search">
+            <i class="fas fa-search"></i>
+          </Link>
+        </li>
         <li className="NavBar__nav-list-item">
           <Link to="/cart">Cart</Link>
         </li>

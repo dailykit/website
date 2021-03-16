@@ -1,12 +1,12 @@
 import React from "react";
-import { HamburgerButton } from "./styled";
+import "./Hamburger.scss";
 
 export default function Hamburger({ open }) {
   return (
-    <HamburgerButton onClick={open}>
-      <div className="horz-line"></div>
-      <div className="horz-line"></div>
-      <div className="horz-line"></div>
-    </HamburgerButton>
+    <div className="HamburgerButton" onClick={open}>
+      <div className="HamburgerButton__horzline"></div>
+      <div className="HamburgerButton__horzline"></div>
+      <div className="HamburgerButton__horzline"></div>
+    </div>
   );
 }
