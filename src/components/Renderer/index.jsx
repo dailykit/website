@@ -213,7 +213,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
           detail: {
             name,
             element,
-            cartId: customer.cart.id,
+            cartId: customer?.cart?.id,
             moduleId,
             productType: productData.type,
           },

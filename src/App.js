@@ -43,6 +43,7 @@ const App = () => {
             email: user.email,
             keycloakId: user.id,
           });
+          console.log("🚀 ~ file: App.js ~ line 46 ~ data", data);
           if (data.success) {
             const { settings: fetchedSettings, brandId, customer } = data.data;
             settingsDispatch({

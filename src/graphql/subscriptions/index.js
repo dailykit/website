@@ -1,15 +1,52 @@
 export const SUBSCRIPTION = {
+  CART: {
+    FETCH: `
+      subscription Carts($id: Int!) {
+         cart(id: $id) {
+            id
+            cartItemViews(where: { level : { _eq : 1 } }) {
+               id
+               displayName
+               displayImage
+               unitPrice
+               childs {
+                 id
+                 displayName
+                 displayImage
+                 unitPrice
+               }
+            }
+            discount
+            tip
+            totalPrice
+            taxPercent
+            tax
+         }
+      }
+      `,
+  },
   CARTS: {
     FETCH: `
          subscription Carts($brandId: Int!, $customerKeycloakId: String!) {
-            carts(where: { brandId :{_eq :  $brandId }, customerKeycloakId :{_eq :  $customerKeycloakId }, status: { _eq : "PENDING" }, source : { _eq : "a-la-carte" } }) {
+            carts(where: { brandId :{_eq :  $brandId }, customerKeycloakId :{_eq :  $customerKeycloakId }, status: { _eq : "CART_PENDING" }, source : { _eq : "a-la-carte" } }) {
                id
-               cartItemProducts {
+               cartItemViews(where: { level : { _eq : 1 } }) {
                   id
-                  name
-                  image
+                  displayName
+                  displayImage
                   unitPrice
+                  childs {
+                    id
+                    displayName
+                    displayImage
+                    unitPrice
+                  }
                }
+               discount
+               tip
+               totalPrice
+               taxPercent
+               tax
                fulfillmentInfo
                customerInfo
                address

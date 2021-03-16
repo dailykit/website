@@ -209,37 +209,38 @@ const addProduct = async () => {
   const updatedCartItem = getCartItemWithModifiers(cartItem, selectedModifiers);
   console.log(updatedCartItem);
   const productDetails = {
-    cartId: window.cartId,
     cartItem: updatedCartItem,
     quantity,
   };
   console.log("comboComponentSelections", comboComponentSelections);
 
-  const response = await addProductToCart(productDetails);
-  if (response.data) {
-    console.log(response);
-    selectedModifiers = [];
-    document.querySelector("#product-modal .close-btn").click();
-  }
+  const event = new CustomEvent("add-to-cart", {
+    detail: {
+      productDetails,
+    },
+  });
+  window.dispatchEvent(event);
+  selectedModifiers = [];
+  document.querySelector("#product-modal .close-btn").click();
 };
 
 const addCustomizableProduct = async () => {
   const productDetails = {
-    cartId: window.cartId,
     cartItem,
     quantity,
   };
 
-  // const isValid = Object.values(productDetails).every(Boolean);
+  const isValid = [quantity, Object.keys(cartItem).length].every(Boolean);
+  if (!isValid) return;
 
-  if (!isValid) return console.log("Missing values!", productDetails);
-
-  const response = await addProductToCart(productDetails);
-
-  if (response.data) {
-    console.log(response);
-    document.querySelector("#product-modal .close-btn").click();
-  }
+  const event = new CustomEvent("add-to-cart", {
+    detail: {
+      productDetails,
+    },
+  });
+  window.dispatchEvent(event);
+  selectedModifiers = [];
+  document.querySelector("#product-modal .close-btn").click();
 };
 
 const addComboProduct = async () => {
@@ -274,21 +275,21 @@ const addComboProduct = async () => {
   );
 
   const productDetails = {
-    cartId: window.cartId,
     quantity,
     cartItem: preparedCartItem,
   };
 
-  const isValid = Object.values(productDetails).every(Boolean);
+  const isValid = [quantity, Object.keys(cartItem).length].every(Boolean);
+  if (!isValid) return;
 
-  if (!isValid) return console.log("Missing values!", productDetails);
-
-  const response = await addProductToCart(productDetails);
-
-  if (response.data) {
-    console.log(response);
-    document.querySelector("#product-modal .close-btn").click();
-  }
+  const event = new CustomEvent("add-to-cart", {
+    detail: {
+      productDetails,
+    },
+  });
+  window.dispatchEvent(event);
+  selectedModifiers = [];
+  document.querySelector("#product-modal .close-btn").click();
 };
 
 const updateQty = (operation) => {

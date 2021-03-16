@@ -13,7 +13,6 @@ const initialState = {
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case "SEED": {
-      console.log(payload);
       return { ...state, ...payload };
     }
     default:

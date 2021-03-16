@@ -39,11 +39,8 @@ const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers }) => ({
     headers: {
       ...headers,
-      Source: "online-store",
+      Source: "a-la-carte",
       "Brand-Id": 1,
-      "Keycloak-Id": "ab6eb061-6900-46fc-bf1f-ee0bad277124",
-      "Brand-Customer-Id": 268,
-      "Cart-Id": 24,
     },
   }));
   return forward(operation);
@@ -95,5 +92,5 @@ ReactDOM.render(
       </SettingsProvider>
     </AuthProvider>
   </ApolloProvider>,
-  root
+  rootElement
 );
