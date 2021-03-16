@@ -3,27 +3,26 @@ const openProductModal = async (productData, cartId) => {
   console.log(productData, cartId);
   window.cartId = cartId;
   quantity = 1;
+
+  // modal open
   const productModalEl = document.querySelector("#product-modal");
   productModalEl.style.display = "block";
+  document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
-  document.body.style.overflow = "hidden";
-
-  //for buy now button(mobile)
-  // if (document.getElementById("buy-now-btn") && window.screen.width > 769) {
-  //   const buynowBtn = document.getElementById("buy-now-btn");
-  //   buynowBtn.style.display = "none";
-  // }
+  // modal close
   const productModalCloseEl = productModalEl.querySelector(".close-btn");
   productModalCloseEl.addEventListener("click", () => {
     selectedModifiers = [];
     productModalEl.style.display = "none";
-    document.body.style.overflow = "auto";
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
   });
-  //for buy now button(mobile)
-  // if (document.getElementById("buy-now-btn") && window.screen.width > 769) {
-  //   const buynowBtn = document.getElementById("buy-now-btn");
-  //   buynowBtn.style.display = "block";
-  // }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == productModalEl) {
+      productModalEl.style.display = "none";
+    }
+  };
   const body = productModalEl.querySelector(".modal-body");
   const footer = productModalEl.querySelector(".modal-footer");
   const fragment = document.createDocumentFragment();
