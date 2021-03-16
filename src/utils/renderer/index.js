@@ -13,7 +13,11 @@ export const DailyKit = {
     try {
       const source = await (await fileAgent(path)).text();
       const [ext] = path.split(".").slice(-1);
-
+      if (ext === "html") {
+        const html = parseHTML(source, document, true);
+        if (html?.length === 0) throw Error("Empty file!");
+        return html;
+      }
       if (ext === "pug") {
         const compiled = `${pug.compile(source)(data)}`;
         const html = parseHTML(compiled, document, true);
