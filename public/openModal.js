@@ -8,6 +8,7 @@ const openProductModal = async (productData, cartId) => {
   const productModalEl = document.querySelector("#product-modal");
   productModalEl.style.display = "block";
   document.getElementsByTagName("body")[0].style.overflow = "hidden";
+  console.log("productMOdal", productModalEl);
 
   // modal close
   const productModalCloseEl = productModalEl.querySelector(".close-btn");
@@ -21,6 +22,7 @@ const openProductModal = async (productData, cartId) => {
   window.onclick = function (event) {
     if (event.target == productModalEl) {
       productModalEl.style.display = "none";
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
   };
   const body = productModalEl.querySelector(".modal-body");
