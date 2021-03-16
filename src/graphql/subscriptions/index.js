@@ -201,4 +201,34 @@ export const SUBSCRIPTION = {
        `,
     },
   },
+  ORDERS: {
+    FETCH: `
+   subscription Orders($keycloakId: String!, $brandId: Int!) {
+      orders(
+         where: {
+            keycloakId: { _eq: $keycloakId }
+            brandId: { _eq: $brandId }
+         }
+         order_by: { created_at: desc }
+      ) {
+         id
+         deliveryInfo
+         fulfillmentType
+         orderStatus
+         amountPaid
+         currency
+         deliveryPrice
+         transactionId
+         discount
+         tax
+         tip
+         itemTotal
+         created_at
+         orderCart {
+            cartInfo
+         }
+      }
+   }
+`,
+  },
 };

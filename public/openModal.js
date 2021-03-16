@@ -6,14 +6,26 @@ const openProductModal = async (productData, cartId) => {
 
   // modal open
   const productModalEl = document.querySelector("#product-modal");
+  const productModalContent = productModalEl.children[0];
   productModalEl.style.display = "block";
   document.getElementsByTagName("body")[0].style.overflow = "hidden";
-  console.log("productMOdal", productModalEl);
-
+  console.log("productMOdal", productModalContent);
+  if (productModalContent.classList.contains("slidesDown")) {
+    productModalContent.classList.remove("slidesDown");
+    productModalContent.classList.add("slidesUp");
+  } else {
+    productModalContent.classList.add("slidesUp");
+  }
   // modal close
   const productModalCloseEl = productModalEl.querySelector(".close-btn");
   productModalCloseEl.addEventListener("click", () => {
     selectedModifiers = [];
+    if (productModalContent.classList.contains("slidesUp")) {
+      productModalContent.classList.remove("slidesUp");
+      productModalContent.classList.add("slidesDown");
+    } else {
+      productModalContent.classList.add("slidesDown");
+    }
     productModalEl.style.display = "none";
     document.getElementsByTagName("body")[0].style.overflow = "auto";
   });
@@ -21,6 +33,12 @@ const openProductModal = async (productData, cartId) => {
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function (event) {
     if (event.target == productModalEl) {
+      if (productModalContent.classList.contains("slidesUp")) {
+        productModalContent.classList.remove("slidesUp");
+        productModalContent.classList.add("slidesDown");
+      } else {
+        productModalContent.classList.add("slidesDown");
+      }
       productModalEl.style.display = "none";
       document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
