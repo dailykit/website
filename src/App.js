@@ -3,7 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Switch, Route, useLocation } from "react-router-dom";
 
 import { getStoreData } from "./api/store";
-import { Loader, NavBar, Footer } from "./components";
+import { Loader, NavBar, Footer, Sidebar } from "./components";
 import {
   SettingsContext,
   MenuContext,
@@ -116,7 +116,7 @@ const App = () => {
   return (
     <>
       <NavBar open={toggleSidebar} />
-      {/* <Sidebar open={sidebar} close={closeSidebar} /> */}
+      <Sidebar open={sidebar} close={closeSidebar} />
       <div className="App">
         <Switch>
           <Route exact path="/checkout">
