@@ -3,7 +3,13 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery, useSubscription } from "@apollo/client";
 import { MenuContext, SettingsContext, CustomerContext } from "../../context";
 import { DailyKit, fileAgent, removeChildren } from "../../utils";
-import { ORDERS, ALL_COUPONS, CAMPAIGNS, PRODUCTS, CARTS } from "../../graphql";
+import {
+  SUBSCRIPTION,
+  ALL_COUPONS,
+  CAMPAIGNS,
+  PRODUCTS,
+  CARTS,
+} from "../../graphql";
 import { Loader } from "..";
 
 const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
@@ -38,26 +44,26 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     }
   );
 
-  //   const { loading: ordersQueryLoading, error, data } = useSubscription(
-  //     gql(ORDERS),
-  //     {
-  //       variables: {
-  //         brandId: 1,
-  //         keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
-  //       },
-  //       onSubscriptionData: ({
-  //         subscriptionData: { data: { orders = [] } = {} } = {},
-  //       } = {}) => {
-  //         setOrderHistory(orders);
-  //       },
-  //     }
-  //   );
+  const { loading: ordersQueryLoading, error } = useSubscription(
+    gql(SUBSCRIPTION.ORDERS.FETCH),
+    {
+      variables: {
+        brandId: settings?.brand?.id,
+        keycloakId: customer?.customer?.keycloakId,
+      },
+      onSubscriptionData: ({
+        subscriptionData: { data: { orders = [] } = {} } = {},
+      } = {}) => {
+        setOrderHistory(orders);
+      },
+    }
+  );
 
-  //   console.log("Orders error: ", error);
+  console.log("Orders error: ", error);
 
   const { loading: couponLoading } = useQuery(gql(ALL_COUPONS), {
     variables: {
-      brandId: 1,
+      brandId: settings?.brand?.id,
     },
     onCompleted: ({ coupons = [] }) => {
       console.log(coupons);
@@ -70,7 +76,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
 
   const { loading: campaignLoading } = useQuery(gql(CAMPAIGNS), {
     variables: {
-      brandId: 1,
+      brandId: settings?.brand?.id,
     },
     onCompleted: ({ campaigns = [] }) => {
       console.log(campaigns);
@@ -95,7 +101,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   });
 
   const { loading: productsLoading } = useQuery(gql(PRODUCTS), {
-    skip: name !== "collections",
+    skip: !["collections", "search", "categoryProductsPage"].includes(name),
     variables: {
       ids: menu.allProductIds,
     },
@@ -160,14 +166,14 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
       } catch (error) {
         console.log(error);
       }
-      console.log("checking...", productData);
+      console.log("checking...", hydratedMenu, settings);
       const parsedHtml = await DailyKit.engine(moduleFile.path, {
         ...{ cart: customer.cart },
         ...settings,
         ...(moduleConfig && { config: moduleConfig }),
         ...(name === "collections" && { categories: hydratedMenu }),
         ...(name === "categoryProductsPage" && { categories: hydratedMenu }),
-        ...(name === "search" && { categories: menu.categories }),
+        ...(name === "search" && { categories: hydratedMenu }),
         ...(name === "profile" && {
           customer: {
             ...customer.platform_customer,
@@ -226,7 +232,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   if (
     loading ||
     lazyQueryLoading ||
-    //  ordersQueryLoading ||
+    ordersQueryLoading ||
     couponLoading ||
     campaignLoading ||
     productsLoading ||
