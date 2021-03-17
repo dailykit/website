@@ -6,6 +6,7 @@ import { CUSTOMER, MUTATION, SUBSCRIPTION } from "../../graphql";
 import { AuthContext } from "../auth";
 import { SettingsContext } from "../settings";
 import { AppContext } from "../app";
+import { combineCartItems } from "../../utils";
 
 export const CustomerContext = React.createContext();
 
@@ -21,7 +22,8 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case "CART": {
       console.log("🍗 Cart dispatch received!");
-      return { ...state, cart: payload };
+      const combinedCartItems = combineCartItems(payload?.cartItemViews);
+      return { ...state, cart: { ...payload, combinedCartItems } };
     }
     default:
       return state;

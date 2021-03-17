@@ -10,11 +10,20 @@ export const SUBSCRIPTION = {
                displayImage
                unitPrice
                childs {
-                 id
                  displayName
                  displayImage
                  unitPrice
+                 childs {
+                  displayName
+                  displayImage
+                  unitPrice
+                  childs {
+                     displayName
+                     displayImage
+                     unitPrice
+                  }
                }
+            }
             }
             discount
             tip
@@ -42,10 +51,19 @@ export const SUBSCRIPTION = {
                   displayImage
                   unitPrice
                   childs {
-                    id
                     displayName
                     displayImage
                     unitPrice
+                    childs {
+                     displayName
+                     displayImage
+                     unitPrice
+                     childs {
+                        displayName
+                        displayImage
+                        unitPrice
+                      }
+                    }
                   }
                }
                discount
