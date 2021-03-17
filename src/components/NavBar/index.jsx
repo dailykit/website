@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, LoginForm, SignUpForm, Modal } from "..";
 import { SettingsContext, AuthContext } from "../../context";
-import HamburgerButton from "../hamburger";
+// import HamburgerButton from "../hamburger";
 
 import "./NavBar.scss";
 
@@ -27,7 +27,7 @@ const NavBar = ({ open }) => {
   return (
     <nav className="NavBar">
       <div className="NavBar__hamburger-wrapper">
-        <HamburgerButton open={open} />
+        {/* <HamburgerButton open={open} /> */}
       </div>
       <Link className="NavBar__brand" to="/">
         <img

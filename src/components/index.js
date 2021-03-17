@@ -13,7 +13,7 @@ import CardList from "./CardList";
 import AddCard from "./AddCard";
 import AddressList from "./AddressList";
 import AddAddress from "./AddAddress";
-import Sidebar from "./sidebar";
+// import Sidebar from "./sidebar";
 
 export {
   Renderer,
@@ -31,5 +31,5 @@ export {
   AddCard,
   AddressList,
   AddAddress,
-  Sidebar,
+  //   Sidebar,
 };

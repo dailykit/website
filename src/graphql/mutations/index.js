@@ -10,30 +10,27 @@ export const MUTATION = {
             }
          }
          `,
+      UPDATE: `
+        mutation UpdateCartItems($cartIds: [Int!]!, $_set: order_cartItem_set_input) {
+         updateCartItems(where: { cartId : { _in : $cartIds } }, _set : $_set) {
+           affected_rows
+         }
+       }
+        `,
     },
     CREATE: `
       mutation CreateCart($object: order_cart_insert_input!) {
          createCart(object: $object) {
             id
-            cartItemViews(where: { level : { _eq : 1 } }) {
-               id
-               displayName
-               displayImage
-               unitPrice
-               childs {
-                 id
-                 displayName
-                 displayImage
-                 unitPrice
-               }
-            }
-            discount
-            tip
-            totalPrice
-            taxPercent
-            tax
          }
        }
+      `,
+    DELETE: `
+      mutation DeleteCart($id: Int!) {
+         deleteCart(id: $id) {
+          id
+         }
+        }
       `,
     UPDATE: `
       mutation UpdateCart($id: Int!, $_set: order_cart_set_input) {

@@ -21,6 +21,12 @@ export const SUBSCRIPTION = {
             totalPrice
             taxPercent
             tax
+            fulfillmentInfo
+            customerInfo
+            address
+            paymentMethodId
+            customerKeycloakId
+            customerId
          }
       }
       `,
@@ -51,6 +57,8 @@ export const SUBSCRIPTION = {
                customerInfo
                address
                paymentMethodId
+               customerKeycloakId
+               customerId
             }
          }
       `,

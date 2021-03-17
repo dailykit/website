@@ -38,22 +38,22 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
     }
   );
 
-  const { loading: ordersQueryLoading, error, data } = useSubscription(
-    gql(ORDERS),
-    {
-      variables: {
-        brandId: 1,
-        keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
-      },
-      onSubscriptionData: ({
-        subscriptionData: { data: { orders = [] } = {} } = {},
-      } = {}) => {
-        setOrderHistory(orders);
-      },
-    }
-  );
+  //   const { loading: ordersQueryLoading, error, data } = useSubscription(
+  //     gql(ORDERS),
+  //     {
+  //       variables: {
+  //         brandId: 1,
+  //         keycloakId: "33da8306-e5eb-4cb5-bae9-9327fd7700d6",
+  //       },
+  //       onSubscriptionData: ({
+  //         subscriptionData: { data: { orders = [] } = {} } = {},
+  //       } = {}) => {
+  //         setOrderHistory(orders);
+  //       },
+  //     }
+  //   );
 
-  console.log("Orders error: ", error);
+  //   console.log("Orders error: ", error);
 
   const { loading: couponLoading } = useQuery(gql(ALL_COUPONS), {
     variables: {
@@ -226,7 +226,7 @@ const Renderer = ({ moduleId, moduleType, moduleConfig, moduleFile }) => {
   if (
     loading ||
     lazyQueryLoading ||
-    ordersQueryLoading ||
+    //  ordersQueryLoading ||
     couponLoading ||
     campaignLoading ||
     productsLoading ||
