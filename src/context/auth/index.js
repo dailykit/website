@@ -1,6 +1,7 @@
 import React from "react";
 import Keycloak from "keycloak-js";
 import jwt_decode from "jwt-decode";
+import { AppContext } from "../app";
 
 const keycloak = new Keycloak({
   realm: "consumers",
@@ -17,6 +18,8 @@ const keycloak = new Keycloak({
 export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { setHeaders } = React.useContext(AppContext);
+
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [user, setUser] = React.useState({});
   const [isInitialized, setIsInitialized] = React.useState(false);
@@ -54,6 +57,10 @@ export const AuthProvider = ({ children }) => {
           id: decoded["sub"],
         });
         setIsAuthenticated(true);
+        setHeaders((headers) => ({
+          ...headers,
+          "Keycloak-Id": decoded["sub"],
+        }));
       }
     } else {
       setIsAuthenticated(false);
