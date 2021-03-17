@@ -3,12 +3,13 @@ import { gql, useQuery } from "@apollo/client";
 import { Switch, Route, useLocation } from "react-router-dom";
 
 import { getStoreData } from "./api/store";
-import { Loader, NavBar, Footer, Sidebar } from "./components";
+import { Loader, NavBar, Footer } from "./components";
 import {
   SettingsContext,
   MenuContext,
   CustomerContext,
   AuthContext,
+  AppContext,
 } from "./context";
 import { GET_MENU } from "./graphql";
 import useLocationBlocker from "./locationBlocker";
@@ -16,16 +17,13 @@ import { Checkout, Profile } from "./pages";
 import { Main } from "./sections";
 
 import "./styles.scss";
-import { NoFragmentCyclesRule } from "graphql";
 
 const App = () => {
   const { pathname } = useLocation();
+  const { setHeaders } = React.useContext(AppContext);
   const { settings, settingsDispatch } = React.useContext(SettingsContext);
   const { user, isInitialized } = React.useContext(AuthContext);
-  const {
-    customer: { customer = {} },
-    customerDispatch,
-  } = React.useContext(CustomerContext);
+  const { customerDispatch } = React.useContext(CustomerContext);
   const { menuDispatch } = React.useContext(MenuContext);
 
   const date = React.useMemo(() => new Date(Date.now()).toISOString(), []);
@@ -76,6 +74,11 @@ const App = () => {
               type: "CUSTOMER",
               payload: customer,
             });
+            setHeaders((headers) => ({
+              ...headers,
+              "Brand-Id": String(brandId),
+              "Customer-Id": customer ? String(customer.id) : "",
+            }));
           }
         } catch (err) {
           console.log(err);
@@ -113,7 +116,7 @@ const App = () => {
   return (
     <>
       <NavBar open={toggleSidebar} />
-      <Sidebar open={sidebar} close={closeSidebar} />
+      {/* <Sidebar open={sidebar} close={closeSidebar} /> */}
       <div className="App">
         <Switch>
           <Route exact path="/checkout">
