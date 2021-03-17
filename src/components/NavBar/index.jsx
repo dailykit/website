@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button, LoginForm, SignUpForm, Modal } from "..";
 import { SettingsContext, AuthContext } from "../../context";
 import Icon from "../Icon";
-import HamburgerButton from "../Hamburger";
 
 import "./NavBar.scss";
 
