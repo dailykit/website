@@ -31,17 +31,19 @@
     justify-content: center;
     padding: 16px;
     margin: 0;
-    &__nav-list-item {
-      margin: 20px;
-      color: #111;
-      font-size: 18px;
-      text-decoration: none;
-      i {
-        margin-right: 1rem;
-      }
-      &:hover {
-        text-decoration: underline;
-      }
+  }
+
+  &__nav-list__nav-list-item {
+    margin: 20px;
+    color: #111;
+    font-size: 18px;
+    text-decoration: none;
+    i {
+      margin-right: 1rem;
+    }
+    &:hover {
+      color: #0a58ca;
+      text-decoration: underline;
     }
   }
 
@@ -51,12 +53,10 @@
     top: 12px;
     right: 12px;
     cursor: pointer;
-    .close-icon {
+    &__close-icon {
       color: #1d3557;
       font-size: 1.5rem;
-    }
-    &:hover {
-      .close-icon {
+      &:hover {
         color: #e63946;
       }
     }

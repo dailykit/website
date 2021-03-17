@@ -1,7 +1,10 @@
 let quantity = 1;
 let price = 0;
+let previousOptionPrice = 0;
+let previousModifierPrice = 0;
 let cartItem;
 let comboComponentSelections = [];
+let comboModifiersPrice = [];
 let selectedModifiers = [];
 let comboProductDataForCart = {
   productId: null,
@@ -156,6 +159,15 @@ const addModifier = (modifierOption, fn1, fn2) => {
   if (modifierIndex === -1) {
     if (fn1(modifierOption)) {
       selectedModifiers.push(modifierOption.cartItem);
+      console.log(comboComponentIndex);
+      if (comboComponentIndex !== null) {
+        if (comboModifiersPrice[comboComponentIndex] !== undefined) {
+          comboModifiersPrice[comboComponentIndex] += modifierOption.price;
+        } else {
+          comboModifiersPrice[comboComponentIndex] = modifierOption.price;
+        }
+      }
+      previousModifierPrice += modifierOption.price;
       price += modifierOption.price;
       document.querySelector(
         `#modifier-checkbox-${modifierOption.id}`
@@ -168,6 +180,8 @@ const addModifier = (modifierOption, fn1, fn2) => {
     }
   } else {
     selectedModifiers.splice(modifierIndex, 1);
+    comboModifiersPrice[comboComponentIndex] -= modifierOption.price;
+    previousModifierPrice -= modifierOption.price;
     price -= modifierOption.price;
     document.getElementById("price").textContent = `$${price}`;
     document.querySelector(
@@ -313,7 +327,7 @@ const updateQty = (operation) => {
   quantity = updatedQuantity;
 };
 
-const updateQtyWithPrice = (operation, oldPrice) => {
+const updateQtyWithPrice = (operation) => {
   console.log(price);
   let updatedQuantity;
   let updatedPrice;
@@ -338,6 +352,7 @@ const updateQtyWithPrice = (operation, oldPrice) => {
 
 const nextComponent = (componentId, currentIndex) => {
   console.log("Next component called...");
+
   const updatedCartItem = getCartItemWithModifiers(
     cartItem,
     selectedModifiers,
@@ -350,10 +365,27 @@ const nextComponent = (componentId, currentIndex) => {
   };
   console.log("🚀 comboComponentSelections", comboComponentSelections);
   selectedModifiers = [];
+  previousModifierPrice = 0;
+  previousOptionPrice = 0;
   setComboComponentIndex(currentIndex + 1);
 };
 
 const prevComponent = (currentIndex) => {
+  console.log(currentIndex, comboComponentSelections[currentIndex - 1]);
+  const prevsComboComponentData = comboComponentSelections[currentIndex - 1];
+  const comboModifierPrice = comboModifiersPrice[currentIndex - 1] || 0;
+  if (prevsComboComponentData !== null) {
+    price =
+      price -
+      prevsComboComponentData.unitPrice -
+      comboModifierPrice -
+      previousOptionPrice -
+      previousModifierPrice;
+  }
+  selectedModifiers = [];
+  comboModifiersPrice[currentIndex - 1] = 0;
+  previousModifierPrice = 0;
+  previousOptionPrice = 0;
   setComboComponentIndex(currentIndex - 1);
 };
 
@@ -476,7 +508,6 @@ const getProductOption = (options, metaData) => {
     const optionEl = document.createElement("div");
     optionEl.setAttribute("class", "option");
     optionEl.setAttribute("id", option?.id);
-    price = metaData?.price;
     if (option?.id === clickedOptionId) {
       checked = ` <i class="far fa-check-circle"></i>`;
       makeAddOns();
@@ -491,9 +522,19 @@ const getProductOption = (options, metaData) => {
                `;
     optionEl.addEventListener("click", function () {
       clickedOptionId = this.id;
-      price += parseFloat(rootOption?.price);
+      selectedModifiers = [];
+      if ((metaData.type = "combo")) {
+        comboModifiersPrice[comboComponentIndex] = 0;
+      }
+      price =
+        price +
+        parseFloat(
+          rootOption?.price - previousOptionPrice - previousModifierPrice
+        );
+      previousOptionPrice = rootOption?.price;
+      previousModifierPrice = 0;
       quantity = 1;
-      document.getElementById("quantity").textContent = `${quantity}`;
+      document.getElementById("quantity").textContent = quantity;
       // document.getElementById(
       //   `product-price-${metaData.componentId}`
       // ).textContent = `$${metaData?.price?.toFixed(2)}`;
@@ -575,10 +616,10 @@ const getProductOption = (options, metaData) => {
   addToCartBarEl.innerHTML = `
              <div class="add-to-cart-btn">
                     <div class="btn-counter">
-                      <button class="counter-btn" onclick="updateQtyWithPrice('dec', ${price})">&#8722;</button>
+                      <button class="counter-btn" onclick="updateQtyWithPrice('dec')">&#8722;</button>
                       <span class="qty" id="quantity"> ${quantity} </span>
-                      <button class="counter-btn" onclick="updateQtyWithPrice('inc',${price})">+</button>
-                      <span class="price" id="price">$${metaData?.price}  </span>
+                      <button class="counter-btn" onclick="updateQtyWithPrice('inc')">+</button>
+                      <span class="price" id="price">$${price}  </span>
                     </div>
                     <button class="add-to-cart" id="product-cta" onclick="addProduct()" disabled>
                       <span class="add-action" >
@@ -658,9 +699,15 @@ const getCustomizableProductNode = (component, metaData) => {
     customizableComponentDisplayEl.appendChild(displayFragment);
 
     customizableComponentBtnEl.addEventListener("click", function () {
+      price = parseFloat(price - previousModifierPrice - previousOptionPrice);
+      quantity = 1;
+      document.getElementById("quantity").textContent = quantity;
       selectedModifiers = [];
-      console.log(metaData);
-      price = metaData?.price;
+      if ((metaData.type = "combo")) {
+        comboModifiersPrice[comboComponentIndex] = 0;
+      }
+      previousOptionPrice = 0;
+      previousModifierPrice = 0;
       const allBtns = Array.from(
         document.getElementsByClassName("customizable-option-btn")
       );
@@ -706,6 +753,11 @@ const renderProductOption = async (productId, cartId) => {
     const res = response.data;
     if (res && res?.products.length) {
       product = res?.products[0];
+      console.log(
+        "🚀 ~ file: renderProductOption.js ~ line 725 ~ renderProductOption ~ product",
+        product
+      );
+      price = product.price; // setting base price in global price variable
       metaData = {
         price: product.price,
         defaultProductOptionId: product.defaultProductOptionId,
@@ -756,9 +808,12 @@ const renderProductOption = async (productId, cartId) => {
 
         customizableComponentBtnEl.addEventListener("click", function () {
           selectedModifiers = [];
-          console.log(metaData);
-          price = metaData?.price;
+          previousOptionPrice = 0;
+          previousModifierPrice = 0;
+          price = product.price; // setting base price in global price variable
           document.getElementById("price").textContent = `$${price}`;
+          quantity = 1;
+          document.getElementById("quantity").textContent = quantity;
           const allBtns = Array.from(
             document.getElementsByClassName("customizable-option-btn")
           );
