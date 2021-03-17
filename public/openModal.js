@@ -28,6 +28,23 @@ const openProductModal = async (productData, cartId) => {
     }
     productModalEl.style.display = "none";
     document.getElementsByTagName("body")[0].style.overflow = "auto";
+
+    // reseting the global variables
+    quantity = 1;
+    price = 0;
+    previousOptionPrice = 0;
+    previousModifierPrice = 0;
+    cartItem;
+    comboComponentSelections = [];
+    comboModifiersPrice = [];
+    selectedModifiers = [];
+    comboProductDataForCart = {
+      productId: null,
+      lastComponentId: null,
+      productPrice: null,
+      productDiscount: null,
+    };
+    comboComponentIndex = null;
   });
 
   // When the user clicks anywhere outside of the modal, close it
@@ -41,6 +58,22 @@ const openProductModal = async (productData, cartId) => {
       }
       productModalEl.style.display = "none";
       document.getElementsByTagName("body")[0].style.overflow = "auto";
+      // reseting the global variables
+      quantity = 1;
+      price = 0;
+      previousOptionPrice = 0;
+      previousModifierPrice = 0;
+      cartItem;
+      comboComponentSelections = [];
+      comboModifiersPrice = [];
+      selectedModifiers = [];
+      comboProductDataForCart = {
+        productId: null,
+        lastComponentId: null,
+        productPrice: null,
+        productDiscount: null,
+      };
+      comboComponentIndex = null;
     }
   };
   const body = productModalEl.querySelector(".modal-body");

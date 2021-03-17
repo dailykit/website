@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, LoginForm, SignUpForm, Modal } from "..";
 import { SettingsContext, AuthContext } from "../../context";
-import HamburgerButton from "../Hamburger";
+import Icon from "../Icon";
 
 import "./NavBar.scss";
 
@@ -27,7 +27,11 @@ const NavBar = ({ open }) => {
   return (
     <nav className="NavBar">
       <div className="NavBar__hamburger-wrapper">
-        <HamburgerButton open={open} />
+        <Icon
+          name="hamburger"
+          onClick={open}
+          className="NavBar__hamburger-wrapper__hamburger-icon"
+        />
       </div>
       <Link className="NavBar__brand" to="/">
         <img
