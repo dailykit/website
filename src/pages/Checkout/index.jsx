@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-import { AuthContext, CustomerContext } from "../../context";
+import { AuthContext, CustomerContext, SettingsContext } from "../../context";
 import { Button, CartItems, Icon, Modal, ProfileForm } from "../../components";
 
 import Fulfillment from "./Fulfillment";
@@ -12,6 +12,7 @@ import Tip from "./Tip";
 
 const Checkout = () => {
   const { isAuthenticated } = React.useContext(AuthContext);
+  const { settings } = React.useContext(SettingsContext);
   const {
     customer: { cart = {} },
   } = React.useContext(CustomerContext);
@@ -137,9 +138,17 @@ const Checkout = () => {
           <CartItems items={cart?.combinedCartItems || []} />
         </div>
         <div className="Checkout__cart-bottom">
-          <div className="Checkout__cart-coupon">
-            <Coupon />
-          </div>
+          {settings?.rewards?.isCouponsAvailable && (
+            <div className="Checkout__cart-coupon">
+              {isAuthenticated ? (
+                <Coupon />
+              ) : (
+                <small className="Checkout__cart-coupon-message">
+                  Discount coupons are only available when logged in!
+                </small>
+              )}
+            </div>
+          )}
           <p className="Checkout__cart-heading--small">Bill Details</p>
           <div className="Checkout__cart-bill-section">
             <p className="Checkout__cart-bill-type">Item Total</p>
@@ -149,6 +158,12 @@ const Checkout = () => {
             <p className="Checkout__cart-bill-type">Delivery Fee</p>
             <p className="Checkout__cart-bill-value">${cart?.deliveryPrice}</p>
           </div>
+          {!!cart?.discount && (
+            <div className="Checkout__cart-bill-section">
+              <p className="Checkout__cart-bill-type">Discount</p>
+              <p className="Checkout__cart-bill-value">- ${cart?.discount}</p>
+            </div>
+          )}
           <hr className="Checkout__cart-divider" />
           <div className="Checkout__cart-bill-section">
             <p className="Checkout__cart-bill-type">Taxes and Charges</p>

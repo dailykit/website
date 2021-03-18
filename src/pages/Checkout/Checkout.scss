@@ -39,6 +39,11 @@
 
     &-coupon {
       margin-bottom: 8px;
+
+      &-message {
+        font-style: italic;
+        color: var(--color-light-gray);
+      }
     }
 
     &-divider {
