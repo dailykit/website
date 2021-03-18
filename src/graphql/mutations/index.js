@@ -40,6 +40,26 @@ export const MUTATION = {
        }
       `,
   },
+  CART_REWARDS: {
+    CREATE: `
+      mutation CartRewards($objects: [order_cart_rewards_insert_input!]!) {
+         createCartRewards(objects: $objects) {
+            returning {
+               id
+            }
+         }
+      }
+      `,
+    DELETE: `
+      mutation DeleteCartRewards($cartId: Int!) {
+         deleteCartRewards(where: { cartId: { _eq: $cartId } }) {
+            returning {
+               id
+            }
+         }
+      }
+      `,
+  },
   CUSTOMER: {
     UPDATE: `
       mutation platform_updateCustomer(

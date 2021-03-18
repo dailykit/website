@@ -1,0 +1,11 @@
+.Coupon {
+  border: 1px dashed var(--color-primary);
+  border-radius: 2px;
+
+  &__cta {
+    background: var(--color-white);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    width: 100%;
+  }
+}

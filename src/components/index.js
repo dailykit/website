@@ -15,6 +15,7 @@ import AddressList from "./AddressList";
 import AddAddress from "./AddAddress";
 import Sidebar from "./SideBar";
 import CartItems from "./CartItems";
+import CouponList from "./CouponList";
 
 export {
   Renderer,
@@ -34,4 +35,5 @@ export {
   AddAddress,
   Sidebar,
   CartItems,
+  CouponList,
 };
