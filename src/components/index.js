@@ -14,6 +14,7 @@ import AddCard from "./AddCard";
 import AddressList from "./AddressList";
 import AddAddress from "./AddAddress";
 import Sidebar from "./SideBar";
+import CartItems from "./CartItems";
 
 export {
   Renderer,
@@ -32,4 +33,5 @@ export {
   AddressList,
   AddAddress,
   Sidebar,
+  CartItems,
 };

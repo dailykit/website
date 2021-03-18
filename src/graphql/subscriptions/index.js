@@ -27,6 +27,8 @@ export const SUBSCRIPTION = {
             }
             discount
             tip
+            deliveryPrice
+            itemTotal
             totalPrice
             taxPercent
             tax
@@ -68,6 +70,8 @@ export const SUBSCRIPTION = {
                }
                discount
                tip
+               itemTotal
+               deliveryPrice
                totalPrice
                taxPercent
                tax
