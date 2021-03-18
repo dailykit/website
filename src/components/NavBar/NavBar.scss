@@ -15,6 +15,13 @@
     color: var(--color-black);
   }
 
+  &__hamburger-wrapper{
+    &__hamburger-icon{
+      color: #111;
+      font-size: 24px;
+    }
+  }
+
   &__brand {
     display: flex;
     align-items: center;

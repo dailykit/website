@@ -1,7 +1,10 @@
 let quantity = 1;
 let price = 0;
+let previousOptionPrice = 0;
+let previousModifierPrice = 0;
 let cartItem;
 let comboComponentSelections = [];
+let comboModifiersPrice = [];
 let selectedModifiers = [];
 let comboProductDataForCart = {
   productId: null,
@@ -156,6 +159,15 @@ const addModifier = (modifierOption, fn1, fn2) => {
   if (modifierIndex === -1) {
     if (fn1(modifierOption)) {
       selectedModifiers.push(modifierOption.cartItem);
+      console.log(comboComponentIndex);
+      if (comboComponentIndex !== null) {
+        if (comboModifiersPrice[comboComponentIndex] !== undefined) {
+          comboModifiersPrice[comboComponentIndex] += modifierOption.price;
+        } else {
+          comboModifiersPrice[comboComponentIndex] = modifierOption.price;
+        }
+      }
+      previousModifierPrice += modifierOption.price;
       price += modifierOption.price;
       document.querySelector(
         `#modifier-checkbox-${modifierOption.id}`
@@ -168,6 +180,8 @@ const addModifier = (modifierOption, fn1, fn2) => {
     }
   } else {
     selectedModifiers.splice(modifierIndex, 1);
+    comboModifiersPrice[comboComponentIndex] -= modifierOption.price;
+    previousModifierPrice -= modifierOption.price;
     price -= modifierOption.price;
     document.getElementById("price").textContent = `$${price}`;
     document.querySelector(
@@ -313,7 +327,7 @@ const updateQty = (operation) => {
   quantity = updatedQuantity;
 };
 
-const updateQtyWithPrice = (operation, oldPrice) => {
+const updateQtyWithPrice = (operation) => {
   console.log(price);
   let updatedQuantity;
   let updatedPrice;
@@ -338,6 +352,7 @@ const updateQtyWithPrice = (operation, oldPrice) => {
 
 const nextComponent = (componentId, currentIndex) => {
   console.log("Next component called...");
+
   const updatedCartItem = getCartItemWithModifiers(
     cartItem,
     selectedModifiers,
@@ -350,10 +365,27 @@ const nextComponent = (componentId, currentIndex) => {
   };
   console.log("🚀 comboComponentSelections", comboComponentSelections);
   selectedModifiers = [];
+  previousModifierPrice = 0;
+  previousOptionPrice = 0;
   setComboComponentIndex(currentIndex + 1);
 };
 
 const prevComponent = (currentIndex) => {
+  console.log(currentIndex, comboComponentSelections[currentIndex - 1]);
+  const prevsComboComponentData = comboComponentSelections[currentIndex - 1];
+  const comboModifierPrice = comboModifiersPrice[currentIndex - 1] || 0;
+  if (prevsComboComponentData !== null) {
+    price =
+      price -
+      prevsComboComponentData.unitPrice -
+      comboModifierPrice -
+      previousOptionPrice -
+      previousModifierPrice;
+  }
+  selectedModifiers = [];
+  comboModifiersPrice[currentIndex - 1] = 0;
+  previousModifierPrice = 0;
+  previousOptionPrice = 0;
   setComboComponentIndex(currentIndex - 1);
 };
 
@@ -476,7 +508,6 @@ const getProductOption = (options, metaData) => {
     const optionEl = document.createElement("div");
     optionEl.setAttribute("class", "option");
     optionEl.setAttribute("id", option?.id);
-    price = metaData?.price;
     if (option?.id === clickedOptionId) {
       checked = ` <i class="far fa-check-circle"></i>`;
       makeAddOns();
@@ -491,9 +522,19 @@ const getProductOption = (options, metaData) => {
                `;
     optionEl.addEventListener("click", function () {
       clickedOptionId = this.id;
-      price += parseFloat(rootOption?.price);
+      selectedModifiers = [];
+      if ((metaData.type = "combo")) {
+        comboModifiersPrice[comboComponentIndex] = 0;
+      }
+      price =
+        price +
+        parseFloat(
+          rootOption?.price - previousOptionPrice - previousModifierPrice
+        );
+      previousOptionPrice = rootOption?.price;
+      previousModifierPrice = 0;
       quantity = 1;
-      document.getElementById("quantity").textContent = `${quantity}`;
+      document.getElementById("quantity").textContent = quantity;
       // document.getElementById(
       //   `product-price-${metaData.componentId}`
       // ).textContent = `$${metaData?.price?.toFixed(2)}`;
@@ -575,10 +616,10 @@ const getProductOption = (options, metaData) => {
   addToCartBarEl.innerHTML = `
              <div class="add-to-cart-btn">
                     <div class="btn-counter">
-                      <button class="counter-btn" onclick="updateQtyWithPrice('dec', ${price})">&#8722;</button>
+                      <button class="counter-btn" onclick="updateQtyWithPrice('dec')">&#8722;</button>
                       <span class="qty" id="quantity"> ${quantity} </span>
-                      <button class="counter-btn" onclick="updateQtyWithPrice('inc',${price})">+</button>
-                      <span class="price" id="price">$${metaData?.price}  </span>
+                      <button class="counter-btn" onclick="updateQtyWithPrice('inc')">+</button>
+                      <span class="price" id="price">$${price}  </span>
                     </div>
                     <button class="add-to-cart" id="product-cta" onclick="addProduct()" disabled>
                       <span class="add-action" >
@@ -596,32 +637,35 @@ const getProductOption = (options, metaData) => {
 };
 
 const getSimpleProductNode = (component, metaData) => {
-  console.log(component);
   const { id, selectedOptions, linkedProduct: product } = component;
-
+  console.log("looooooook", metaData);
   const node = document.createDocumentFragment();
   if (product.assets && product.assets.images.length) {
     const imageEl = document.createElement("img");
     imageEl.setAttribute("src", product.assets.images[0]);
     imageEl.setAttribute("class", "product-image");
-    node.appendChild(imageEl);
+    console.log(metaData);
+    if (!metaData?.isCustomizableProduct) {
+      node.appendChild(imageEl);
+    }
   }
 
-  const topEl = document.createElement("div");
-  topEl.setAttribute("class", "product-top");
+  // const topEl = document.createElement("div");
+  // topEl.setAttribute("class", "product-top");
 
-  const nameEl = document.createElement("h3");
-  nameEl.setAttribute("class", "product-name");
-  nameEl.textContent = product.name;
-  topEl.appendChild(nameEl);
+  // const nameEl = document.createElement("h3");
+  // nameEl.setAttribute("class", "product-name");
+  // nameEl.textContent = product.name;
+  // topEl.appendChild(nameEl);
 
   // const priceEl = document.createElement("h4");
   // priceEl.setAttribute("class", "product-price");
   // priceEl.setAttribute("id", `product-price-${id}`);
   // priceEl.textContent = `$${metaData.price}`;
   // topEl.appendChild(priceEl);
-
-  node.appendChild(topEl);
+  // if (metaData?.isCustomizableProduct) {
+  //   node.appendChild(topEl);
+  // }
   const { optionsWrapperEl, addToCartBarEl } = getProductOption(
     selectedOptions,
     { ...metaData, componentId: id }
@@ -634,52 +678,84 @@ const getSimpleProductNode = (component, metaData) => {
 
 const getCustomizableProductNode = (component, metaData) => {
   const { id, linkedProduct: product } = component;
-
+  console.log("custommmmmmmm", product);
   const node = document.createDocumentFragment();
   let result = {};
-  product.customizableProductComponents.forEach((customizableComponent) => {
-    const customizableComponentEl = document.createElement("div");
-    customizableComponentEl.setAttribute("class", "customizable-option");
+  let isActiveClass;
+  product.customizableProductComponents.forEach(
+    (customizableComponent, index) => {
+      console.log("Index:", index);
+      if (index === 0) {
+        isActiveClass = "active";
+      } else {
+        isActiveClass = "";
+      }
+      const customizableComponentEl = document.createElement("div");
+      customizableComponentEl.setAttribute("class", "customizable-option");
 
-    const customizableComponentBtnEl = document.createElement("button");
-    customizableComponentBtnEl.setAttribute("class", "customizable-option-btn");
-    customizableComponentBtnEl.textContent =
-      customizableComponent.linkedProduct.name;
-
-    const customizableComponentDisplayEl = document.createElement("div");
-    customizableComponentDisplayEl.setAttribute(
-      "class",
-      "customizable-option-display"
-    );
-    const { node: displayFragment, addToCartBarEl } = getSimpleProductNode(
-      customizableComponent,
-      metaData
-    );
-    customizableComponentDisplayEl.appendChild(displayFragment);
-
-    customizableComponentBtnEl.addEventListener("click", function () {
-      selectedModifiers = [];
-      console.log(metaData);
-      price = metaData?.price;
-      const allBtns = Array.from(
-        document.getElementsByClassName("customizable-option-btn")
+      const customizableComponentBtnEl = document.createElement("button");
+      customizableComponentBtnEl.setAttribute(
+        "class",
+        `customizable-option-btn ${isActiveClass}`
       );
-      allBtns.forEach((display) => display.classList.remove("active"));
-      const allDisplays = Array.from(
-        document.getElementsByClassName("customizable-option-display")
+      // customizable component button style
+      const buttonPreviewWrapperEl = document.createElement("div");
+      buttonPreviewWrapperEl.setAttribute("class", "buttonPreviewWrapper");
+      const buttonPreviewImageEl = document.createElement("div");
+      buttonPreviewImageEl.setAttribute("class", "buttonPreview");
+      buttonPreviewImageEl.style.backgroundImage = `url(${customizableComponent.linkedProduct.assets.images[0]})`;
+      const previewLinkedProductNameEl = document.createElement("div");
+      previewLinkedProductNameEl.setAttribute("class", "previewName");
+      previewLinkedProductNameEl.textContent =
+        customizableComponent.linkedProduct.name;
+      buttonPreviewWrapperEl.appendChild(buttonPreviewImageEl);
+      buttonPreviewWrapperEl.appendChild(previewLinkedProductNameEl);
+      customizableComponentBtnEl.appendChild(buttonPreviewWrapperEl);
+
+      const customizableComponentDisplayEl = document.createElement("div");
+      customizableComponentDisplayEl.setAttribute(
+        "class",
+        `customizable-option-display ${isActiveClass}`
       );
-      allDisplays.forEach((display) => display.classList.remove("active"));
+      const { node: displayFragment, addToCartBarEl } = getSimpleProductNode(
+        customizableComponent,
+        {
+          ...metaData,
+          isCustomizableProduct: true,
+        }
+      );
+      customizableComponentDisplayEl.appendChild(displayFragment);
 
-      this.nextSibling.classList.add("active");
-      this.classList.add("active");
-    });
+      customizableComponentBtnEl.addEventListener("click", function () {
+        price = parseFloat(price - previousModifierPrice - previousOptionPrice);
+        quantity = 1;
+        document.getElementById("quantity").textContent = quantity;
+        selectedModifiers = [];
+        if ((metaData.type = "combo")) {
+          comboModifiersPrice[comboComponentIndex] = 0;
+        }
+        previousOptionPrice = 0;
+        previousModifierPrice = 0;
+        const allBtns = Array.from(
+          document.getElementsByClassName("customizable-option-btn")
+        );
+        allBtns.forEach((display) => display.classList.remove("active"));
+        const allDisplays = Array.from(
+          document.getElementsByClassName("customizable-option-display")
+        );
+        allDisplays.forEach((display) => display.classList.remove("active"));
 
-    customizableComponentEl.appendChild(customizableComponentBtnEl);
-    customizableComponentEl.appendChild(customizableComponentDisplayEl);
+        this.nextSibling.classList.add("active");
+        this.classList.add("active");
+      });
 
-    node.appendChild(customizableComponentEl);
-    result = { ...result, addToCartBarEl };
-  });
+      customizableComponentEl.appendChild(customizableComponentBtnEl);
+      customizableComponentEl.appendChild(customizableComponentDisplayEl);
+
+      node.appendChild(customizableComponentEl);
+      result = { ...result, addToCartBarEl };
+    }
+  );
   return { node, ...result };
 };
 
@@ -706,12 +782,18 @@ const renderProductOption = async (productId, cartId) => {
     const res = response.data;
     if (res && res?.products.length) {
       product = res?.products[0];
+      console.log(
+        "🚀 ~ file: renderProductOption.js ~ line 725 ~ renderProductOption ~ product",
+        product
+      );
+      price = product.price; // setting base price in global price variable
       metaData = {
         price: product.price,
         defaultProductOptionId: product.defaultProductOptionId,
         discount: product.discount,
         componentId: product.id,
         type: product.type,
+        isCustomizableProduct: false,
       };
     }
   }
@@ -730,57 +812,87 @@ const renderProductOption = async (productId, cartId) => {
       break;
     }
     case "customizable": {
-      product.customizableProductComponents.forEach((customizableComponent) => {
-        const customizableComponentEl = document.createElement("div");
-        customizableComponentEl.setAttribute("class", "customizable-option");
+      product.customizableProductComponents.forEach(
+        (customizableComponent, index) => {
+          // display default or first option
+          let isActiveClass;
+          if (product?.defaultProductOptionId === customizableComponent?.id) {
+            isActiveClass = "active";
+          } else if (index === 0) {
+            isActiveClass = "active";
+          }
 
-        const customizableComponentBtnEl = document.createElement("button");
-        customizableComponentBtnEl.setAttribute(
-          "class",
-          "customizable-option-btn"
-        );
-        customizableComponentBtnEl.textContent =
-          customizableComponent.linkedProduct.name;
+          const customizableComponentEl = document.createElement("div");
+          customizableComponentEl.setAttribute("class", "customizable-option");
 
-        const customizableComponentDisplayEl = document.createElement("div");
-        customizableComponentDisplayEl.setAttribute(
-          "class",
-          "customizable-option-display"
-        );
-
-        const { node: displayFragment, addToCartBarEl } = getSimpleProductNode(
-          customizableComponent,
-          metaData
-        );
-        customizableComponentDisplayEl.appendChild(displayFragment);
-
-        customizableComponentBtnEl.addEventListener("click", function () {
-          selectedModifiers = [];
-          console.log(metaData);
-          price = metaData?.price;
-          document.getElementById("price").textContent = `$${price}`;
-          const allBtns = Array.from(
-            document.getElementsByClassName("customizable-option-btn")
+          const customizableComponentBtnEl = document.createElement("button");
+          customizableComponentBtnEl.setAttribute(
+            "class",
+            `customizable-option-btn ${isActiveClass}`
           );
-          allBtns.forEach((display) => display.classList.remove("active"));
-          const allDisplays = Array.from(
-            document.getElementsByClassName("customizable-option-display")
+          // customizable component button style
+          const buttonPreviewWrapperEl = document.createElement("div");
+          buttonPreviewWrapperEl.setAttribute("class", "buttonPreviewWrapper");
+          const buttonPreviewImageEl = document.createElement("div");
+          buttonPreviewImageEl.setAttribute("class", "buttonPreview");
+          buttonPreviewImageEl.style.backgroundImage = `url(${customizableComponent.linkedProduct.assets.images[0]})`;
+          const previewLinkedProductNameEl = document.createElement("div");
+          previewLinkedProductNameEl.setAttribute("class", "previewName");
+          previewLinkedProductNameEl.textContent =
+            customizableComponent.linkedProduct.name;
+          buttonPreviewWrapperEl.appendChild(buttonPreviewImageEl);
+          buttonPreviewWrapperEl.appendChild(previewLinkedProductNameEl);
+          customizableComponentBtnEl.appendChild(buttonPreviewWrapperEl);
+
+          const customizableComponentDisplayEl = document.createElement("div");
+          customizableComponentDisplayEl.setAttribute(
+            "class",
+            `customizable-option-display ${isActiveClass}`
           );
-          allDisplays.forEach((display) => display.classList.remove("active"));
 
-          this.nextSibling.classList.add("active");
-          this.classList.add("active");
-          customizableComponentId = customizableComponent.id;
-        });
+          const {
+            node: displayFragment,
+            addToCartBarEl,
+          } = getSimpleProductNode(customizableComponent, {
+            ...metaData,
+            isCustomizableProduct: true,
+          });
 
-        customizableComponentEl.appendChild(customizableComponentBtnEl);
-        customizableComponentEl.appendChild(customizableComponentDisplayEl);
-        returnResult = {
-          ...returnResult,
-          productOpt: [...returnResult.productOpt, customizableComponentEl],
-          footerContent: [addToCartBarEl],
-        };
-      });
+          customizableComponentDisplayEl.appendChild(displayFragment);
+
+          customizableComponentBtnEl.addEventListener("click", function () {
+            selectedModifiers = [];
+            previousOptionPrice = 0;
+            previousModifierPrice = 0;
+            price = product.price; // setting base price in global price variable
+            document.getElementById("price").textContent = `$${price}`;
+            quantity = 1;
+            document.getElementById("quantity").textContent = quantity;
+            const allBtns = Array.from(
+              document.getElementsByClassName("customizable-option-btn")
+            );
+            allBtns.forEach((display) => display.classList.remove("active"));
+            const allDisplays = Array.from(
+              document.getElementsByClassName("customizable-option-display")
+            );
+            allDisplays.forEach((display) =>
+              display.classList.remove("active")
+            );
+
+            this.nextSibling.classList.add("active");
+            this.classList.add("active");
+            customizableComponentId = customizableComponent.id;
+          });
+
+          customizableComponentEl.appendChild(customizableComponentBtnEl);
+          customizableComponentEl.appendChild(customizableComponentDisplayEl);
+          returnResult = {
+            ...returnResult,
+            productOpt: [...returnResult.productOpt, customizableComponentEl],
+            footerContent: [addToCartBarEl],
+          };
+        }
+      );
       comboComponentIndex = null;
       break;
     }

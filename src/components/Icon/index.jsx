@@ -13,17 +13,19 @@ const Icon = ({ name, className, ...props }) => {
       case "chevron-up":
         return <i class="fas fa-chevron-up" />;
       case "circle-check":
-        return <i class="far fa-check-circle" />;
+        return <i className="far fa-check-circle" />;
       case "close":
         return <i class="far fa-times-circle" />;
       case "email":
-        return <i class="fas fa-envelope" />;
+        return <i className="fas fa-envelope" />;
       case "home":
-        return <i class="fas fa-home" />;
+        return <i className="fas fa-home" />;
       case "card":
-        return <i class="fas fa-credit-card" />;
+        return <i className="fas fa-credit-card" />;
       case "phone":
-        return <i class="fas fa-phone" />;
+        return <i className="fas fa-phone" />;
+      case "hamburger":
+        return <i className="fas fa-bars" />;
       default:
         return null;
     }
