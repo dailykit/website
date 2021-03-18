@@ -1,14 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button, LoginForm, SignUpForm, Modal } from "..";
-import { SettingsContext, AuthContext } from "../../context";
-import Icon from "../Icon";
+import { Button, LoginForm, SignUpForm, Modal, Icon } from "..";
+import { SettingsContext, AuthContext, CustomerContext } from "../../context";
 
 import "./NavBar.scss";
 
 const NavBar = ({ open }) => {
   const { settings } = React.useContext(SettingsContext);
   const { isAuthenticated, logout } = React.useContext(AuthContext);
+  const {
+    customer: { cart = {} },
+  } = React.useContext(CustomerContext);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = React.useState(false);
@@ -48,6 +50,14 @@ const NavBar = ({ open }) => {
           </Link>
         </li>
         <li className="NavBar__nav-list-item">
+          {!!cart?.combinedCartItems?.length && (
+            <span className="NavBar__nav-list-item-badge">
+              {cart.combinedCartItems.reduce(
+                (acc, item) => acc + item.ids.length,
+                0
+              )}
+            </span>
+          )}
           <Link to="/cart">Cart</Link>
         </li>
         {isAuthenticated && (

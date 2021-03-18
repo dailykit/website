@@ -27,6 +27,8 @@ export const SUBSCRIPTION = {
             }
             discount
             tip
+            deliveryPrice
+            itemTotal
             totalPrice
             taxPercent
             tax
@@ -36,6 +38,24 @@ export const SUBSCRIPTION = {
             paymentMethodId
             customerKeycloakId
             customerId
+         }
+      }
+      `,
+  },
+  CART_REWARDS: {
+    FETCH: `
+      subscription CartRewards($cartId: Int!, $params: jsonb) {
+         cartRewards(where: { cartId: { _eq: $cartId } }) {
+            reward {
+               id
+               coupon {
+                  id
+                  code
+               }
+               condition {
+                  isValid(args: { params: $params })
+               }
+            }
          }
       }
       `,
@@ -68,6 +88,8 @@ export const SUBSCRIPTION = {
                }
                discount
                tip
+               itemTotal
+               deliveryPrice
                totalPrice
                taxPercent
                tax
@@ -79,6 +101,44 @@ export const SUBSCRIPTION = {
                customerId
             }
          }
+      `,
+  },
+  COUPONS: {
+    FETCH: `
+      subscription Coupons($params: jsonb, $brandId: Int!) {
+         coupons(
+            where: {
+               isActive: { _eq: true }
+               isArchived: { _eq: false }
+               brands: { brandId: { _eq: $brandId }, isActive: { _eq: true } }
+            }
+         ) {
+            id
+            code
+            isRewardMulti
+            rewards(order_by: { priority: desc }) {
+               id
+               condition {
+                  isValid(args: { params: $params })
+               }
+            }
+            metaDetails
+            visibilityCondition {
+               isValid(args: { params: $params })
+            }
+         }
+      }
+      `,
+    FETCH_TEMP: `
+      subscription Coupons {
+         coupons
+          {
+            id
+            code
+            metaDetails
+            isRewardMulti
+         }
+      }
       `,
   },
   FULFILLMENT: {

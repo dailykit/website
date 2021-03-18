@@ -330,7 +330,7 @@ const Fulfillment = () => {
 
   return (
     <div className="Fulfillment">
-      {cart.fulfillmentInfo && !isEditing ? (
+      {cart?.fulfillmentInfo && !isEditing ? (
         <div className="Fulfillment__details">
           <div className="Fulfillment__details-wrapper">
             <div className="Fulfillment__details-type">

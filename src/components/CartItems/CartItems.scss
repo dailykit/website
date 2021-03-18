@@ -1,0 +1,30 @@
+.CartItems {
+  padding: 16px;
+
+  &__item {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: 60px auto 40px 60px;
+    margin-bottom: 8px;
+    align-items: center;
+
+    &-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
+    &-name {
+      font-size: 14px;
+    }
+
+    &-price {
+      text-align: right;
+    }
+
+    &-quantity {
+      color: var(--color-light-gray);
+    }
+  }
+}

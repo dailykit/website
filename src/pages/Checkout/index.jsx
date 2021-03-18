@@ -1,20 +1,32 @@
 import React from "react";
+import { useHistory } from "react-router";
 import clsx from "clsx";
 
-import { AuthContext, CustomerContext } from "../../context";
-import { Button, Icon, Modal, ProfileForm } from "../../components";
+import { AuthContext, CustomerContext, SettingsContext } from "../../context";
+import { Button, CartItems, Icon, Modal, ProfileForm } from "../../components";
+import { formatPrice } from "../../utils";
 
 import Fulfillment from "./Fulfillment";
 import PaymentCardTile from "./PaymentCardTile";
+import Coupon from "./Coupon";
+import Tip from "./Tip";
 import "./Checkout.scss";
 
 const Checkout = () => {
+  const history = useHistory();
   const { isAuthenticated } = React.useContext(AuthContext);
+  const { settings } = React.useContext(SettingsContext);
   const {
     customer: { cart = {} },
   } = React.useContext(CustomerContext);
 
   const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cart || !Object.keys(cart).length) {
+      history.replace("/cart");
+    }
+  }, [cart]);
 
   const renderLeft = () => {
     return (
@@ -98,7 +110,7 @@ const Checkout = () => {
           >
             Payment
           </h2>
-          {isAuthenticated && cart.fulfillmentInfo && (
+          {isAuthenticated && cart?.fulfillmentInfo && (
             <div className="Checkout__details-card-body">
               {process.env.REACT_APP_CURRENCY === "INR" ? (
                 <div id="payment" />
@@ -115,8 +127,75 @@ const Checkout = () => {
     );
   };
 
+  const renderTotalItems = () => {
+    const count = cart?.combinedCartItems.reduce(
+      (acc, item) => acc + item.ids.length,
+      0
+    );
+
+    return count > 1 ? `${count} items` : `${count} item`;
+  };
+
   const renderRight = () => {
-    return <p>Cart</p>;
+    return (
+      <div className="Checkout__cart">
+        <div className="Checkout__cart-header">
+          <p>Total</p>
+          <p>{renderTotalItems()}</p>
+        </div>
+        <div className="Checkout__cart-top">
+          <CartItems items={cart?.combinedCartItems || []} />
+        </div>
+        <div className="Checkout__cart-bottom">
+          {settings?.rewards?.isCouponsAvailable && (
+            <div className="Checkout__cart-coupon">
+              {isAuthenticated ? (
+                <Coupon />
+              ) : (
+                <small className="Checkout__cart-coupon-message">
+                  Discount coupons are only available when logged in!
+                </small>
+              )}
+            </div>
+          )}
+          <p className="Checkout__cart-heading--small">Bill Details</p>
+          <div className="Checkout__cart-bill-section">
+            <p className="Checkout__cart-bill-type">Item Total</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.itemTotal)}
+            </p>
+          </div>
+          <div className="Checkout__cart-bill-section">
+            <p className="Checkout__cart-bill-type">Delivery Fee</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.deliveryPrice)}
+            </p>
+          </div>
+          {!!cart?.discount && (
+            <div className="Checkout__cart-bill-section">
+              <p className="Checkout__cart-bill-type">Discount</p>
+              <p className="Checkout__cart-bill-value">
+                - {formatPrice(cart?.discount)}
+              </p>
+            </div>
+          )}
+          <hr className="Checkout__cart-divider" />
+          <div className="Checkout__cart-bill-section">
+            <p className="Checkout__cart-bill-type">Taxes and Charges</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.tax)}
+            </p>
+          </div>
+          <div className="Checkout__cart-tip">
+            <Tip />
+          </div>
+        </div>
+        <div className="Checkout__cart-footer">
+          <p>To Pay</p>
+          <p>{formatPrice(cart?.totalPrice)}</p>
+        </div>
+      </div>
+    );
   };
 
   return (

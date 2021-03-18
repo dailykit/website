@@ -8,10 +8,14 @@ const Icon = ({ name, className, ...props }) => {
     switch (name) {
       case "edit":
         return <i className="far fa-edit" />;
+      case "chevron-down":
+        return <i class="fas fa-chevron-down" />;
+      case "chevron-up":
+        return <i class="fas fa-chevron-up" />;
       case "circle-check":
         return <i className="far fa-check-circle" />;
       case "close":
-        return <i className="far fa-times-circle"></i>;
+        return <i class="far fa-times-circle" />;
       case "email":
         return <i className="fas fa-envelope" />;
       case "home":

@@ -44,8 +44,27 @@
     align-items: center;
     list-style-type: none;
 
-    &-item:not(:last-child) {
-      margin-right: 32px;
+    &-item {
+      position: relative;
+
+      &:not(:last-child) {
+        margin-right: 32px;
+      }
+
+      &-badge {
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        background: var(--color-primary);
+        color: var(--color-white);
+        width: 20px;
+        height: 20px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        padding: 2px;
+        font-size: 12px;
+      }
     }
 
     &:hover {
@@ -70,29 +89,28 @@
     }
   }
 
-  &__spacer{
+  &__spacer {
     display: flex;
-    flex:1;
+    flex: 1;
   }
-
 
   @media (min-width: 769px) {
-    &__hamburger-wrapper{
-    display: none;
+    &__hamburger-wrapper {
+      display: none;
     }
-    &__spacer{
+    &__spacer {
       display: none;
     }
   }
-  @media (max-width:769px){
-    &__nav-list{
+  @media (max-width: 769px) {
+    &__nav-list {
       display: none;
     }
-    &__nav-list-mv{
-      display:flex;
+    &__nav-list-mv {
+      display: flex;
     }
     justify-content: flex-start;
-    &__brand{
+    &__brand {
       margin-left: 16px;
     }
   }
