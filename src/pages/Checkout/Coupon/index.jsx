@@ -1,9 +1,14 @@
 import React from "react";
+import { CustomerContext } from "../../../context";
 
 import "./Coupon.scss";
 
 const Coupon = () => {
-  return <div className="Coupon">Coupon</div>;
+  const {
+    customer: { cart = {} },
+  } = React.useContext(CustomerContext);
+
+  return <div className="Coupon"></div>;
 };
 
 export default Coupon;
