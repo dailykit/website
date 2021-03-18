@@ -1,6 +1,8 @@
 import React from "react";
 import clsx from "clsx";
 
+import { formatPrice } from "../../utils";
+
 import "./CartItems.scss";
 
 const CartItems = ({ className, items }) => {
@@ -16,7 +18,7 @@ const CartItems = ({ className, items }) => {
           <h4 className="CartItems__item-name"> {item.displayName} </h4>
           <p className="CartItems__item-quantity"> {item.ids.length} </p>
           <p className="CartItems__item-price">
-            ${item.ids.length * item.unitPrice}
+            {formatPrice(item.ids.length * item.unitPrice)}
           </p>
         </div>
       ))}

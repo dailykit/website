@@ -3,12 +3,13 @@ import clsx from "clsx";
 
 import { AuthContext, CustomerContext, SettingsContext } from "../../context";
 import { Button, CartItems, Icon, Modal, ProfileForm } from "../../components";
+import { formatPrice } from "../../utils";
 
 import Fulfillment from "./Fulfillment";
 import PaymentCardTile from "./PaymentCardTile";
-import "./Checkout.scss";
 import Coupon from "./Coupon";
 import Tip from "./Tip";
+import "./Checkout.scss";
 
 const Checkout = () => {
   const { isAuthenticated } = React.useContext(AuthContext);
@@ -152,22 +153,30 @@ const Checkout = () => {
           <p className="Checkout__cart-heading--small">Bill Details</p>
           <div className="Checkout__cart-bill-section">
             <p className="Checkout__cart-bill-type">Item Total</p>
-            <p className="Checkout__cart-bill-value">${cart?.itemTotal}</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.itemTotal)}
+            </p>
           </div>
           <div className="Checkout__cart-bill-section">
             <p className="Checkout__cart-bill-type">Delivery Fee</p>
-            <p className="Checkout__cart-bill-value">${cart?.deliveryPrice}</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.deliveryPrice)}
+            </p>
           </div>
           {!!cart?.discount && (
             <div className="Checkout__cart-bill-section">
               <p className="Checkout__cart-bill-type">Discount</p>
-              <p className="Checkout__cart-bill-value">- ${cart?.discount}</p>
+              <p className="Checkout__cart-bill-value">
+                - {formatPrice(cart?.discount)}
+              </p>
             </div>
           )}
           <hr className="Checkout__cart-divider" />
           <div className="Checkout__cart-bill-section">
             <p className="Checkout__cart-bill-type">Taxes and Charges</p>
-            <p className="Checkout__cart-bill-value">${cart?.tax}</p>
+            <p className="Checkout__cart-bill-value">
+              {formatPrice(cart?.tax)}
+            </p>
           </div>
           <div className="Checkout__cart-tip">
             <Tip />
@@ -175,7 +184,7 @@ const Checkout = () => {
         </div>
         <div className="Checkout__cart-footer">
           <p>To Pay</p>
-          <p>${cart?.totalPrice}</p>
+          <p>{formatPrice(cart?.totalPrice)}</p>
         </div>
       </div>
     );

@@ -56,3 +56,10 @@ export const combineCartItems = (cartItems) => {
 
   return combinedItems;
 };
+
+export const formatPrice = (price) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: process.env.REACT_APP_CURRENCY,
+  }).format(price || 0);
+};

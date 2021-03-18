@@ -1,11 +1,13 @@
 import React from "react";
+import { toast } from "react-toastify";
+import { gql, useMutation } from "@apollo/client";
+
 import { CustomerContext } from "../../../context";
 import { Button, Icon, Input } from "../../../components";
+import { MUTATION } from "../../../graphql";
+import { formatPrice } from "../../../utils";
 
 import "./Tip.scss";
-import { gql, useMutation } from "@apollo/client";
-import { MUTATION } from "../../../graphql";
-import { toast } from "react-toastify";
 
 const Tip = () => {
   const {
@@ -77,7 +79,7 @@ const Tip = () => {
               name="close"
               onClick={() => handleAddTip(0)}
             />
-            ${cart.tip.toFixed(2)}
+            {formatPrice(cart.tip)}
           </div>
         </div>
       ) : (
