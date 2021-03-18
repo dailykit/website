@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router";
 import clsx from "clsx";
 
 import { AuthContext, CustomerContext, SettingsContext } from "../../context";
@@ -12,6 +13,7 @@ import Tip from "./Tip";
 import "./Checkout.scss";
 
 const Checkout = () => {
+  const history = useHistory();
   const { isAuthenticated } = React.useContext(AuthContext);
   const { settings } = React.useContext(SettingsContext);
   const {
@@ -19,6 +21,12 @@ const Checkout = () => {
   } = React.useContext(CustomerContext);
 
   const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cart || !Object.keys(cart).length) {
+      history.replace("/cart");
+    }
+  }, [cart]);
 
   const renderLeft = () => {
     return (
