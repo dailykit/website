@@ -33,7 +33,7 @@
     "subscriptions-transport-ws": "^0.9.18"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "SKIP_PREFLIGHT_CHECK=true && chmod +x ./env.sh && ./env.sh && cp env-config.js ./public && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
