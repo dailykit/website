@@ -12,7 +12,6 @@ public/client.js
 node_modules
 bower_components
 
-.env
 
 *.sublime*
 
@@ -27,3 +26,4 @@ sketch
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+env-config.js
