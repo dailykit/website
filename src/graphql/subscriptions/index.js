@@ -13,11 +13,16 @@ export const SUBSCRIPTION = {
                  displayName
                  displayImage
                  unitPrice
-                 childs {
+                 modifiers: childs(where: { modifierOptionId : { _is_null: false } }) {
                   displayName
                   displayImage
                   unitPrice
-                  childs {
+                 }
+                 childs(where: { modifierOptionId : { _is_null: true } }) {
+                  displayName
+                  displayImage
+                  unitPrice
+                  modifiers: childs(where: { modifierOptionId : { _is_null: false } }) {
                      displayName
                      displayImage
                      unitPrice

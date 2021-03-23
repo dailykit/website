@@ -18,6 +18,26 @@ const resetStore = () => {
   cartItem = undefined;
 };
 
+const decreaseQty = (...ids) => {
+  const event = new CustomEvent("product-quantity", {
+    detail: {
+      operation: "decrease",
+      ids,
+    },
+  });
+  window.dispatchEvent(event);
+};
+
+const increaseQty = (...ids) => {
+  const event = new CustomEvent("product-quantity", {
+    detail: {
+      operation: "increase",
+      ids,
+    },
+  });
+  window.dispatchEvent(event);
+};
+
 const getCartItemWithModifiers = (
   cartItemInput,
   selectedModifiersInput,
@@ -73,9 +93,6 @@ const getCartItemWithModifiers = (
   }
   return cartItemInput;
 };
-
-// 1. selectedModifiers should satisfy isRequired for all the categories
-// 2. limits of multiple
 
 const getModifiersValidator = (modifier) => {
   const checks = {};
@@ -222,6 +239,7 @@ const addProduct = async () => {
   if (!isValid) return;
   const updatedCartItem = getCartItemWithModifiers(cartItem, selectedModifiers);
   console.log(updatedCartItem);
+  //   return;
   const productDetails = {
     cartItem: updatedCartItem,
     quantity,

@@ -196,7 +196,7 @@ query Products($ids: [Int!]!) {
             quantity
             image
             isActive
-            supplierItemId
+            simpleRecipeYieldId
             sachetItemId
             ingredientSachetId
             cartItem
@@ -228,7 +228,7 @@ query Products($ids: [Int!]!) {
                 quantity
                 image
                 isActive
-                supplierItemId
+                simpleRecipeYieldId
                 sachetItemId
                 ingredientSachetId
                 cartItem
@@ -272,7 +272,7 @@ query Products($ids: [Int!]!) {
                 quantity
                 image
                 isActive
-                supplierItemId
+                simpleRecipeYieldId
                 sachetItemId
                 ingredientSachetId
                 cartItem
@@ -313,7 +313,7 @@ query Products($ids: [Int!]!) {
                     quantity
                     image
                     isActive
-                    supplierItemId
+                    simpleRecipeYieldId
                     sachetItemId
                     ingredientSachetId
                     cartItem

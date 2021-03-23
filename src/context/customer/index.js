@@ -1,6 +1,12 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import {
+  gql,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useSubscription,
+} from "@apollo/client";
 
 import { CUSTOMER, MUTATION, SUBSCRIPTION } from "../../graphql";
 import { AuthContext } from "../auth";
@@ -111,6 +117,25 @@ export const CustomerProvider = ({ children }) => {
       toast.error("Failed to update cart items!");
     },
   });
+
+  const [deleteCartItem] = useMutation(gql(MUTATION.CART.CART_ITEMS.DELETE), {
+    onCompleted: () => toast("Item removed!"),
+    onError: (error) => {
+      console.log(error);
+      toast.error("Failed to update cart items!");
+    },
+  });
+
+  const [duplicateCartItem] = useLazyQuery(
+    gql(MUTATION.CART.CART_ITEMS.DUPLICATE),
+    {
+      onError: (error) => {
+        console.log(error);
+        toast.error("Failed to update cart items!");
+      },
+      fetchPolicy: "network-only",
+    }
+  );
 
   const [createCartItems] = useMutation(gql(MUTATION.CART.CART_ITEMS.CREATE), {
     onCompleted: () => {
@@ -321,6 +346,40 @@ export const CustomerProvider = ({ children }) => {
     [settings, customer.customer, customer.cart]
   );
 
+  const updateQty = ({ operation, ids }) => {
+    if (!operation || !ids?.length) return;
+    console.log(operation, ids);
+    switch (operation) {
+      case "decrease": {
+        if (customer.cart.combinedCartItems.length === 1) {
+          deleteCart({
+            variables: {
+              id: customer.cart.id,
+            },
+          });
+        } else {
+          deleteCartItem({
+            variables: {
+              id: ids[0],
+            },
+          });
+        }
+        break;
+      }
+      case "increase": {
+        duplicateCartItem({
+          variables: {
+            params: {
+              cartItemId: ids[0],
+              parentCartItemId: null,
+            },
+          },
+        });
+        break;
+      }
+    }
+  };
+
   React.useEffect(() => {
     const handleEvent = (e) => {
       addToCart(e.detail.productDetails);
@@ -329,6 +388,15 @@ export const CustomerProvider = ({ children }) => {
     window.addEventListener("add-to-cart", handleEvent);
     return () => window.removeEventListener("add-to-cart", handleEvent);
   }, [addToCart]);
+
+  React.useEffect(() => {
+    const handleEvent = (e) => {
+      updateQty(e.detail);
+    };
+
+    window.addEventListener("product-quantity", handleEvent);
+    return () => window.removeEventListener("product-quantity", handleEvent);
+  }, [updateQty]);
 
   return (
     <CustomerContext.Provider
