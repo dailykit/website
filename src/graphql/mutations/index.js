@@ -10,6 +10,22 @@ export const MUTATION = {
             }
          }
          `,
+      DELETE: `
+        mutation DeleteCartItem($id: Int!) {
+         deleteCartItem(id: $id) {
+            id
+         }
+       }
+       
+        `,
+      DUPLICATE: `
+        query DuplicateCartItem($params: jsonb!) {
+         order_duplicateCartItem(args: { params : $params }) {
+           success
+           message
+         }
+       }
+        `,
       UPDATE: `
         mutation UpdateCartItems($cartIds: [Int!]!, $_set: order_cartItem_set_input) {
          updateCartItems(where: { cartId : { _in : $cartIds } }, _set : $_set) {

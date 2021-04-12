@@ -58,7 +58,7 @@ const QUERIES = {
               quantity
               image
               isActive
-              supplierItemId
+              simpleRecipeYieldId
               sachetItemId
               ingredientSachetId
               cartItem
@@ -90,7 +90,7 @@ const QUERIES = {
                   quantity
                   image
                   isActive
-                  supplierItemId
+                  simpleRecipeYieldId
                   sachetItemId
                   ingredientSachetId
                   cartItem
@@ -134,7 +134,7 @@ const QUERIES = {
                   quantity
                   image
                   isActive
-                  supplierItemId
+                  simpleRecipeYieldId
                   sachetItemId
                   ingredientSachetId
                   cartItem
@@ -175,7 +175,7 @@ const QUERIES = {
                       quantity
                       image
                       isActive
-                      supplierItemId
+                      simpleRecipeYieldId
                       sachetItemId
                       ingredientSachetId
                       cartItem
